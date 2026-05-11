@@ -60,8 +60,7 @@ defineExpose({ getLocation })
 <template>
   <div class="location-picker">
     <AddressInput
-      :model-value="address"
-      @update:model-value="address = $event"
+      v-model="address"
       @location-selected="onAddressSelected"
       :label="label"
       :placeholder="placeholder"

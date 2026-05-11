@@ -68,14 +68,14 @@ function onFocus() {
 
 function selectSuggestion(item: { display_name: string; lat: string; lon: string }) {
   const address = item.display_name
+  showSuggestions.value = false
+  suggestions.value = []
   emit('update:modelValue', address)
   emit('location-selected', {
     address,
     lat: parseFloat(item.lat),
     lng: parseFloat(item.lon)
   })
-  showSuggestions.value = false
-  suggestions.value = []
 }
 
 function closeSuggestions() {
@@ -97,6 +97,7 @@ defineExpose({ closeSuggestions })
         :value="modelValue"
         @input="onInput"
         @focus="onFocus"
+        @blur="showSuggestions = false"
         @click.stop
         :required="required"
         :placeholder="placeholder"

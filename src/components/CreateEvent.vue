@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import AddressInput from './AddressInput.vue'
-import Map from './Map.vue'
+import LocationPicker from './LocationPicker.vue'
 import CaptchaInput from './CaptchaInput.vue'
 
 const first_name = ref('John')
@@ -20,13 +19,6 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
   address.value = data.address
   lat.value = data.lat
   long_.value = data.lng
-  is_marker.value = true
-}
-
-function onMapLocationSelected(data: { lat: number; lng: number; address: string }) {
-  lat.value = data.lat
-  long_.value = data.lng
-  address.value = data.address
 }
 
 async function submitForm() {
@@ -76,18 +68,7 @@ async function submitForm() {
           <input id="date" type="date" v-model="date" required />
         </div>
 
-        <AddressInput
-          v-model="address"
-          @location-selected="onLocationSelected"
-          required
-        />
-
-        <Map
-          :lat="lat"
-          :lng="long_"
-          :is_marker="is_marker"
-          @location-selected="onMapLocationSelected"
-        />
+        <LocationPicker required="true" @location-selected="onLocationSelected()" />
 
         <input type="hidden" name="lat" :value="lat" />
         <input type="hidden" name="long" :value="long_" />
