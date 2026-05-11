@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import AddressInput from './AddressInput.vue'
 import Map from './Map.vue'
+import CaptchaInput from './CaptchaInput.vue'
 
 const first_name = ref('John')
 const last_name = ref('Doe')
@@ -12,29 +13,12 @@ const address = ref('')
 const lat = ref(46.603354)
 const long_ = ref(1.888334)
 const comments = ref('')
-const captcha_img = ref('')
-const captcha_token = ref('')
-const captcha_value = ref('')
-const is_marker = ref(false)
-
-async function fetchCaptcha() {
-  try {
-    const res = await fetch('/generate-captcha')
-    const data = await res.json()
-    captcha_token.value = data.captcha_token
-    captcha_img.value = 'data:image/png;base64,' + data.image
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-fetchCaptcha()
+const captcha = ref()
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   address.value = data.address
   lat.value = data.lat
   long_.value = data.lng
-  is_marker.value = true
 }
 
 function onMapLocationSelected(data: { lat: number; lng: number; address: string }) {
@@ -44,8 +28,9 @@ function onMapLocationSelected(data: { lat: number; lng: number; address: string
 }
 
 async function submitForm() {
-  await fetchCaptcha()
   // TODO: submit event data
+  console.log(captcha.value.token)
+  console.log(captcha.value.value)
 }
 </script>
 
@@ -111,18 +96,7 @@ async function submitForm() {
         </div>
       </div>
 
-      <div class="create-event__section create-event__captcha-section">
-        <h2>Verification</h2>
-        <div class="create-event__captcha">
-          <img v-if="captcha_img" :src="captcha_img" alt="Captcha image" class="create-event__captcha-img" />
-          <p v-else class="create-event__captcha-loading">Loading captcha...</p>
-          <div class="create-event__captcha-actions">
-            <input id="captcha" type="text" v-model="captcha_value" placeholder="Enter captcha" />
-            <button type="button" class="btn-secondary" @click="fetchCaptcha()">Refresh</button>
-          </div>
-        </div>
-      </div>
-
+      <CaptchaInput ref="captcha" />
       <div class="create-event__actions">
         <button type="submit" class="btn-primary">Create Event</button>
       </div>
@@ -187,34 +161,7 @@ async function submitForm() {
   color: var(--color-text-dark);
 }
 
-.create-event__captcha {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
 
-.create-event__captcha-img {
-  max-width: 200px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-}
-
-.create-event__captcha-loading {
-  color: var(--color-text-medium);
-  font-style: italic;
-}
-
-.create-event__captcha-actions {
-  display: flex;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 300px;
-}
-
-.create-event__captcha-actions input {
-  flex: 1;
-}
 
 .create-event__actions {
   text-align: center;
