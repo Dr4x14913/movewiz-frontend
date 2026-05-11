@@ -1,71 +1,218 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  const first_name = ref('John')
-  const last_name  = ref('Doe')
-  const email      = ref('john@example.com')
-  const event_name = ref('Event Name')
-  const date       = ref('')
-  const address    = ref('')
-  const lat        = ref(0)
-  const long_       = ref(0)
-  const comments   = ref('')
-  const captcha_img = ref("")
-  const captcha_token = ref('')
-  const captcha_value = ref('')
-  
-  async function fetch_captcha() {
-      console.log("ess")
-    try{
-      const res = await fetch("/generate-captcha")
-      const data = await res.json()
-      captcha_token.value = data.captcha_token
-      captcha_img.value = 'data:image/png;base64,' + data.image
-    } catch (e) {
-      console.error(e)
-    }
+import { ref } from 'vue'
+
+const first_name = ref('John')
+const last_name = ref('Doe')
+const email = ref('john@example.com')
+const event_name = ref('Event Name')
+const date = ref('')
+const address = ref('')
+const lat = ref(0)
+const long_ = ref(0)
+const comments = ref('')
+const captcha_img = ref('')
+const captcha_token = ref('')
+const captcha_value = ref('')
+
+async function fetchCaptcha() {
+  try {
+    const res = await fetch('/generate-captcha')
+    const data = await res.json()
+    captcha_token.value = data.captcha_token
+    captcha_img.value = 'data:image/png;base64,' + data.image
+  } catch (e) {
+    console.error(e)
   }
-fetch_captcha()
+}
+
+fetchCaptcha()
+
+async function submitForm() {
+  await fetchCaptcha()
+  // TODO: submit event data
+}
 </script>
 
 <template>
-  <h1>Create an event</h1>
+  <div class="create-event">
+    <h1>Create an Event</h1>
+    <p class="create-event__subtitle">Fill in the details below to organize your movie night.</p>
 
-  <form @submit.prevent="fetch_captcha">
-    <div>
-      <label for="first-name">First Name</label>
-      <input id="first-name" type="text" value="John" v-model="first_name"/>
+    <form @submit.prevent="submitForm" class="create-event__form">
+      <div class="create-event__section">
+        <h2>Contact Information</h2>
 
-      <label for="last-name">Last Name</label>
-      <input id="last-name" type="text" value="Doe" v-model="last_name"/>
+        <div class="create-event__row">
+          <div class="create-event__field">
+            <label for="first-name">First Name</label>
+            <input id="first-name" type="text" v-model="first_name" required />
+          </div>
 
-      <label for="email">Email</label>
-      <input id="email" type="email" value="john@example.com" v-model="email"/>
+          <div class="create-event__field">
+            <label for="last-name">Last Name</label>
+            <input id="last-name" type="text" v-model="last_name" required />
+          </div>
+        </div>
 
-      <label for="event-name">Event Name</label>
-      <input id="event-name" type="text" value="Event Name" v-model="event_name"/>
+        <div class="create-event__field">
+          <label for="email">Email</label>
+          <input id="email" type="email" v-model="email" required />
+        </div>
+      </div>
 
-      <label for="date">Date</label>
-      <input id="date" type="date" v-model="date"/>
+      <div class="create-event__section">
+        <h2>Event Details</h2>
 
-      <label for="address">Address</label>
-      <input id="address" type="text" v-model="address"/>
+        <div class="create-event__field">
+          <label for="event-name">Event Name</label>
+          <input id="event-name" type="text" v-model="event_name" required />
+        </div>
 
-      <label for="lat">Latitude</label>
-      <input id="lat" type="number" v-model="lat"/>
+        <div class="create-event__field">
+          <label for="date">Date</label>
+          <input id="date" type="date" v-model="date" required />
+        </div>
 
-      <label for="long">Longitude</label>
-      <input id="long" type="number" v-model="long_"/>
+        <div class="create-event__field">
+          <label for="address">Address</label>
+          <input id="address" type="text" v-model="address" required />
+        </div>
 
-      <label for="comments">Comments</label>
-      <textarea id="comments" v-model="comments"/>
-    </div>
-    <div>
-      <label for="captcha">Captcha</label>
-      <img :src="captcha_img"/>
-      <input id="captcha" type="text" v-model="captcha_value" />
-      <button @click="fetch_captcha()">Generate Captcha</button>
-    </div>
-  </form>
+        <div class="create-event__row">
+          <div class="create-event__field">
+            <label for="lat">Latitude</label>
+            <input id="lat" type="number" step="any" v-model="lat" />
+          </div>
 
+          <div class="create-event__field">
+            <label for="long">Longitude</label>
+            <input id="long" type="number" step="any" v-model="long_" />
+          </div>
+        </div>
 
+        <div class="create-event__field">
+          <label for="comments">Comments</label>
+          <textarea id="comments" v-model="comments" rows="3" placeholder="Optional notes about the event..."></textarea>
+        </div>
+      </div>
+
+      <div class="create-event__section create-event__captcha-section">
+        <h2>Verification</h2>
+        <div class="create-event__captcha">
+          <img v-if="captcha_img" :src="captcha_img" alt="Captcha image" class="create-event__captcha-img" />
+          <p v-else class="create-event__captcha-loading">Loading captcha...</p>
+          <div class="create-event__captcha-actions">
+            <input id="captcha" type="text" v-model="captcha_value" placeholder="Enter captcha" />
+            <button type="button" class="btn-secondary" @click="fetchCaptcha()">Refresh</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="create-event__actions">
+        <button type="submit" class="btn-primary">Create Event</button>
+      </div>
+    </form>
+  </div>
 </template>
+
+<style scoped>
+.create-event {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.create-event__subtitle {
+  color: var(--color-text-medium);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.create-event__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.create-event__section {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 2px solid var(--color-secondary-green);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
+}
+
+.create-event__section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.create-event__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.create-event__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.create-event__field:last-child {
+  margin-bottom: 0;
+}
+
+.create-event__field label {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-dark);
+}
+
+.create-event__captcha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.create-event__captcha-img {
+  max-width: 200px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.create-event__captcha-loading {
+  color: var(--color-text-medium);
+  font-style: italic;
+}
+
+.create-event__captcha-actions {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+.create-event__captcha-actions input {
+  flex: 1;
+}
+
+.create-event__actions {
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.create-event__actions .btn-primary {
+  min-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .create-event__row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
