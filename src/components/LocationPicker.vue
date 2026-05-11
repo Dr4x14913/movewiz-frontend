@@ -1,0 +1,87 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import AddressInput from './AddressInput.vue'
+import Map from './Map.vue'
+
+const props = withDefaults(defineProps<{
+  label?: string
+  placeholder?: string
+  required?: boolean
+  height?: string
+  defaultLat?: number
+  defaultLng?: number
+  zoom?: number
+}>(), {
+  label: 'Address',
+  placeholder: 'Start typing an address...',
+  required: false,
+  height: '300px',
+  defaultLat: 46.603354,
+  defaultLng: 1.888334,
+  zoom: 6
+})
+
+const emit = defineEmits<{
+  'location-selected': [data: { address: string; lat: number; lng: number }]
+}>()
+
+const address = ref('')
+const lat = ref(props.defaultLat)
+const lng = ref(props.defaultLng)
+const hasMarker = ref(false)
+
+function onAddressSelected(data: { address: string; lat: number; lng: number }) {
+  address.value = data.address
+  lat.value = data.lat
+  lng.value = data.lng
+  hasMarker.value = true
+  emit('location-selected', { address: data.address, lat: data.lat, lng: data.lng })
+}
+
+function onMapSelected(data: { lat: number; lng: number; address: string }) {
+  lat.value = data.lat
+  lng.value = data.lng
+  address.value = data.address
+  hasMarker.value = true
+  emit('location-selected', { address: data.address, lat: data.lat, lng: data.lng })
+}
+
+function getLocation() {
+  return {
+    address: address.value,
+    lat: lat.value,
+    lng: lng.value
+  }
+}
+
+defineExpose({ getLocation })
+</script>
+
+<template>
+  <div class="location-picker">
+    <AddressInput
+      :model-value="address"
+      @update:model-value="address = $event"
+      @location-selected="onAddressSelected"
+      :label="label"
+      :placeholder="placeholder"
+      :required="required"
+    />
+    <Map
+      :lat="lat"
+      :lng="lng"
+      :is_marker="hasMarker"
+      :height="height"
+      @location-selected="onMapSelected"
+    />
+  </div>
+</template>
+
+
+<style scoped>
+.location-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+</style>

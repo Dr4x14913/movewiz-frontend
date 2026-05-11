@@ -14,11 +14,13 @@ const lat = ref(46.603354)
 const long_ = ref(1.888334)
 const comments = ref('')
 const captcha = ref()
+const is_marker = ref(false)
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   address.value = data.address
   lat.value = data.lat
   long_.value = data.lng
+  is_marker.value = true
 }
 
 function onMapLocationSelected(data: { lat: number; lng: number; address: string }) {
@@ -161,8 +163,6 @@ async function submitForm() {
   color: var(--color-text-dark);
 }
 
-
-
 .create-event__actions {
   text-align: center;
   padding-top: 1rem;
@@ -171,8 +171,6 @@ async function submitForm() {
 .create-event__actions .btn-primary {
   min-width: 200px;
 }
-
-
 
 @media (max-width: 600px) {
   .create-event__row {
