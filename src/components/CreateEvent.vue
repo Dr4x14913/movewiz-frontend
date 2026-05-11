@@ -9,15 +9,14 @@
   const lat        = ref(0)
   const long_       = ref(0)
   const comments   = ref('')
-  const backend = ref("http://localhost:3033")
   const captcha_img = ref("")
   const captcha_token = ref('')
   const captcha_value = ref('')
   
   async function fetch_captcha() {
-      console.log("e")
+      console.log("ess")
     try{
-      const res = await fetch(backend.value + "/generate-captcha")
+      const res = await fetch("/generate-captcha")
       const data = await res.json()
       captcha_token.value = data.captcha_token
       captcha_img.value = 'data:image/png;base64,' + data.image

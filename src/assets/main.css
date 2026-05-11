@@ -93,6 +93,7 @@ a:hover,
 
 .btn-accent:hover {
   opacity: 0.9;
+  color: var(--color-primary-orange);
   box-shadow: 0 4px 12px rgba(216, 108, 31, 0.3);
 }
 
