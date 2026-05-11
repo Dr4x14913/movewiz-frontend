@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import AddressInput from './AddressInput.vue'
+import Map from './Map.vue'
 
 const first_name = ref('John')
 const last_name = ref('Doe')
@@ -7,12 +9,13 @@ const email = ref('john@example.com')
 const event_name = ref('Event Name')
 const date = ref('')
 const address = ref('')
-const lat = ref(0)
-const long_ = ref(0)
+const lat = ref(46.603354)
+const long_ = ref(1.888334)
 const comments = ref('')
 const captcha_img = ref('')
 const captcha_token = ref('')
 const captcha_value = ref('')
+const is_marker = ref(false)
 
 async function fetchCaptcha() {
   try {
@@ -26,6 +29,19 @@ async function fetchCaptcha() {
 }
 
 fetchCaptcha()
+
+function onLocationSelected(data: { address: string; lat: number; lng: number }) {
+  address.value = data.address
+  lat.value = data.lat
+  long_.value = data.lng
+  is_marker.value = true
+}
+
+function onMapLocationSelected(data: { lat: number; lng: number; address: string }) {
+  lat.value = data.lat
+  long_.value = data.lng
+  address.value = data.address
+}
 
 async function submitForm() {
   await fetchCaptcha()
@@ -73,22 +89,21 @@ async function submitForm() {
           <input id="date" type="date" v-model="date" required />
         </div>
 
-        <div class="create-event__field">
-          <label for="address">Address</label>
-          <input id="address" type="text" v-model="address" required />
-        </div>
+        <AddressInput
+          v-model="address"
+          @location-selected="onLocationSelected"
+          required
+        />
 
-        <div class="create-event__row">
-          <div class="create-event__field">
-            <label for="lat">Latitude</label>
-            <input id="lat" type="number" step="any" v-model="lat" />
-          </div>
+        <Map
+          :lat="lat"
+          :lng="long_"
+          :is_marker="is_marker"
+          @location-selected="onMapLocationSelected"
+        />
 
-          <div class="create-event__field">
-            <label for="long">Longitude</label>
-            <input id="long" type="number" step="any" v-model="long_" />
-          </div>
-        </div>
+        <input type="hidden" name="lat" :value="lat" />
+        <input type="hidden" name="long" :value="long_" />
 
         <div class="create-event__field">
           <label for="comments">Comments</label>
@@ -209,6 +224,8 @@ async function submitForm() {
 .create-event__actions .btn-primary {
   min-width: 200px;
 }
+
+
 
 @media (max-width: 600px) {
   .create-event__row {

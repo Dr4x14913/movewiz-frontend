@@ -29,7 +29,7 @@ import { RouterLink, RouterView } from 'vue-router'
   border-bottom: 2px solid var(--color-secondary-green);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1100;
 }
 
 .navbar__brand {
