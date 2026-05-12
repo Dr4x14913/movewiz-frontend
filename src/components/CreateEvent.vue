@@ -3,7 +3,9 @@ import { ref } from 'vue'
 import Card from './Card.vue'
 import LocationPicker from './LocationPicker.vue'
 import CaptchaInput from './CaptchaInput.vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const first_name = ref('John')
 const last_name = ref('Doe')
 const email = ref('john@example.com')
@@ -21,6 +23,7 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
   lat.value = data.lat
   long_.value = data.lng
 }
+
 
 async function submitForm() {
   // TODO: submit event data
@@ -65,7 +68,12 @@ async function submitForm() {
           <input id="date" type="date" v-model="date" required />
         </div>
 
-        <LocationPicker required="true" @location-selected="onLocationSelected()" />
+        <LocationPicker
+          :label="t('common.address.label')"
+          :placeholder="t('common.address.placeholder')"
+          required="true"
+          @location-selected="onLocationSelected()"
+        />
 
         <input type="hidden" name="lat" :value="lat" />
         <input type="hidden" name="long" :value="long_" />
@@ -77,7 +85,11 @@ async function submitForm() {
       </Card>
 
       <Card :title="$t('createEvent.verification.title')">
-        <CaptchaInput ref="captcha" />
+        <CaptchaInput
+          ref="captcha"
+          :title="t('common.captcha.title')"
+          :placeholder="t('common.captcha.placeholder')"
+        />
       </Card>
       <div class="create-event__actions">
         <button type="submit" class="btn-primary">{{ $t('createEvent.submit') }}</button>

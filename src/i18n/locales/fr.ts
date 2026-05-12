@@ -67,4 +67,15 @@ export default {
   about: {
     title: 'C\'est ça',
   },
+  common: {
+    address: {
+      label: 'Adresse',
+      placeholder: 'Commencez à taper une adresse...',
+    },
+    captcha: {
+      title: 'Vérification',
+      placeholder: 'Entrez le captcha',
+      refresh: 'Rafraîchir',
+    },
+  },
 }

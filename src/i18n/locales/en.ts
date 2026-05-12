@@ -67,4 +67,15 @@ export default {
   about: {
     title: 'This is it',
   },
+  common: {
+    address: {
+      label: 'Address',
+      placeholder: 'Start typing an address...',
+    },
+    captcha: {
+      title: 'Verification',
+      placeholder: 'Enter captcha',
+      refresh: 'Refresh',
+    },
+  },
 }

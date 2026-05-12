@@ -4,13 +4,11 @@ import { ref, onMounted } from 'vue'
 import Spinner from './Spinner.vue'
 
 const props = withDefaults(defineProps<{
-  title?: string
-  placeholder?: string
+  title: string
+  placeholder: string
   inputId?: string
   endpoint?: string
 }>(), {
-  title: 'Verification',
-  placeholder: 'Enter captcha',
   inputId: 'captcha',
   endpoint: '/generate-captcha'
 })
@@ -61,7 +59,7 @@ defineExpose({ token, value })
           :placeholder="placeholder"
         />
         <button type="button" class="btn-secondary" @click="refresh">
-          Refresh
+          {{ $t("common.captcha.refresh") }}
         </button>
       </div>
     </div>
