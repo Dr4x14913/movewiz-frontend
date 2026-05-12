@@ -43,7 +43,6 @@ defineExpose({ token, value })
 
 <template>
   <div class="captcha-input">
-    <h2>{{ title }}</h2>
     <div class="captcha-input__captcha">
       <img
         v-if="image"
@@ -71,21 +70,6 @@ defineExpose({ token, value })
 
 
 <style scoped>
-.captcha-input {
-  padding: 1.5rem;
-  background-color: #ffffff;
-  border: 2px solid var(--color-secondary-green);
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
-}
-
-.captcha-input h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #f0f0f0;
-}
-
 .captcha-input__captcha {
   display: flex;
   flex-direction: column;

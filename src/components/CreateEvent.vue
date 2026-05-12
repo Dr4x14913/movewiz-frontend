@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import Card from './Card.vue'
 import LocationPicker from './LocationPicker.vue'
 import CaptchaInput from './CaptchaInput.vue'
 
@@ -34,9 +35,7 @@ async function submitForm() {
     <p class="create-event__subtitle">Fill in the details below to organize your movie night.</p>
 
     <form @submit.prevent="submitForm" class="create-event__form">
-      <div class="create-event__section">
-        <h2>Contact Information</h2>
-
+      <Card variant="outlined" title="Contact Information">
         <div class="create-event__row">
           <div class="create-event__field">
             <label for="first-name">First Name</label>
@@ -53,11 +52,9 @@ async function submitForm() {
           <label for="email">Email</label>
           <input id="email" type="email" v-model="email" required />
         </div>
-      </div>
+      </Card>
 
-      <div class="create-event__section">
-        <h2>Event Details</h2>
-
+      <Card variant="elevated" title="Event Details">
         <div class="create-event__field">
           <label for="event-name">Event Name</label>
           <input id="event-name" type="text" v-model="event_name" required />
@@ -77,9 +74,11 @@ async function submitForm() {
           <label for="comments">Comments</label>
           <textarea id="comments" v-model="comments" rows="3" placeholder="Optional notes about the event..."></textarea>
         </div>
-      </div>
+      </Card>
 
-      <CaptchaInput ref="captcha" />
+      <Card title="Verification">
+        <CaptchaInput ref="captcha" />
+      </Card>
       <div class="create-event__actions">
         <button type="submit" class="btn-primary">Create Event</button>
       </div>
@@ -93,9 +92,14 @@ async function submitForm() {
   margin: 0 auto;
 }
 
+.create-event h1 {
+  color: var(--color-primary-green);
+  margin-bottom: 0.25rem;
+}
+
 .create-event__subtitle {
   color: var(--color-text-medium);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   font-size: 1rem;
 }
 
@@ -105,20 +109,7 @@ async function submitForm() {
   gap: 1.5rem;
 }
 
-.create-event__section {
-  padding: 1.5rem;
-  background-color: #ffffff;
-  border: 2px solid var(--color-secondary-green);
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
-}
 
-.create-event__section h2 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #f0f0f0;
-}
 
 .create-event__row {
   display: grid;
@@ -142,20 +133,60 @@ async function submitForm() {
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--color-text-dark);
+  transition: color 0.2s ease;
+}
+
+.create-event__field input,
+.create-event__field textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.create-event__field input:focus,
+.create-event__field textarea:focus {
+  border-color: var(--color-primary-green);
+  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+  transform: scale(1.01);
 }
 
 .create-event__actions {
   text-align: center;
-  padding-top: 1rem;
+  padding-top: 0.5rem;
+  animation: fadeIn 0.6s ease-out 0.2s both;
 }
 
 .create-event__actions .btn-primary {
   min-width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-event__actions .btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.create-event__actions .btn-primary:hover::after {
+  transform: translateX(100%);
 }
 
 @media (max-width: 600px) {
   .create-event__row {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

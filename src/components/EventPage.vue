@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { router } from '../router.ts'
+import Card from './Card.vue'
 
 interface EventData {
   id: number
@@ -81,28 +82,25 @@ function formatDate(dateStr: string): string {
   <div class="event-page">
     <h1>Event</h1>
 
-    <div v-if="!hasToken" class="event-page__token-card">
-      <h2>Access Your Event</h2>
+    <Card v-if="!hasToken" variant="outlined" title="Access Your Event">
       <p class="event-page__token-desc">Enter the token from your invitation link to view event details.</p>
       <form @submit.prevent="redirectWithToken()" class="event-page__token-form">
         <input id="token-in" v-model="tokenValue" type="text" placeholder="Paste your token here" autocomplete="off" />
         <button type="submit" class="btn-primary">View Event</button>
       </form>
-    </div>
+    </Card>
 
     <div v-else class="event-page__content">
       <div v-if="isLoading" class="event-page__loading">
         <p>Loading event details...</p>
       </div>
 
-      <div v-else-if="isErrored" class="event-page__error">
-        <h2>Event Not Found</h2>
+      <Card v-else-if="isErrored" title="Event Not Found">
         <p class="text-secondary">This event could not be found or the token is invalid.</p>
-        <button class="btn-primary" @click="goHome()">Go Home</button>
-      </div>
+        <button class="btn-primary event-page__btn" @click="goHome()">Go Home</button>
+      </Card>
 
-      <div v-else-if="eventData" class="event-page__details">
-        <h2>{{ eventData.eventName }}</h2>
+      <Card v-else-if="eventData" variant="elevated" :title="eventData.eventName">
 
         <div class="event-page__field">
           <span class="event-page__label">Date</span>
@@ -128,7 +126,7 @@ function formatDate(dateStr: string): string {
           <span class="event-page__label">Comments</span>
           <p class="event-page__comments">{{ eventData.comments }}</p>
         </div>
-      </div>
+      </Card>
     </div>
   </div>
 </template>
@@ -137,21 +135,6 @@ function formatDate(dateStr: string): string {
 .event-page {
   max-width: 600px;
   margin: 0 auto;
-}
-
-.event-page__token-card {
-  max-width: 450px;
-  margin: 2rem auto 0;
-  padding: 2rem;
-  background-color: #ffffff;
-  border: 2px solid var(--color-secondary-green);
-  border-radius: 16px;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
-}
-
-.event-page__token-card h2 {
-  margin-bottom: 0.5rem;
 }
 
 .event-page__token-desc {
@@ -176,34 +159,8 @@ function formatDate(dateStr: string): string {
   color: var(--color-text-medium);
 }
 
-.event-page__error {
-  text-align: center;
-  padding: 2rem;
-  background-color: #fff;
-  border: 2px solid var(--color-secondary-green);
-  border-radius: 12px;
-}
-
-.event-page__error h2 {
-  color: var(--color-primary-orange);
-  margin-bottom: 0.5rem;
-}
-
-.event-page__error .btn-primary {
+.event-page__btn {
   margin-top: 1rem;
-}
-
-.event-page__details {
-  padding: 1.5rem;
-  background-color: #fff;
-  border: 2px solid var(--color-secondary-green);
-  border-radius: 12px;
-}
-
-.event-page__details h2 {
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-bg-cream);
 }
 
 .event-page__field {
