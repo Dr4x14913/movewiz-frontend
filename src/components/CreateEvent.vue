@@ -35,7 +35,7 @@ async function submitForm() {
     <p class="create-event__subtitle">Fill in the details below to organize your movie night.</p>
 
     <form @submit.prevent="submitForm" class="create-event__form">
-      <Card variant="outlined" title="Contact Information">
+      <Card variant="classic" title="Contact Information">
         <div class="create-event__row">
           <div class="create-event__field">
             <label for="first-name">First Name</label>
@@ -54,7 +54,7 @@ async function submitForm() {
         </div>
       </Card>
 
-      <Card variant="elevated" title="Event Details">
+      <Card variant="borderless" title="Event Details">
         <div class="create-event__field">
           <label for="event-name">Event Name</label>
           <input id="event-name" type="text" v-model="event_name" required />

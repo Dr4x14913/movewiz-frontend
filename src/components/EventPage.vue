@@ -82,7 +82,7 @@ function formatDate(dateStr: string): string {
   <div class="event-page">
     <h1>Event</h1>
 
-    <Card v-if="!hasToken" variant="outlined" title="Access Your Event">
+    <Card v-if="!hasToken" variant="classic" title="Access Your Event">
       <p class="event-page__token-desc">Enter the token from your invitation link to view event details.</p>
       <form @submit.prevent="redirectWithToken()" class="event-page__token-form">
         <input id="token-in" v-model="tokenValue" type="text" placeholder="Paste your token here" autocomplete="off" />
@@ -100,7 +100,7 @@ function formatDate(dateStr: string): string {
         <button class="btn-primary event-page__btn" @click="goHome()">Go Home</button>
       </Card>
 
-      <Card v-else-if="eventData" variant="elevated" :title="eventData.eventName">
+      <Card v-else-if="eventData" variant="borderless" :title="eventData.eventName">
 
         <div class="event-page__field">
           <span class="event-page__label">Date</span>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import Card from './Card.vue'
 
 const tagline = ref('Find and organize movie nights near you')
 </script>
@@ -12,17 +13,15 @@ const tagline = ref('Find and organize movie nights near you')
   </section>
 
   <section class="features">
-    <div class="feature-card">
-      <h2 class="feature-card__title">Discover Events</h2>
-      <p class="feature-card__desc">Find movie screenings and gatherings in your area.</p>
+    <Card title="Discover Events">
+      <p>Find movie screenings and gatherings in your area.</p>
       <a href="#" class="btn-secondary">Learn More</a>
-    </div>
+    </Card>
 
-    <div class="feature-card">
-      <h2 class="feature-card__title">Create Events</h2>
-      <p class="feature-card__desc">Organize your own movie night with friends.</p>
+    <Card title="Create Events">
+      <p>Organize your own movie night with friends.</p>
       <a href="/create" class="btn-accent">Create Now</a>
-    </div>
+    </Card>
   </section>
 </template>
 
@@ -56,28 +55,5 @@ const tagline = ref('Find and organize movie nights near you')
   flex-wrap: wrap;
 }
 
-.feature-card {
-  background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 16px;
-  border: 2px solid var(--color-secondary-green);
-  text-align: center;
-  max-width: 350px;
-  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
-}
 
-.feature-card__title {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-dark);
-  margin-bottom: 0.5rem;
-}
-
-.feature-card__desc {
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--color-text-medium);
-  margin-bottom: 1.5rem;
-}
 </style>
