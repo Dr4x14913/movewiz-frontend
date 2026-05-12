@@ -80,7 +80,7 @@ defineExpose({ token, value })
 .captcha-input__captcha-img {
   max-width: 200px;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--color-input-border);
 }
 
 .captcha-input__captcha-loading {

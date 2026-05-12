@@ -23,7 +23,7 @@ const variantClass = computed(() => ({
 
 <style scoped>
 .card {
-  background-color: #ffffff;
+  background-color: var(--color-card-bg);
   border: 2px solid var(--color-secondary-green);
   border-radius: 16px;
   padding: 1.5rem;
@@ -37,7 +37,10 @@ const variantClass = computed(() => ({
   box-shadow: 0 6px 20px rgba(46, 125, 50, 0.15);
 }
 
-/* Elevated: borderless, flat, no shadow */
+.card--borderless:hover {
+  box-shadow: none;
+}
+
 .card--borderless {
   border: none;
   border-radius: 0;
@@ -52,7 +55,7 @@ const variantClass = computed(() => ({
   border: 2px solid var(--color-secondary-green);
   border-radius: 8px;
   padding: 1.25rem;
-  background-color: #ffffff;
+  background-color: var(--color-card-bg);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }

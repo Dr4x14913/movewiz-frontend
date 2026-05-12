@@ -168,7 +168,7 @@ function formatDate(dateStr: string): string {
   justify-content: space-between;
   align-items: baseline;
   padding: 0.625rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-input-border);
 }
 
 .event-page__field:last-child {

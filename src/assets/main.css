@@ -15,7 +15,7 @@ a,
 
 a:hover,
 .link:hover {
-  background-color: hsla(87, 47%, 56%, 0.15);
+  background-color: var(--color-hover-bg);
 }
 
 /* Primary Button */
@@ -104,7 +104,8 @@ select {
   padding: 0.625rem 1rem;
   border: 1px solid var(--color-text-medium);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--color-input-bg);
+  border-color: var(--color-input-border);
   color: var(--color-text-dark);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }

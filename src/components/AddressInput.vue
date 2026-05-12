@@ -160,7 +160,7 @@ defineExpose({ closeSuggestions })
   list-style: none;
   margin: 0.25rem 0 0 0;
   padding: 0;
-  background: #ffffff;
+  background: var(--color-card-bg);
   border: 2px solid var(--color-secondary-green);
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15);
@@ -173,7 +173,7 @@ defineExpose({ closeSuggestions })
   cursor: pointer;
   font-size: 0.9rem;
   color: var(--color-text-dark);
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-input-border);
   transition: background-color 0.2s ease;
 }
 

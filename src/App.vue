@@ -1,5 +1,25 @@
 <script setup lang="ts">
+import { onUnmounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import ThemeToggle from './components/ThemeToggle.vue'
+
+function applyTheme() {
+  const saved = localStorage.getItem('theme')
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const theme = saved || (prefersDark ? 'dark' : 'light')
+  document.documentElement.dataset.theme = theme
+}
+applyTheme()
+
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+function onSystemThemeChange() {
+  if (!localStorage.getItem('theme')) applyTheme()
+}
+mediaQuery.addEventListener('change', onSystemThemeChange)
+
+onUnmounted(() => {
+  mediaQuery.removeEventListener('change', onSystemThemeChange)
+})
 </script>
 
 <template>
@@ -12,6 +32,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <RouterLink to="/" exact-active-class="active">Home</RouterLink>
       <RouterLink to="/about" exact-active-class="active">About</RouterLink>
       <RouterLink to="/create" exact-active-class="active">Create Event</RouterLink>
+      <ThemeToggle />
     </div>
   </nav>
   <main>
@@ -25,7 +46,7 @@ import { RouterLink, RouterView } from 'vue-router'
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: var(--color-bg-cream);
+  background-color: var(--color-navbar-bg);
   border-bottom: 2px solid var(--color-secondary-green);
   position: sticky;
   top: 0;

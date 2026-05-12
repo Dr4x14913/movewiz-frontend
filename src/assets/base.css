@@ -3,20 +3,49 @@
 :root {
   /* Color Palette */
   --color-bg-cream: #FDFCF5;
+  --color-bg-surface: #FFFFFF;
   --color-primary-green: #8BC34A;
   --color-secondary-green: #2E7D32;
   --color-primary-orange: #D86C1F;
   --color-text-dark: #333333;
   --color-text-medium: #666666;
+  --color-navbar-bg: #FDFCF5;
+  --color-card-bg: #FFFFFF;
+  --color-input-bg: #FFFFFF;
+  --color-input-border: #CCCCCC;
+  --color-hover-bg: hsla(87, 47%, 56%, 0.15);
 
   /* Typography */
   --font-heading: 'Nunito', sans-serif;
   --font-body: 'Open Sans', sans-serif;
 }
 
+[data-theme="dark"] {
+  --color-bg-cream: #2D2418;
+  --color-bg-surface: #3D3024;
+  --color-primary-green: #9CCC65;
+  --color-secondary-green: #4CAF50;
+  --color-primary-orange: #E8833D;
+  --color-text-dark: #EDE7D9;
+  --color-text-medium: #B8B09E;
+  --color-navbar-bg: #251D14;
+  --color-card-bg: #3D3024;
+  --color-input-bg: #3D3024;
+  --color-input-border: #5A4A38;
+  --color-hover-bg: hsla(87, 25%, 30%, 0.25);
+}
+
+
+/* Reset */
+html {
+  margin: 0;
+  padding: 0;
+}
 
 /* Body */
 body {
+  margin: 0;
+  padding: 0;
   min-height: 100vh;
   color: var(--color-text-dark);
   background-color: var(--color-bg-cream);
