@@ -29,7 +29,7 @@ const variantClass = computed(() => ({
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  animation: cardEnter 0.4s ease-out both;
+  animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .card:hover {
@@ -44,7 +44,7 @@ const variantClass = computed(() => ({
   padding: 1.5rem;
   background: transparent;
   box-shadow: none;
-  animation: cardEnter 0.4s ease-out both;
+  animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Classic: traditional professional card — squarish, clean lines, green border */
@@ -74,11 +74,11 @@ const variantClass = computed(() => ({
 @keyframes cardEnter {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateX(-40vw);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
