@@ -2,6 +2,7 @@
 import { onUnmounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import ThemeToggle from './components/ThemeToggle.vue'
+import LangToggle from './components/LangToggle.vue'
 
 function applyTheme() {
   const saved = localStorage.getItem('theme')
@@ -29,9 +30,10 @@ onUnmounted(() => {
       <span class="navbar__brand-wiz">Wiz</span>
     </RouterLink>
     <div class="navbar__links">
-      <RouterLink to="/" exact-active-class="active">Home</RouterLink>
-      <RouterLink to="/about" exact-active-class="active">About</RouterLink>
-      <RouterLink to="/create" exact-active-class="active">Create Event</RouterLink>
+      <RouterLink to="/" exact-active-class="active">{{ $t('nav.home') }}</RouterLink>
+      <RouterLink to="/about" exact-active-class="active">{{ $t('nav.about') }}</RouterLink>
+      <RouterLink to="/create" exact-active-class="active">{{ $t('nav.createEvent') }}</RouterLink>
+      <LangToggle />
       <ThemeToggle />
     </div>
   </nav>

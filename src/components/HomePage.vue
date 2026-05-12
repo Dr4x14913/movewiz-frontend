@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import Card from './Card.vue'
-
-const tagline = ref('Find and organize movie nights near you')
 </script>
 
 <template>
   <section class="hero">
-    <h1 class="hero__title">MovieWiz</h1>
-    <p class="hero__tagline">{{ tagline }}</p>
-    <a href="#" class="btn-primary">Get Started</a>
+    <h1 class="hero__title">{{ $t('hero.title') }}</h1>
+    <p class="hero__tagline">{{ $t('hero.tagline') }}</p>
+    <a href="#" class="btn-primary">{{ $t('hero.getStarted') }}</a>
   </section>
 
   <section class="features">
-    <Card title="Discover Events">
-      <p>Find movie screenings and gatherings in your area.</p>
-      <a href="#" class="btn-secondary">Learn More</a>
+    <Card :title="$t('features.discover.title')">
+      <p>{{ $t('features.discover.desc') }}</p>
+      <a href="#" class="btn-secondary">{{ $t('features.discover.btn') }}</a>
     </Card>
 
-    <Card title="Create Events">
-      <p>Organize your own movie night with friends.</p>
-      <a href="/create" class="btn-accent">Create Now</a>
+    <Card :title="$t('features.create.title')">
+      <p>{{ $t('features.create.desc') }}</p>
+      <a href="/create" class="btn-accent">{{ $t('features.create.btn') }}</a>
     </Card>
   </section>
 </template>

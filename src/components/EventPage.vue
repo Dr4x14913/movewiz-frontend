@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { router } from '../router.ts'
 import Card from './Card.vue'
+
+const { locale } = useI18n()
 
 interface EventData {
   id: number
@@ -70,7 +73,8 @@ function goHome() {
 }
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
+  const dsLocale = locale.value === 'fr' ? 'fr-FR' : 'en-US'
+  return new Date(dateStr).toLocaleDateString(dsLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -80,50 +84,50 @@ function formatDate(dateStr: string): string {
 
 <template>
   <div class="event-page">
-    <h1>Event</h1>
+    <h1>{{ $t('eventPage.title') }}</h1>
 
-    <Card v-if="!hasToken" variant="classic" title="Access Your Event">
-      <p class="event-page__token-desc">Enter the token from your invitation link to view event details.</p>
+    <Card v-if="!hasToken" variant="classic" :title="$t('eventPage.access.title')">
+      <p class="event-page__token-desc">{{ $t('eventPage.access.desc') }}</p>
       <form @submit.prevent="redirectWithToken()" class="event-page__token-form">
-        <input id="token-in" v-model="tokenValue" type="text" placeholder="Paste your token here" autocomplete="off" />
-        <button type="submit" class="btn-primary">View Event</button>
+        <input id="token-in" v-model="tokenValue" type="text" :placeholder="$t('eventPage.access.placeholder')" autocomplete="off" />
+        <button type="submit" class="btn-primary">{{ $t('eventPage.access.btn') }}</button>
       </form>
     </Card>
 
     <div v-else class="event-page__content">
       <div v-if="isLoading" class="event-page__loading">
-        <p>Loading event details...</p>
+        <p>{{ $t('eventPage.loading') }}</p>
       </div>
 
-      <Card v-else-if="isErrored" title="Event Not Found">
-        <p class="text-secondary">This event could not be found or the token is invalid.</p>
-        <button class="btn-primary event-page__btn" @click="goHome()">Go Home</button>
+      <Card v-else-if="isErrored" :title="$t('eventPage.notFound.title')">
+        <p class="text-secondary">{{ $t('eventPage.notFound.desc') }}</p>
+        <button class="btn-primary event-page__btn" @click="goHome()">{{ $t('eventPage.goHome') }}</button>
       </Card>
 
       <Card v-else-if="eventData" variant="borderless" :title="eventData.eventName">
 
         <div class="event-page__field">
-          <span class="event-page__label">Date</span>
+          <span class="event-page__label">{{ $t('eventPage.fields.date') }}</span>
           <span>{{ formatDate(eventData.datePicker) }}</span>
         </div>
 
         <div class="event-page__field">
-          <span class="event-page__label">Contact</span>
+          <span class="event-page__label">{{ $t('eventPage.fields.contact') }}</span>
           <span>{{ eventData.firstName }} {{ eventData.lastName }}</span>
         </div>
 
         <div class="event-page__field">
-          <span class="event-page__label">Email</span>
+          <span class="event-page__label">{{ $t('eventPage.fields.email') }}</span>
           <span>{{ eventData.email }}</span>
         </div>
 
         <div class="event-page__field">
-          <span class="event-page__label">Address</span>
+          <span class="event-page__label">{{ $t('eventPage.fields.address') }}</span>
           <span>{{ eventData.address }}</span>
         </div>
 
         <div v-if="eventData.comments" class="event-page__field">
-          <span class="event-page__label">Comments</span>
+          <span class="event-page__label">{{ $t('eventPage.fields.comments') }}</span>
           <p class="event-page__comments">{{ eventData.comments }}</p>
         </div>
       </Card>

@@ -1,3 +1,3 @@
 <template>
-  This is it
+  {{ $t('about.title') }}
 </template>

@@ -31,37 +31,37 @@ async function submitForm() {
 
 <template>
   <div class="create-event">
-    <h1>Create an Event</h1>
-    <p class="create-event__subtitle">Fill in the details below to organize your movie night.</p>
+    <h1>{{ $t('createEvent.title') }}</h1>
+    <p class="create-event__subtitle">{{ $t('createEvent.subtitle') }}</p>
 
     <form @submit.prevent="submitForm" class="create-event__form">
-      <Card variant="classic" title="Contact Information">
+      <Card variant="classic" :title="$t('createEvent.contact.title')">
         <div class="create-event__row">
           <div class="create-event__field">
-            <label for="first-name">First Name</label>
+            <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
             <input id="first-name" type="text" v-model="first_name" required />
           </div>
 
           <div class="create-event__field">
-            <label for="last-name">Last Name</label>
+            <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
             <input id="last-name" type="text" v-model="last_name" required />
           </div>
         </div>
 
         <div class="create-event__field">
-          <label for="email">Email</label>
+          <label for="email">{{ $t('createEvent.contact.email') }}</label>
           <input id="email" type="email" v-model="email" required />
         </div>
       </Card>
 
-      <Card variant="borderless" title="Event Details">
+      <Card variant="borderless" :title="$t('createEvent.details.title')">
         <div class="create-event__field">
-          <label for="event-name">Event Name</label>
+          <label for="event-name">{{ $t('createEvent.details.eventName') }}</label>
           <input id="event-name" type="text" v-model="event_name" required />
         </div>
 
         <div class="create-event__field">
-          <label for="date">Date</label>
+          <label for="date">{{ $t('createEvent.details.date') }}</label>
           <input id="date" type="date" v-model="date" required />
         </div>
 
@@ -71,16 +71,16 @@ async function submitForm() {
         <input type="hidden" name="long" :value="long_" />
 
         <div class="create-event__field">
-          <label for="comments">Comments</label>
-          <textarea id="comments" v-model="comments" rows="3" placeholder="Optional notes about the event..."></textarea>
+          <label for="comments">{{ $t('createEvent.details.comments') }}</label>
+          <textarea id="comments" v-model="comments" rows="3" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
         </div>
       </Card>
 
-      <Card title="Verification">
+      <Card :title="$t('createEvent.verification.title')">
         <CaptchaInput ref="captcha" />
       </Card>
       <div class="create-event__actions">
-        <button type="submit" class="btn-primary">Create Event</button>
+        <button type="submit" class="btn-primary">{{ $t('createEvent.submit') }}</button>
       </div>
     </form>
   </div>
