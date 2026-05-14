@@ -16,7 +16,9 @@
             <line x1="12" y1="8" x2="12.01" y2="8" />
           </svg>
         </div>
-        <p class="popup__message">{{ message }}</p>
+        <h3 v-if="title" class="popup__title">{{ title }}</h3>
+        <p v-if="html" class="popup__message" v-html="html"></p>
+        <p v-else class="popup__message">{{ message }}</p>
         <button class="popup__close" @click="onClose" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -31,12 +33,17 @@
 <script setup lang="ts">
 import { ref } from "vue"
 const props = withDefaults(defineProps<{
-  message: string
+  message?: string
+  title?: string
+  html?: string
   type?: 'success' | 'error' | 'info'
   show?: boolean
 }>(), {
   type: 'info',
-  show: true
+  show: true,
+  message: '',
+  title: '',
+  html: ''
 })
 
 const show = ref(props.show)
@@ -113,12 +120,29 @@ const emit = defineEmits<{
   background: var(--color-hover-bg);
 }
 
+.popup__title {
+  text-align: center;
+  color: var(--color-text-dark);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
 .popup__message {
   text-align: center;
   color: var(--color-text-dark);
   font-family: var(--font-body);
   margin-bottom: 1.5rem;
   line-height: 1.5;
+}
+
+.popup__message a {
+  color: var(--color-primary-green);
+  text-decoration: underline;
+}
+
+.popup__message a:hover {
+  color: var(--color-secondary-green);
 }
 
 .popup__close {

@@ -55,23 +55,25 @@ async function submitForm() {
       eventName: event_name.value
     })
   })
-  captcha_refresh_count.value ++
+  captcha_refresh_count.value++
   if (!response.ok) {
     form_resp.value = FormResponse.Error
-    if (response.status == 429) {
-      form_resp_msg.value = "Too many requests, please try again later"
+    if (response.status === 429) {
+      form_resp_msg.value = t('createEvent.popup.errorDefault')
     } else {
       try {
         const resp = await response.json()
-        form_resp_msg.value = JSON.stringify(resp)
+        form_resp_msg.value = resp.error || t('createEvent.popup.errorDefault')
       } catch {
-        form_resp_msg.value = `Request failed with status ${response.status}`
+        form_resp_msg.value = t('createEvent.popup.errorDefault')
       }
     }
   } else {
     form_resp.value = FormResponse.Success
     const resp = await response.json()
-    form_resp_msg.value = JSON.stringify(resp)
+    form_resp_msg.value = `${t('createEvent.popup.successDesc')}
+      <a href="${resp.readUrl}" target="_blank" rel="noopener">${t('createEvent.popup.readLink')}</a> |
+      <a href="${resp.writeUrl}" target="_blank" rel="noopener">${t('createEvent.popup.writeLink')}</a>`
   }
 }
 
@@ -82,10 +84,10 @@ function onPopupClose() {
 
 <template>
   <div v-if="form_resp == FormResponse.Error">
-    <PopUp :message="form_resp_msg" type='error' @close='onPopupClose' />
+    <PopUp :title="t('createEvent.popup.errorTitle')" :message="form_resp_msg" type='error' @close='onPopupClose' />
   </div>
   <div v-if="form_resp == FormResponse.Success">
-    <PopUp :message="form_resp_msg" type='success' @close='onPopupClose' />
+    <PopUp :title="t('createEvent.popup.successTitle')" :html="form_resp_msg" type='success' @close='onPopupClose' />
   </div>
   <div class="create-event">
     <h1>{{ $t('createEvent.title') }}</h1>

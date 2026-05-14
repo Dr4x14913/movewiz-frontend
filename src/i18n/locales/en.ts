@@ -24,6 +24,14 @@ export default {
   createEvent: {
     title: 'Create an Event',
     subtitle: 'Fill in the details below to organize your movie night.',
+    popup: {
+      successTitle: 'Event created successfully!',
+      successDesc: 'You can now access your event:',
+      readLink: 'View event (read-only)',
+      writeLink: 'Edit event',
+      errorTitle: 'Failed to create event',
+      errorDefault: 'An error occurred. Please try again.',
+    },
     contact: {
       title: 'Contact Information',
       firstName: 'First Name',

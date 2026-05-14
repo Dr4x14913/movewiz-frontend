@@ -24,6 +24,14 @@ export default {
   createEvent: {
     title: 'Créer un événement',
     subtitle: 'Remplissez les détails ci-dessous pour organiser votre soirée cinéma.',
+    popup: {
+      successTitle: 'Événement créé avec succès !',
+      successDesc: 'Vous pouvez maintenant accéder à votre événement :',
+      readLink: 'Voir l\'événement (lecture seule)',
+      writeLink: 'Modifier l\'événement',
+      errorTitle: 'Échec de la création de l\'événement',
+      errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+    },
     contact: {
       title: 'Informations de contact',
       firstName: 'Prénom',
