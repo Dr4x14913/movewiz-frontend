@@ -46,6 +46,13 @@ function onMapSelected(data: { lat: number; lng: number; address: string }) {
   emit('location-selected', { address: data.address, lat: data.lat, lng: data.lng })
 }
 
+function setAddress(addr: string, la: number, ln: number) {
+  address.value = addr
+  lat.value = la
+  lng.value = ln
+  hasMarker.value = true
+}
+
 function getLocation() {
   return {
     address: address.value,
@@ -54,7 +61,7 @@ function getLocation() {
   }
 }
 
-defineExpose({ getLocation })
+defineExpose({ getLocation, setAddress })
 </script>
 
 <template>

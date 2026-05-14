@@ -72,6 +72,22 @@ export default {
       comments: 'Commentaires',
     },
   },
+  editEvent: {
+    title: 'Modifier l\'événement',
+    subtitle: 'Mettez à jour les détails ci-dessous pour modifier votre soirée cinéma.',
+    loading: 'Chargement des détails...',
+    notFound: {
+      title: 'Événement introuvable',
+      desc: 'Cet événement est introuvable ou le token de modification est invalide.',
+    },
+    popup: {
+      successTitle: 'Événement mis à jour avec succès !',
+      successDesc: 'Votre événement a été sauvegardé.',
+      errorTitle: 'Échec de la mise à jour',
+      errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+    },
+    submit: 'Enregistrer les modifications',
+  },
   about: {
     title: 'C\'est ça',
   },

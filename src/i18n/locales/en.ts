@@ -72,6 +72,22 @@ export default {
       comments: 'Comments',
     },
   },
+  editEvent: {
+    title: 'Edit Event',
+    subtitle: 'Update the details below to modify your movie night.',
+    loading: 'Loading event details...',
+    notFound: {
+      title: 'Event Not Found',
+      desc: 'This event could not be found or the edit token is invalid.',
+    },
+    popup: {
+      successTitle: 'Event updated successfully!',
+      successDesc: 'Your event has been saved.',
+      errorTitle: 'Failed to update event',
+      errorDefault: 'An error occurred. Please try again.',
+    },
+    submit: 'Save Changes',
+  },
   about: {
     title: 'This is it',
   },

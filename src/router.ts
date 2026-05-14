@@ -3,11 +3,13 @@ import HomePage from './components/HomePage.vue'
 import CreateEvent from './components/CreateEvent.vue'
 import Toto from './components/Toto.vue'
 import EventPage from './components/EventPage.vue'
+import EditEvent from './components/EditEvent.vue'
 
 const routes = [
   { path: '/', component: HomePage },
   { path: '/create', component: CreateEvent },
   { path: '/event', component: EventPage, props: route => ({ token: route.query.token }) },
+  { path: '/edit', component: EditEvent, props: route => ({ token: route.query.token }) },
   { path: '/about', component: Toto },
 ]
 
