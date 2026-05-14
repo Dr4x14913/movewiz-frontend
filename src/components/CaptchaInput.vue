@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import Spinner from './Spinner.vue'
 
 const props = withDefaults(defineProps<{
@@ -8,9 +8,11 @@ const props = withDefaults(defineProps<{
   placeholder: string
   inputId?: string
   endpoint?: string
+  refreshCount?: number
 }>(), {
   inputId: 'captcha',
-  endpoint: '/generate-captcha'
+  endpoint: '/generate-captcha',
+  refreshCount: 0,
 })
 
 const image = ref('')
@@ -29,11 +31,16 @@ async function fetchCaptcha() {
 }
 
 function refresh() {
+  value.value = ""
   fetchCaptcha()
 }
 
 onMounted(() => {
   fetchCaptcha()
+})
+
+watch(() => props.refreshCount, () => {
+  refresh()
 })
 
 defineExpose({ token, value })
@@ -49,7 +56,7 @@ defineExpose({ token, value })
         class="captcha-input__captcha-img"
       />
       <p v-else class="captcha-input__captcha-loading">
-        <Spinner size="20" />
+        <Spinner :size="20" />
       </p>
       <div class="captcha-input__captcha-actions">
         <input

@@ -3,20 +3,29 @@ import { ref } from 'vue'
 import Card from './Card.vue'
 import LocationPicker from './LocationPicker.vue'
 import CaptchaInput from './CaptchaInput.vue'
+import PopUp from './PopUp.vue'
 import { useI18n } from 'vue-i18n'
 
+enum FormResponse {
+  Error,
+  Success,
+  None,
+}
 const { t } = useI18n()
 const first_name = ref('John')
 const last_name = ref('Doe')
-const email = ref('john@example.com')
+const email = ref('john@toto.com')
 const event_name = ref('Event Name')
-const date = ref('')
+const date = ref(new Date().toISOString().split('T')[0])
 const address = ref('')
 const lat = ref(46.603354)
 const long_ = ref(1.888334)
 const comments = ref('')
 const captcha = ref()
 const is_marker = ref(false)
+const form_resp = ref(FormResponse.None)
+const form_resp_msg = ref('')
+const captcha_refresh_count = ref(0)
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   address.value = data.address
@@ -26,13 +35,58 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
 
 
 async function submitForm() {
-  // TODO: submit event data
-  console.log(captcha.value.token)
-  console.log(captcha.value.value)
+  const response = await fetch('/api/createEvent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      firstName: first_name.value,
+      lastName: last_name.value,
+      email: email.value,
+      address: address.value,
+      latitude: lat.value,
+      longitude: long_.value,
+      frontendOrigin: window.location.origin,
+      datePicker: date.value,
+      comments: comments.value,
+      answer: captcha.value.value,
+      captchaToken: captcha.value.token,
+      eventName: event_name.value
+    })
+  })
+  captcha_refresh_count.value ++
+  if (!response.ok) {
+    form_resp.value = FormResponse.Error
+    if (response.status == 429) {
+      form_resp_msg.value = "Too many requests, please try again later"
+    } else {
+      try {
+        const resp = await response.json()
+        form_resp_msg.value = JSON.stringify(resp)
+      } catch {
+        form_resp_msg.value = `Request failed with status ${response.status}`
+      }
+    }
+  } else {
+    form_resp.value = FormResponse.Success
+    const resp = await response.json()
+    form_resp_msg.value = JSON.stringify(resp)
+  }
+}
+
+function onPopupClose() {
+    form_resp.value = FormResponse.None
 }
 </script>
 
 <template>
+  <div v-if="form_resp == FormResponse.Error">
+    <PopUp :message="form_resp_msg" type='error' @close='onPopupClose' />
+  </div>
+  <div v-if="form_resp == FormResponse.Success">
+    <PopUp :message="form_resp_msg" type='success' @close='onPopupClose' />
+  </div>
   <div class="create-event">
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="create-event__subtitle">{{ $t('createEvent.subtitle') }}</p>
@@ -71,8 +125,8 @@ async function submitForm() {
         <LocationPicker
           :label="t('common.address.label')"
           :placeholder="t('common.address.placeholder')"
-          required="true"
-          @location-selected="onLocationSelected()"
+          :required=true
+          @location-selected="onLocationSelected"
         />
 
         <input type="hidden" name="lat" :value="lat" />
@@ -80,7 +134,7 @@ async function submitForm() {
 
         <div class="create-event__field">
           <label for="comments">{{ $t('createEvent.details.comments') }}</label>
-          <textarea id="comments" v-model="comments" rows="3" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
+          <textarea id="comments" required v-model="comments" rows="3" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
         </div>
       </Card>
 
@@ -89,6 +143,7 @@ async function submitForm() {
           ref="captcha"
           :title="t('common.captcha.title')"
           :placeholder="t('common.captcha.placeholder')"
+          :refreshCount="captcha_refresh_count"
         />
       </Card>
       <div class="create-event__actions">

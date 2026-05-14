@@ -64,7 +64,7 @@ defineExpose({ getLocation })
       @location-selected="onAddressSelected"
       :label="label"
       :placeholder="placeholder"
-      :required="required"
+      :required="props.required"
     />
     <Map
       :lat="lat"

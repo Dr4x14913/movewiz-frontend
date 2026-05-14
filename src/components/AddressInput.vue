@@ -99,7 +99,7 @@ defineExpose({ closeSuggestions })
         @focus="onFocus"
         @blur="showSuggestions = false"
         @click.stop
-        :required="required"
+        :required="props.required"
         :placeholder="placeholder"
         style="min-width: 80%"
       />
