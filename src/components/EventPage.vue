@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router.ts'
 import Card from './Card.vue'
+import Map from './Map.vue'
 
 const { locale } = useI18n()
 
@@ -19,6 +20,13 @@ interface EventData {
   comments?: string
 }
 
+interface ParticipantData {
+  latitude?: number
+  longitude?: number
+  firstName: string
+  lastName: string
+}
+
 const props = defineProps<{
   token?: string
 }>()
@@ -28,6 +36,17 @@ const isErrored = ref(false)
 const tokenValue = ref('')
 const eventData = ref<EventData | null>(null)
 const isLoading = ref(false)
+const participants = ref<ParticipantData[]>([])
+
+const participantMarkers = computed(() => {
+  return participants.value
+    .filter(p => p.latitude !== undefined && p.longitude !== undefined)
+    .map(p => ({
+      lat: p.latitude!,
+      lng: p.longitude!,
+      tooltip: `${p.firstName} ${p.lastName}`
+    }))
+})
 
 watch(hasToken, async (newVal) => {
   if (newVal) {
@@ -38,6 +57,7 @@ watch(hasToken, async (newVal) => {
     isLoading.value = false
     if (result) {
       eventData.value = result
+      await fetchParticipants()
     }
   }
 })
@@ -70,6 +90,18 @@ async function fetchEvent(): Promise<EventData | null> {
 
 function goHome() {
   router.push('/')
+}
+
+async function fetchParticipants() {
+  try {
+    const res = await fetch('/api/getParticipants?token=' + tokenValue.value)
+    const data = await res.json()
+    if (res.ok && Array.isArray(data)) {
+      participants.value = data
+    }
+  } catch (err) {
+    console.error('Failed to fetch participants:', err)
+  }
 }
 
 function formatDate(dateStr: string): string {
@@ -130,6 +162,18 @@ function formatDate(dateStr: string): string {
           <span class="event-page__label">{{ $t('eventPage.fields.comments') }}</span>
           <p class="event-page__comments">{{ eventData.comments }}</p>
         </div>
+
+        <Map
+          v-if="participantMarkers.length > 0"
+          :lat="eventData.latitude"
+          :lng="eventData.longitude"
+          :zoom="10"
+          :additional-markers="participantMarkers"
+          :fit-markers="true"
+          :displayMainMarker="true"
+          :is_editable="false"
+          height="350px"
+        />
       </Card>
     </div>
   </div>

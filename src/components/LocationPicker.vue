@@ -76,7 +76,7 @@ defineExpose({ getLocation, setAddress })
     <Map
       :lat="lat"
       :lng="lng"
-      :is_marker="hasMarker"
+      :displayMainMarker="hasMarker"
       :height="height"
       @location-selected="onMapSelected"
     />

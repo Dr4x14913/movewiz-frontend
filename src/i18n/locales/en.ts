@@ -71,6 +71,10 @@ export default {
       address: 'Address',
       comments: 'Comments',
     },
+    legend: {
+      event: 'Event',
+      participant: 'Participant',
+    },
   },
   editEvent: {
     title: 'Edit Event',
