@@ -7,7 +7,7 @@ import Map from '../components/Map.vue'
 import RegisterParticipant from '../components/RegisterParticipant.vue'
 import ParticipantTable from '../components/ParticipantTable.vue'
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 interface EventData {
   id: number
@@ -31,6 +31,7 @@ interface ParticipantData {
   phoneNumber?: string
   email?: string
   showEmail?: boolean
+  address?: string
 }
 
 const props = defineProps<{
@@ -52,7 +53,7 @@ const participantMarkers = computed(() => {
     .map(p => ({
       lat: p.latitude!,
       lng: p.longitude!,
-      tooltip: `${p.firstName} ${p.lastName}`
+      tooltip: `${p.firstName} ${p.lastName} (${p.mode === 'driver' ? t('eventPage.participants.driver') : t('eventPage.participants.passenger')})`
     }))
 })
 
@@ -105,7 +106,23 @@ async function fetchParticipants() {
     const res = await fetch('/api/getParticipants?token=' + tokenValue.value)
     const data = await res.json()
     if (res.ok && Array.isArray(data)) {
-      participants.value = data
+      const enriched = await Promise.all(data.map(async (p: ParticipantData) => {
+        if (p.latitude && p.longitude) {
+          try {
+            const geoRes = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${p.latitude}&lon=${p.longitude}`
+            )
+            const geoData = await geoRes.json()
+            const city = geoData.address?.city || geoData.address?.town || geoData.address?.village || ''
+            const postcode = geoData.address?.postcode || ''
+            p.address = city && postcode ? `${postcode} ${city}` : city || postcode || ''
+          } catch {
+            p.address = ''
+          }
+        }
+        return p
+      }))
+      participants.value = enriched
     }
   } catch (err) {
     console.error('Failed to fetch participants:', err)

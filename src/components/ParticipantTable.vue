@@ -9,6 +9,7 @@ interface Participant {
   email?: string
   showEmail?: boolean
   registrationDate?: string
+  address?: string
 }
 
 defineProps<{
@@ -29,7 +30,7 @@ defineProps<{
           <th>{{ $t('eventPage.participants.table.mode') }}</th>
           <th>{{ $t('eventPage.participants.table.phone') }}</th>
           <th>{{ $t('eventPage.participants.table.email') }}</th>
-          <th>{{ $t('eventPage.participants.table.location') }}</th>
+          <th>{{ $t('eventPage.participants.table.address') }}</th>
           <th>{{ $t('eventPage.participants.table.date') }}</th>
         </tr>
       </thead>
@@ -49,13 +50,9 @@ defineProps<{
             <span v-if="p.showEmail && p.email">{{ p.email }}</span>
             <span v-else class="participant-table__none">—</span>
           </td>
-          <td>
-            <span v-if="p.latitude && p.longitude" class="participant-table__icon--location" :title="$t('eventPage.participants.hasLocation')">
-              📍
-            </span>
-            <span v-else class="participant-table__no-location">
-              {{ $t('eventPage.participants.noLocation') }}
-            </span>
+          <td class="participant-table__address">
+            <span v-if="p.address">{{ p.address }}</span>
+            <span v-else class="participant-table__none">—</span>
           </td>
           <td class="participant-table__date">
             <span v-if="p.registrationDate">{{ p.registrationDate }}</span>
@@ -140,15 +137,6 @@ defineProps<{
 .participant-table__badge--passenger {
   background-color: var(--color-secondary-green);
   color: white;
-}
-
-.participant-table__icon--location {
-  font-size: 1.1rem;
-}
-
-.participant-table__no-location {
-  color: var(--color-text-medium);
-  font-size: 0.85rem;
 }
 
 .participant-table__none {
