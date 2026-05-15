@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import Card from './Card.vue'
 import LocationPicker from './LocationPicker.vue'
 import PopUp from './PopUp.vue'
+import Spinner from './Spinner.vue'
 import { useI18n } from 'vue-i18n'
 
 enum FormResponse {
@@ -37,8 +38,20 @@ const long_ = ref<number | null>(null)
 
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
+const isSubmitting = ref(false)
 
-
+function clearForm() {
+  firstName.value = ''
+  lastName.value = ''
+  email.value = ''
+  mode.value = 'passenger'
+  hideEmail.value = false
+  phoneNumber.value = ''
+  comments.value = ''
+  notifyMe.value = false
+  lat.value = null
+  long_.value = null
+}
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   lat.value = data.lat
@@ -46,48 +59,55 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
 }
 
 async function submitForm() {
-  const body: any = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    email: email.value,
-    mode: mode.value,
-    showEmail: !hideEmail.value,
-    token: props.token,
-
-    eventPageUrl: props.eventPageUrl,
-    editParticipantPageUrl: props.editParticipantPageUrl,
-  }
-
-  if (phoneNumber.value) body.phoneNumber = phoneNumber.value
-  if (comments.value) body.comments = comments.value
-  if (notifyMe.value) body.notifyMe = notifyMe.value
-  if (lat.value !== null) body.latitude = lat.value
-  if (long_ !== null) body.longitude = long_.value
-
-  const response = await fetch('/api/registerParticipant', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    form_resp.value = FormResponse.Error
-    try {
-      const resp = await response.json()
-      form_resp_msg.value = resp.error || t('registerParticipant.popup.errorDefault')
-    } catch {
-      form_resp_msg.value = t('registerParticipant.popup.errorDefault')
+  isSubmitting.value = true
+  try {
+    const body: any = {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      mode: mode.value,
+      showEmail: !hideEmail.value,
+      token: props.token,
+      eventPageUrl: props.eventPageUrl,
+      editParticipantPageUrl: props.editParticipantPageUrl,
     }
-  } else {
-    form_resp.value = FormResponse.Success
-    form_resp_msg.value = t('registerParticipant.popup.successDesc')
-    emit('registered')
+
+    if (phoneNumber.value) body.phoneNumber = phoneNumber.value
+    if (comments.value) body.comments = comments.value
+    if (notifyMe.value) body.notifyMe = notifyMe.value
+    if (lat.value !== null) body.latitude = lat.value
+    if (long_.value !== null) body.longitude = long_.value
+
+    const response = await fetch('/api/registerParticipant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+
+    if (!response.ok) {
+      form_resp.value = FormResponse.Error
+      try {
+        const resp = await response.json()
+        form_resp_msg.value = resp.error || t('registerParticipant.popup.errorDefault')
+      } catch {
+        form_resp_msg.value = t('registerParticipant.popup.errorDefault')
+      }
+    } else {
+      form_resp.value = FormResponse.Success
+      form_resp_msg.value = t('registerParticipant.popup.successDesc')
+      emit('registered')
+    }
+  } finally {
+    isSubmitting.value = false
   }
 }
 
 function onPopupClose() {
+  if (form_resp.value === FormResponse.Success) {
+    clearForm()
+  }
   form_resp.value = FormResponse.None
 }
 </script>
@@ -101,7 +121,10 @@ function onPopupClose() {
   </div>
   <div class="register-participant">
     <Card collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
-      <form @submit.prevent="submitForm" class="register-participant__form">
+      <div v-if="isSubmitting" class="register-participant__spinner-overlay">
+        <Spinner :size="48" />
+      </div>
+      <form @submit.prevent="submitForm" class="register-participant__form" :class="{ 'register-participant__form--disabled': isSubmitting }">
         <div class="register-participant__row">
           <div class="register-participant__field">
             <label for="reg-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
@@ -131,7 +154,7 @@ function onPopupClose() {
 
         <div class="register-participant__field">
           <label for="reg-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
-          <input id="reg-phone" type="tel" v-model="phoneNumber" />
+          <input id="reg-phone" type="tel" v-model="phoneNumber" required />
         </div>
 
         <div class="register-participant__field">
@@ -162,7 +185,7 @@ function onPopupClose() {
         </div>
 
         <div class="register-participant__actions">
-          <button type="submit" class="btn-primary">{{ $t('registerParticipant.submit') }}</button>
+          <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('registerParticipant.submit') }}</button>
         </div>
       </form>
     </Card>
@@ -250,6 +273,22 @@ function onPopupClose() {
 
 .register-participant__actions .btn-primary {
   min-width: 200px;
+}
+
+.register-participant__spinner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(253, 252, 245, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+}
+
+.register-participant__form--disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 @media (max-width: 600px) {

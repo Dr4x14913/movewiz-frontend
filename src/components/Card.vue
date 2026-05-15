@@ -61,6 +61,7 @@ watch(() => props.defaultExpanded, (val) => {
 
 <style scoped>
 .card {
+  position: relative;
   background-color: var(--color-card-bg);
   border: 2px solid var(--color-secondary-green);
   border-radius: 16px;

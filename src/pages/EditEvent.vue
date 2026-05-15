@@ -3,6 +3,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import Card from '../components/Card.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import PopUp from '../components/PopUp.vue'
+import Spinner from '../components/Spinner.vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router'
 
@@ -22,6 +23,7 @@ const isLoading = ref(true)
 const isErrored = ref(false)
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
+const isSubmitting = ref(false)
 
 //const picker = ref<InstanceType<typeof import('./LocationPicker.vue')>['default'] | null>(null)
 const picker = ref(null)
@@ -80,36 +82,41 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
 }
 
 async function submitForm() {
-  const response = await fetch('/api/editEvent', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      editToken: props.token,
-      firstName: first_name.value,
-      lastName: last_name.value,
-      email: email.value,
-      eventName: event_name.value,
-      datePicker: date.value,
-      address: address.value,
-      latitude: lat.value,
-      longitude: long_.value,
-      comments: comments.value,
-    }),
-  })
+  isSubmitting.value = true
+  try {
+    const response = await fetch('/api/editEvent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        editToken: props.token,
+        firstName: first_name.value,
+        lastName: last_name.value,
+        email: email.value,
+        eventName: event_name.value,
+        datePicker: date.value,
+        address: address.value,
+        latitude: lat.value,
+        longitude: long_.value,
+        comments: comments.value,
+      }),
+    })
 
-  if (!response.ok) {
-    form_resp.value = FormResponse.Error
-    try {
-      const resp = await response.json()
-      form_resp_msg.value = resp.error || t('editEvent.popup.errorDefault')
-    } catch {
-      form_resp_msg.value = t('editEvent.popup.errorDefault')
+    if (!response.ok) {
+      form_resp.value = FormResponse.Error
+      try {
+        const resp = await response.json()
+        form_resp_msg.value = resp.error || t('editEvent.popup.errorDefault')
+      } catch {
+        form_resp_msg.value = t('editEvent.popup.errorDefault')
+      }
+    } else {
+      form_resp.value = FormResponse.Success
+      form_resp_msg.value = t('editEvent.popup.successDesc')
     }
-  } else {
-    form_resp.value = FormResponse.Success
-    form_resp_msg.value = t('editEvent.popup.successDesc')
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -144,7 +151,11 @@ function goHome() {
       </Card>
     </div>
 
-    <form v-else @submit.prevent="submitForm" class="edit-event__form">
+    <div v-else class="edit-event__form-wrapper">
+      <div v-if="isSubmitting" class="edit-event__spinner-overlay">
+        <Spinner :size="48" />
+      </div>
+      <form @submit.prevent="submitForm" class="edit-event__form" :class="{ 'edit-event__form--disabled': isSubmitting }">
       <Card variant="classic" :title="$t('createEvent.contact.title')">
         <div class="edit-event__row">
           <div class="edit-event__field">
@@ -190,10 +201,11 @@ function goHome() {
       </Card>
 
       <div class="edit-event__actions">
-        <button type="submit" class="btn-primary">{{ $t('editEvent.submit') }}</button>
+        <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('editEvent.submit') }}</button>
       </div>
-    </form>
-  </div>
+        </form>
+      </div>
+    </div>
 </template>
 
 <style scoped>
@@ -273,6 +285,26 @@ function goHome() {
 .edit-event__actions {
   text-align: center;
   padding-top: 0.5rem;
+}
+
+.edit-event__form-wrapper {
+  position: relative;
+}
+
+.edit-event__spinner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(253, 252, 245, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+}
+
+.edit-event__form--disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .edit-event__actions .btn-primary {

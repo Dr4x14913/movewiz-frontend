@@ -4,6 +4,7 @@ import Card from '../components/Card.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import CaptchaInput from '../components/CaptchaInput.vue'
 import PopUp from '../components/PopUp.vue'
+import Spinner from '../components/Spinner.vue'
 import { useI18n } from 'vue-i18n'
 
 enum FormResponse {
@@ -26,6 +27,7 @@ const displayMainMarker = ref(false)
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const captcha_refresh_count = ref(0)
+const isSubmitting = ref(false)
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   address.value = data.address
@@ -35,46 +37,51 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
 
 
 async function submitForm() {
-  const response = await fetch('/api/createEvent', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      firstName: first_name.value,
-      lastName: last_name.value,
-      email: email.value,
-      address: address.value,
-      latitude: lat.value,
-      longitude: long_.value,
-      eventPageUrl: window.location.origin + '/event',
-      editPageUrl: window.location.origin + '/edit',
-      datePicker: date.value,
-      comments: comments.value,
-      answer: captcha.value.value,
-      captchaToken: captcha.value.token,
-      eventName: event_name.value
+  isSubmitting.value = true
+  try {
+    const response = await fetch('/api/createEvent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName: first_name.value,
+        lastName: last_name.value,
+        email: email.value,
+        address: address.value,
+        latitude: lat.value,
+        longitude: long_.value,
+        eventPageUrl: window.location.origin + '/event',
+        editPageUrl: window.location.origin + '/edit',
+        datePicker: date.value,
+        comments: comments.value,
+        answer: captcha.value.value,
+        captchaToken: captcha.value.token,
+        eventName: event_name.value,
+      }),
     })
-  })
-  captcha_refresh_count.value++
-  if (!response.ok) {
-    form_resp.value = FormResponse.Error
-    if (response.status === 429) {
-      form_resp_msg.value = t('createEvent.popup.errorDefault')
-    } else {
-      try {
-        const resp = await response.json()
-        form_resp_msg.value = resp.error || t('createEvent.popup.errorDefault')
-      } catch {
+    captcha_refresh_count.value++
+    if (!response.ok) {
+      form_resp.value = FormResponse.Error
+      if (response.status === 429) {
         form_resp_msg.value = t('createEvent.popup.errorDefault')
+      } else {
+        try {
+          const resp = await response.json()
+          form_resp_msg.value = resp.error || t('createEvent.popup.errorDefault')
+        } catch {
+          form_resp_msg.value = t('createEvent.popup.errorDefault')
+        }
       }
+    } else {
+      form_resp.value = FormResponse.Success
+      const resp = await response.json()
+      form_resp_msg.value = `${t('createEvent.popup.successDesc')}
+        <a href="${resp.readUrl}" target="_blank" rel="noopener">${t('createEvent.popup.readLink')}</a> |
+        <a href="${resp.writeUrl}" target="_blank" rel="noopener">${t('createEvent.popup.writeLink')}</a>`
     }
-  } else {
-    form_resp.value = FormResponse.Success
-    const resp = await response.json()
-    form_resp_msg.value = `${t('createEvent.popup.successDesc')}
-      <a href="${resp.readUrl}" target="_blank" rel="noopener">${t('createEvent.popup.readLink')}</a> |
-      <a href="${resp.writeUrl}" target="_blank" rel="noopener">${t('createEvent.popup.writeLink')}</a>`
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -94,7 +101,11 @@ function onPopupClose() {
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="create-event__subtitle">{{ $t('createEvent.subtitle') }}</p>
 
-    <form @submit.prevent="submitForm" class="create-event__form">
+    <div class="create-event__form-wrapper">
+      <div v-if="isSubmitting" class="create-event__spinner-overlay">
+        <Spinner :size="48" />
+      </div>
+      <form @submit.prevent="submitForm" class="create-event__form" :class="{ 'create-event__form--disabled': isSubmitting }">
       <Card variant="classic" :title="$t('createEvent.contact.title')">
         <div class="create-event__row">
           <div class="create-event__field">
@@ -150,10 +161,11 @@ function onPopupClose() {
         />
       </Card>
       <div class="create-event__actions">
-        <button type="submit" class="btn-primary">{{ $t('createEvent.submit') }}</button>
+        <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('createEvent.submit') }}</button>
       </div>
-    </form>
-  </div>
+        </form>
+      </div>
+    </div>
 </template>
 
 <style scoped>
@@ -222,6 +234,26 @@ function onPopupClose() {
   text-align: center;
   padding-top: 0.5rem;
   animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.create-event__form-wrapper {
+  position: relative;
+}
+
+.create-event__spinner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(253, 252, 245, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+}
+
+.create-event__form--disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .create-event__actions .btn-primary {
