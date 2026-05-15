@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
-import Card from './Card.vue'
-import LocationPicker from './LocationPicker.vue'
-import PopUp from './PopUp.vue'
+import Card from '../components/Card.vue'
+import LocationPicker from '../components/LocationPicker.vue'
+import PopUp from '../components/PopUp.vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router'
 

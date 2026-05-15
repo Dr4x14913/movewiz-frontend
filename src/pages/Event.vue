@@ -2,8 +2,8 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router.ts'
-import Card from './Card.vue'
-import Map from './Map.vue'
+import Card from '../components/Card.vue'
+import Map from '../components/Map.vue'
 
 const { locale } = useI18n()
 

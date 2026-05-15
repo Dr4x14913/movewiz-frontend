@@ -1,16 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from './components/HomePage.vue'
-import CreateEvent from './components/CreateEvent.vue'
-import Toto from './components/Toto.vue'
-import EventPage from './components/EventPage.vue'
-import EditEvent from './components/EditEvent.vue'
+import Home from './pages/Home.vue'
+import CreateEvent from './pages/CreateEvent.vue'
+import Event from './pages/Event.vue'
+import EditEvent from './pages/EditEvent.vue'
 
 const routes = [
-  { path: '/', component: HomePage },
+  { path: '/', component: Home },
   { path: '/create', component: CreateEvent },
-  { path: '/event', component: EventPage, props: route => ({ token: route.query.token }) },
+  { path: '/event', component: Event, props: route => ({ token: route.query.token }) },
   { path: '/edit', component: EditEvent, props: route => ({ token: route.query.token }) },
-  { path: '/about', component: Toto },
+  { path: '/about', component: Home },
 ]
 
 export const router = createRouter({
