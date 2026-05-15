@@ -208,7 +208,7 @@ function formatDate(dateStr: string): string {
         @registered="fetchParticipants"
       />
 
-      <Card v-if="!isErrored && eventData" collapsible :default-expanded="false" :title="$t('eventPage.participants.title')">
+      <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
         <ParticipantTable :participants="participants" />
       </Card>
     </div>
