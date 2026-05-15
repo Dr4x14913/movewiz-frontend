@@ -97,7 +97,7 @@ function onPopupClose() {
   <div v-if="form_resp == FormResponse.Success">
     <PopUp :title="t('createEvent.popup.successTitle')" :html="form_resp_msg" type='success' @close='onPopupClose' />
   </div>
-  <div class="create-event">
+  <div class="page create-event">
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="create-event__subtitle">{{ $t('createEvent.subtitle') }}</p>
 
@@ -169,11 +169,6 @@ function onPopupClose() {
 </template>
 
 <style scoped>
-.create-event {
-  max-width: 650px;
-  margin: 0 auto;
-}
-
 .create-event h1 {
   color: var(--color-primary-green);
   margin-bottom: 0.25rem;

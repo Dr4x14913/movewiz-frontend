@@ -193,10 +193,7 @@ function onPopupClose() {
 </template>
 
 <style scoped>
-.register-participant {
-  max-width: 650px;
-  margin: 0 auto;
-}
+/* .page class handles layout */
 
 .register-participant__section-title {
   font-size: 1.1rem;

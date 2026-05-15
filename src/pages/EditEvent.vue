@@ -136,7 +136,7 @@ function goHome() {
   <div v-if="form_resp == FormResponse.Success">
     <PopUp :title="t('editEvent.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose" />
   </div>
-  <div class="edit-event">
+  <div class="page edit-event">
     <h1>{{ $t('editEvent.title') }}</h1>
     <p class="edit-event__subtitle">{{ $t('editEvent.subtitle') }}</p>
 
@@ -209,10 +209,7 @@ function goHome() {
 </template>
 
 <style scoped>
-.edit-event {
-  max-width: 650px;
-  margin: 0 auto;
-}
+/* .page class handles layout */
 
 .edit-event h1 {
   color: var(--color-primary-green);

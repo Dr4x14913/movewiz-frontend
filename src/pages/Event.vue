@@ -5,6 +5,7 @@ import { router } from '../router.ts'
 import Card from '../components/Card.vue'
 import Map from '../components/Map.vue'
 import RegisterParticipant from '../components/RegisterParticipant.vue'
+import ParticipantTable from '../components/ParticipantTable.vue'
 
 const { locale } = useI18n()
 
@@ -26,6 +27,10 @@ interface ParticipantData {
   longitude?: number
   firstName: string
   lastName: string
+  mode: string
+  phoneNumber?: string
+  email?: string
+  showEmail?: boolean
 }
 
 const props = defineProps<{
@@ -118,7 +123,7 @@ function formatDate(dateStr: string): string {
 </script>
 
 <template>
-  <div class="event-page">
+  <div class="page event-page">
     <h1>{{ $t('eventPage.title') }}</h1>
 
     <Card v-if="!hasToken" variant="classic" :title="$t('eventPage.access.title')">
@@ -185,15 +190,16 @@ function formatDate(dateStr: string): string {
         :edit-participant-page-url="editParticipantPageUrl"
         @registered="fetchParticipants"
       />
+
+      <Card v-if="!isErrored && eventData" collapsible :default-expanded="false" :title="$t('eventPage.participants.title')">
+        <ParticipantTable :participants="participants" />
+      </Card>
     </div>
   </div>
 </template>
 
 <style scoped>
-.event-page {
-  max-width: 600px;
-  margin: 0 auto;
-}
+/* .page class handles layout */
 
 .event-page__token-desc {
   color: var(--color-text-medium);

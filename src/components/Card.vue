@@ -66,6 +66,7 @@ watch(() => props.defaultExpanded, (val) => {
   border: 2px solid var(--color-secondary-green);
   border-radius: 16px;
   padding: 1.5rem;
+  margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
