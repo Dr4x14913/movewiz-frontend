@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<{
   defaultLat?: number
   defaultLng?: number
   zoom?: number
+  mainMarkerLabel?: string
 }>(), {
   label: 'Address',
   placeholder: 'Start typing an address...',
@@ -18,7 +19,8 @@ const props = withDefaults(defineProps<{
   height: '300px',
   defaultLat: 46.603354,
   defaultLng: 1.888334,
-  zoom: 6
+  zoom: 6,
+  mainMarkerLabel: null,
 })
 
 const emit = defineEmits<{
@@ -78,6 +80,7 @@ defineExpose({ getLocation, setAddress })
       :lng="lng"
       :displayMainMarker="hasMarker"
       :height="height"
+      :mainMarkerLabel="props.mainMarkerLabel"
       @location-selected="onMapSelected"
     />
   </div>

@@ -95,6 +95,35 @@ export default {
   about: {
     title: 'C\'est ça',
   },
+  registerParticipant: {
+    toggle: 'S\'inscrire à cet événement',
+    submit: 'S\'inscrire',
+    markerLabel: 'Votre adresse',
+    contact: {
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      email: 'E-mail',
+    },
+    details: {
+      title: 'Détails',
+      mode: 'Mode',
+      driver: 'Conducteur',
+      passenger: 'Passager',
+      registrationDate: 'Date d\'inscription',
+      phoneNumber: 'Téléphone',
+      comments: 'Commentaires',
+      commentsPlaceholder: 'Notes optionnelles...',
+      hideEmail: 'Masquer mon e-mail aux autres participants',
+      notifyMe: 'M\'avertir des nouvelles inscriptions',
+      location: 'Votre position',
+    },
+    popup: {
+      successTitle: 'Inscription réussie !',
+      successDesc: 'Vous êtes inscrit à cet événement.',
+      errorTitle: 'Échec de l\'inscription',
+      errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+    },
+  },
   common: {
     address: {
       label: 'Adresse',

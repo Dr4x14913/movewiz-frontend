@@ -1,23 +1,61 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 
 const props = withDefaults(defineProps<{
   title?: string
   variant?: 'default' | 'borderless' | 'classic'
+  collapsible?: boolean
+  defaultExpanded?: boolean
 }>(), {
   variant: 'default',
+  collapsible: false,
+  defaultExpanded: true,
 })
+
+const isExpanded = ref(props.defaultExpanded)
+const contentRef = ref<HTMLDivElement | null>(null)
+let contentHeight = 'auto'
 
 const variantClass = computed(() => ({
   'card--borderless': props.variant === 'borderless',
-  'card--classic': props.variant === 'classic'
+  'card--classic': props.variant === 'classic',
+  'card--collapsible': props.collapsible,
 }))
+
+async function toggle() {
+  if (!isExpanded.value && contentRef.value) {
+    contentHeight = contentRef.value.scrollHeight + 'px'
+    await nextTick()
+  }
+  isExpanded.value = !isExpanded.value
+
+  if (isExpanded.value) {
+    contentHeight = 'auto'
+    await nextTick()
+    contentRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  } else {
+    if (contentRef.value) {
+      contentHeight = contentRef.value.scrollHeight + 'px'
+      await nextTick()
+      contentHeight = '0px'
+    }
+  }
+}
+
+watch(() => props.defaultExpanded, (val) => {
+  isExpanded.value = val
+})
 </script>
 
 <template>
   <div class="card" :class="variantClass">
-    <h2 v-if="title" class="card__title">{{ title }}</h2>
-    <slot />
+    <h2 v-if="title" class="card__title" :class="{ 'card__title--clickable': collapsible }" @click="collapsible && toggle()">
+      <span>{{ title }}</span>
+      <span v-if="collapsible" class="card__toggle-icon" :class="{ 'card__toggle-icon--expanded': isExpanded }">▼</span>
+    </h2>
+    <div v-if="isExpanded" ref="contentRef" class="card__content" :style="collapsible ? { maxHeight: contentHeight, overflow: 'hidden' } : {}">
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -72,6 +110,34 @@ const variantClass = computed(() => ({
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--color-primary-orange);
   color: var(--color-text-dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card__title--clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.card__title--clickable:hover {
+  color: var(--color-primary-green);
+}
+
+.card__toggle-icon {
+  display: inline-block;
+  font-size: 0.7rem;
+  transition: transform 0.3s ease;
+  margin-left: 0.5rem;
+}
+
+.card__toggle-icon--expanded {
+  transform: rotate(180deg);
+}
+
+.card__content {
+  transition: max-height 0.35s ease;
 }
 
 @keyframes cardEnter {

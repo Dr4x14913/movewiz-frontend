@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { router } from '../router.ts'
 import Card from '../components/Card.vue'
 import Map from '../components/Map.vue'
+import RegisterParticipant from '../components/RegisterParticipant.vue'
 
 const { locale } = useI18n()
 
@@ -37,6 +38,8 @@ const tokenValue = ref('')
 const eventData = ref<EventData | null>(null)
 const isLoading = ref(false)
 const participants = ref<ParticipantData[]>([])
+const eventPageUrl = window.location.origin + '/event'
+const editParticipantPageUrl = window.location.origin + '/edit-participant'
 
 const participantMarkers = computed(() => {
   return participants.value
@@ -164,7 +167,6 @@ function formatDate(dateStr: string): string {
         </div>
 
         <Map
-          v-if="participantMarkers.length > 0"
           :lat="eventData.latitude"
           :lng="eventData.longitude"
           :zoom="10"
@@ -175,6 +177,14 @@ function formatDate(dateStr: string): string {
           height="350px"
         />
       </Card>
+
+      <RegisterParticipant
+        v-if="!isErrored && eventData"
+        :token="tokenValue"
+        :event-page-url="eventPageUrl"
+        :edit-participant-page-url="editParticipantPageUrl"
+        @registered="fetchParticipants"
+      />
     </div>
   </div>
 </template>

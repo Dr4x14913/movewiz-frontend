@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<{
   additionalMarkers?: AdditionalMarker[]
   fitMarkers?: boolean
   is_editable?: boolean
+  mainMarkerLabel?: string
 }>(), {
   lat: 46.603354,
   lng: 1.888334,
@@ -34,6 +35,7 @@ const props = withDefaults(defineProps<{
   height: '300px',
   displayMainMarker: false,
   is_editable: true,
+  mainMarkerLabel: undefined,
 })
 
 const emit = defineEmits<{
@@ -111,7 +113,7 @@ function updateLegend() {
   if (hasEvent) {
     const item = L.DomUtil.create('div', 'map-legend__item', content)
     const dot = L.DomUtil.create('span', 'map-legend__dot map-legend__dot--orange', item)
-    item.appendChild(document.createTextNode(t('eventPage.legend.event')))
+    item.appendChild(document.createTextNode(props.mainMarkerLabel || t('eventPage.legend.event')))
   }
 
   if (hasParticipants) {

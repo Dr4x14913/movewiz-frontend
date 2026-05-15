@@ -95,6 +95,35 @@ export default {
   about: {
     title: 'This is it',
   },
+  registerParticipant: {
+    toggle: 'Register for this event',
+    submit: 'Register',
+    markerLabel: 'Your address',
+    contact: {
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      email: 'Email',
+    },
+    details: {
+      title: 'Details',
+      mode: 'Mode',
+      driver: 'Driver',
+      passenger: 'Passenger',
+      registrationDate: 'Registration Date',
+      phoneNumber: 'Phone Number',
+      comments: 'Comments',
+      commentsPlaceholder: 'Optional notes...',
+      hideEmail: 'Hide my email from other participants',
+      notifyMe: 'Notify me of new registrations',
+      location: 'Your Location',
+    },
+    popup: {
+      successTitle: 'Registration successful!',
+      successDesc: 'You have been registered for this event.',
+      errorTitle: 'Registration failed',
+      errorDefault: 'An error occurred. Please try again.',
+    },
+  },
   common: {
     address: {
       label: 'Address',
