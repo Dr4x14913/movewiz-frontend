@@ -13,10 +13,10 @@ enum FormResponse {
   None,
 }
 const { t } = useI18n()
-const first_name = ref('John')
-const last_name = ref('Doe')
-const email = ref('john@toto.com')
-const event_name = ref('Event Name')
+const first_name = ref('')
+const last_name = ref('')
+const email = ref('')
+const event_name = ref('')
 const date = ref(new Date().toISOString().split('T')[0])
 const address = ref('')
 const lat = ref(46.603354)
@@ -33,6 +33,17 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
   address.value = data.address
   lat.value = data.lat
   long_.value = data.lng
+}
+
+function resetForm() {
+  first_name.value = ''
+  last_name.value = ''
+  email.value = ''
+  event_name.value = ''
+  address.value = ''
+  comments.value = ''
+  lat.value = 46.603354
+  long_.value = 1.888334
 }
 
 
@@ -74,6 +85,7 @@ async function submitForm() {
         }
       }
     } else {
+      resetForm()
       form_resp.value = FormResponse.Success
       const resp = await response.json()
       form_resp_msg.value = `${t('createEvent.popup.successDesc')}
