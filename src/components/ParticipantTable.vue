@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+
 interface Participant {
   firstName: string
   lastName: string
@@ -12,9 +14,34 @@ interface Participant {
   address?: string
 }
 
-defineProps<{
+const props = defineProps<{
   participants: Participant[]
 }>()
+
+const emit = defineEmits<{
+  filtered: [participants: Participant[]]
+}>()
+
+const searchQuery = ref('')
+const modeFilter = ref('all')
+
+const filteredParticipants = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim()
+
+  return props.participants.filter(p => {
+    if (modeFilter.value !== 'all' && p.mode !== modeFilter.value) return false
+
+    if (!query) return true
+
+    const name = `${p.firstName} ${p.lastName}`.toLowerCase()
+    const address = (p.address || '').toLowerCase()
+    return name.includes(query) || address.includes(query)
+  })
+})
+
+watch(filteredParticipants, (newval) => {
+  emit('filtered', newval)
+}, { immediate: true })
 </script>
 
 <template>
@@ -22,20 +49,34 @@ defineProps<{
     <div v-if="participants.length === 0" class="participant-table__empty">
       {{ $t('eventPage.participants.empty') }}
     </div>
-    <div v-else class="participant-table__scroll">
-      <table class="participant-table__table">
-      <thead>
-        <tr>
-          <th>{{ $t('eventPage.participants.table.name') }}</th>
-          <th>{{ $t('eventPage.participants.table.mode') }}</th>
-          <th>{{ $t('eventPage.participants.table.phone') }}</th>
-          <th>{{ $t('eventPage.participants.table.email') }}</th>
-          <th>{{ $t('eventPage.participants.table.address') }}</th>
-          <th>{{ $t('eventPage.participants.table.date') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(p, idx) in participants" :key="idx">
+    <div v-else>
+      <div class="participant-table__filters">
+        <input
+          v-model="searchQuery"
+          type="text"
+          :placeholder="$t('eventPage.participants.search')"
+          class="participant-table__search"
+        />
+        <select v-model="modeFilter" class="participant-table__mode-filter">
+          <option value="all">{{ $t('eventPage.participants.all') }}</option>
+          <option value="driver">{{ $t('eventPage.participants.driver') }}</option>
+          <option value="passenger">{{ $t('eventPage.participants.passenger') }}</option>
+        </select>
+      </div>
+      <div class="participant-table__scroll">
+        <table class="participant-table__table">
+        <thead>
+          <tr>
+            <th>{{ $t('eventPage.participants.table.name') }}</th>
+            <th>{{ $t('eventPage.participants.table.mode') }}</th>
+            <th>{{ $t('eventPage.participants.table.phone') }}</th>
+            <th>{{ $t('eventPage.participants.table.email') }}</th>
+            <th>{{ $t('eventPage.participants.table.address') }}</th>
+            <th>{{ $t('eventPage.participants.table.date') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(p, idx) in filteredParticipants" :key="idx">
           <td class="participant-table__name">{{ p.firstName }} {{ p.lastName }}</td>
           <td>
             <span :class="['participant-table__badge', p.mode === 'driver' ? 'participant-table__badge--driver' : 'participant-table__badge--passenger']">
@@ -62,6 +103,7 @@ defineProps<{
       </tbody>
       </table>
     </div>
+    </div>
   </div>
 </template>
 
@@ -71,6 +113,46 @@ defineProps<{
   padding: 1.5rem;
   color: var(--color-text-medium);
   font-style: italic;
+}
+
+.participant-table__filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.participant-table__search {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color-input-border);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background-color: var(--color-bg-cream);
+  color: var(--color-text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.participant-table__search:focus {
+  border-color: var(--color-primary-green);
+}
+
+.participant-table__mode-filter {
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color-input-border);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background-color: var(--color-bg-cream);
+  color: var(--color-text-dark);
+  outline: none;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.participant-table__mode-filter:focus {
+  border-color: var(--color-primary-green);
 }
 
 .participant-table__scroll {

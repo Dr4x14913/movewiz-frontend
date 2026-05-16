@@ -109,7 +109,7 @@ Located in `src/i18n/locales/`:
     eventPage.fields.date
     ```
 
-3.  **Adding new text**: Add the key to both locale files (`en.ts` and `fr.ts`) simultaneously. Do not commit with missing translations.
+3.  **Adding new text**: Add the key to both locale files (`en.ts` and `fr.ts`) simultaneously. Do not commit with missing translations. Before adding check for already defined translation to avoid duplicates.
 
 4.  **Dynamic content** (data from APIs, user input) should not be translated. Only static UI text.
 

@@ -44,11 +44,12 @@ const tokenValue = ref('')
 const eventData = ref<EventData | null>(null)
 const isLoading = ref(false)
 const participants = ref<ParticipantData[]>([])
+const filteredParticipants = ref<ParticipantData[]>([])
 const eventPageUrl = window.location.origin + '/event'
 const editParticipantPageUrl = window.location.origin + '/edit-participant'
 
 const participantMarkers = computed(() => {
-  return participants.value
+  return filteredParticipants.value
     .filter(p => p.latitude !== undefined && p.longitude !== undefined)
     .map(p => ({
       lat: p.latitude!,
@@ -124,10 +125,15 @@ async function fetchParticipants() {
         return p
       }))
       participants.value = enriched
+      filteredParticipants.value = enriched
     }
   } catch (err) {
     console.error('Failed to fetch participants:', err)
   }
+}
+
+function onFiltered(p: ParticipantData[]) {
+  filteredParticipants.value = p
 }
 
 function formatDate(dateStr: string): string {
@@ -210,7 +216,7 @@ function formatDate(dateStr: string): string {
       />
 
       <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
-        <ParticipantTable :participants="participants" />
+      <ParticipantTable :participants="participants" @filtered="onFiltered" />
       </Card>
     </div>
   </div>

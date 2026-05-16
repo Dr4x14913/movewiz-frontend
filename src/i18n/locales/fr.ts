@@ -77,6 +77,8 @@ export default {
     participants: {
       title: 'Participants',
       empty: 'Aucun participant pour le moment. Inscrivez-vous en premier !',
+      search: 'Rechercher par nom ou adresse',
+      all: 'Tous',
       table: {
         name: 'Nom',
         mode: 'Mode',
