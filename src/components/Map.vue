@@ -14,6 +14,7 @@ interface AdditionalMarker {
   lat: number
   lng: number
   tooltip: string
+  color: string
 }
 
 const { t } = useI18n()
@@ -48,13 +49,16 @@ let marker: L.Marker | null = null
 let additionalMarkersLayer: L.LayerGroup | null = null
 let legendControl: L.Control | null = null
 
-// Custom green icon for additional markers
-const greenIcon = L.divIcon({
-  className: '',
-  html: '<div style="background-color:var(--color-secondary-green);width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 3px rgba(0,0,0,0.4)"></div>',
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
-})
+// Custom icon for additional markers
+
+function getIcon(color: string) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="background-color:var(${color});width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 3px rgba(0,0,0,0.4)"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+  })
+}
 
 // Orange icon for main event marker
 const orangeIcon = L.divIcon({
@@ -117,9 +121,13 @@ function updateLegend() {
   }
 
   if (hasParticipants) {
-    const item = L.DomUtil.create('div', 'map-legend__item', content)
-    const dot = L.DomUtil.create('span', 'map-legend__dot map-legend__dot--green', item)
-    item.appendChild(document.createTextNode(t('eventPage.legend.participant')))
+    const itemDriver = L.DomUtil.create('div', 'map-legend__item', content)
+    L.DomUtil.create('span', 'map-legend__dot map-legend__dot--secondary-green', itemDriver)
+    itemDriver.appendChild(document.createTextNode(t('eventPage.participants.driver')))
+
+    const itemPassenger = L.DomUtil.create('div', 'map-legend__item', content)
+    L.DomUtil.create('span', 'map-legend__dot map-legend__dot--primary-green', itemPassenger)
+    itemPassenger.appendChild(document.createTextNode(t('eventPage.participants.passenger')))
   }
 
   legendControl = new L.Control({ position: 'bottomright' })
@@ -154,7 +162,7 @@ function updateAdditionalMarkers() {
   const markerLayer: L.Marker[] = []
   props.additionalMarkers.forEach((m) => {
     allPoints.push([m.lat, m.lng])
-    const mk = L.marker([m.lat, m.lng], { icon: greenIcon })
+    const mk = L.marker([m.lat, m.lng], { icon: getIcon(m.color) })
       .bindTooltip(m.tooltip, { direction: 'top', offset: [0, -10] })
     additionalMarkersLayer?.addLayer(mk)
     markerLayer.push(mk)
@@ -275,7 +283,11 @@ watch(props, (new_val) => {
   background-color: var(--color-primary-orange);
 }
 
-.map-legend__dot--green {
+.map-legend__dot--secondary-green {
   background-color: var(--color-secondary-green);
+}
+
+.map-legend__dot--primary-green {
+  background-color: var(--color-primary-green);
 }
 </style>

@@ -73,7 +73,6 @@ export default {
     },
     legend: {
       event: 'Event',
-      participant: 'Participant',
     },
     participants: {
       title: 'Participants',

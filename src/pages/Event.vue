@@ -53,7 +53,8 @@ const participantMarkers = computed(() => {
     .map(p => ({
       lat: p.latitude!,
       lng: p.longitude!,
-      tooltip: `${p.firstName} ${p.lastName} (${p.mode === 'driver' ? t('eventPage.participants.driver') : t('eventPage.participants.passenger')})`
+      tooltip: `${p.firstName} ${p.lastName}`,
+      color: p.mode == 'driver' ? '--color-secondary-green' : '--color-primary-green',
     }))
 })
 
