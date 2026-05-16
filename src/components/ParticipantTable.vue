@@ -15,19 +15,21 @@ interface Participant {
 }
 
 const props = defineProps<{
-  participants: Participant[]
+  participants: Participant[],
+  modelValue?: string,
 }>()
 
 const emit = defineEmits<{
   filtered: [participants: Participant[]]
+  'update:modelValue': [value: string]
 }>()
 
-const searchQuery = ref('')
+const searchQuery = ref(props.modelValue)
 const modeFilter = ref('all')
 
 const filteredParticipants = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
-
+  emit('update:modelValue', searchQuery.value)
   return props.participants.filter(p => {
     if (modeFilter.value !== 'all' && p.mode !== modeFilter.value) return false
 
@@ -42,6 +44,8 @@ const filteredParticipants = computed(() => {
 watch(filteredParticipants, (newval) => {
   emit('filtered', newval)
 }, { immediate: true })
+
+watch(() => props.modelValue, (newVal) => searchQuery.value = newVal)
 </script>
 
 <template>
@@ -51,12 +55,15 @@ watch(filteredParticipants, (newval) => {
     </div>
     <div v-else>
       <div class="participant-table__filters">
-        <input
-          v-model="searchQuery"
-          type="text"
-          :placeholder="$t('eventPage.participants.search')"
-          class="participant-table__search"
-        />
+        <div class="participant-table__search-wrap">
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="$t('eventPage.participants.search')"
+            class="participant-table__search"
+          />
+          <button v-if="searchQuery" @click="searchQuery = ''" class="participant-table__clear" type="button">×</button>
+        </div>
         <select v-model="modeFilter" class="participant-table__mode-filter">
           <option value="all">{{ $t('eventPage.participants.all') }}</option>
           <option value="driver">{{ $t('eventPage.participants.driver') }}</option>
@@ -77,7 +84,9 @@ watch(filteredParticipants, (newval) => {
         </thead>
         <tbody>
           <tr v-for="(p, idx) in filteredParticipants" :key="idx">
-          <td class="participant-table__name">{{ p.firstName }} {{ p.lastName }}</td>
+          <td class="participant-table__name">
+            <a href="#" @click.prevent="searchQuery = `${p.firstName} ${p.lastName}`">{{ p.firstName }} {{ p.lastName }}</a>
+          </td>
           <td>
             <span :class="['participant-table__badge', p.mode === 'driver' ? 'participant-table__badge--driver' : 'participant-table__badge--passenger']">
               {{ p.mode === 'driver' ? $t('eventPage.participants.driver') : $t('eventPage.participants.passenger') }}
@@ -121,9 +130,14 @@ watch(filteredParticipants, (newval) => {
   margin-bottom: 0.75rem;
 }
 
+.participant-table__search-wrap {
+  position: relative;
+  flex: 1;
+}
+
 .participant-table__search {
   flex: 1;
-  padding: 0.625rem 0.75rem;
+  padding: 0.625rem 2.25rem 0.625rem 0.75rem;
   border: 1px solid var(--color-input-border);
   border-radius: 50px;
   font-family: var(--font-body);
@@ -132,10 +146,29 @@ watch(filteredParticipants, (newval) => {
   color: var(--color-text-dark);
   outline: none;
   transition: border-color 0.2s;
+  width: 80%;
 }
 
 .participant-table__search:focus {
   border-color: var(--color-primary-green);
+}
+
+.participant-table__clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--color-text-medium);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.participant-table__clear:hover {
+  color: var(--color-text-dark);
 }
 
 .participant-table__mode-filter {
@@ -156,7 +189,8 @@ watch(filteredParticipants, (newval) => {
 }
 
 .participant-table__scroll {
-  overflow-x: auto;
+  max-height: 400px;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -199,8 +233,15 @@ watch(filteredParticipants, (newval) => {
   vertical-align: middle;
 }
 
-.participant-table__name {
+.participant-table__name a {
   font-weight: 600;
+  color: var(--color-secondary-green);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.participant-table__name a:hover {
+  text-decoration: underline;
 }
 
 .participant-table__badge {

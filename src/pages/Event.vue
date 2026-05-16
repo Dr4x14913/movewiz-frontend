@@ -47,6 +47,7 @@ const participants = ref<ParticipantData[]>([])
 const filteredParticipants = ref<ParticipantData[]>([])
 const eventPageUrl = window.location.origin + '/event'
 const editParticipantPageUrl = window.location.origin + '/edit-participant'
+const searchText = ref('')
 
 const participantMarkers = computed(() => {
   return filteredParticipants.value
@@ -136,6 +137,10 @@ function onFiltered(p: ParticipantData[]) {
   filteredParticipants.value = p
 }
 
+function onParticipantClick(name: string) {
+  searchText.value = name
+}
+
 function formatDate(dateStr: string): string {
   const dsLocale = locale.value === 'fr' ? 'fr-FR' : 'en-US'
   return new Date(dateStr).toLocaleDateString(dsLocale, {
@@ -204,7 +209,13 @@ function formatDate(dateStr: string): string {
           :displayMainMarker="true"
           :is_editable="false"
           height="350px"
+          @marker-clicked="onParticipantClick"
         />
+        <button v-if="searchText" @click="searchText = ''" class="event-page__clear">{{ $t('common.clear') }}</button>
+      </Card>
+
+      <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
+        <ParticipantTable v-model="searchText" :participants="participants" @filtered="onFiltered" />
       </Card>
 
       <RegisterParticipant
@@ -214,10 +225,6 @@ function formatDate(dateStr: string): string {
         :edit-participant-page-url="editParticipantPageUrl"
         @registered="fetchParticipants"
       />
-
-      <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
-      <ParticipantTable :participants="participants" @filtered="onFiltered" />
-      </Card>
     </div>
   </div>
 </template>
@@ -276,5 +283,21 @@ function formatDate(dateStr: string): string {
   text-align: right;
   max-width: 60%;
   color: var(--color-text-dark);
+}
+
+.event-page__clear {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-text-medium);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.event-page__clear:hover {
+  background: var(--color-text-dark);
 }
 </style>

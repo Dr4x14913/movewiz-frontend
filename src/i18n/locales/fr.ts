@@ -140,6 +140,7 @@ export default {
     },
   },
   common: {
+    clear: 'Tout afficher',
     address: {
       label: 'Adresse',
       placeholder: 'Commencez à taper une adresse...',

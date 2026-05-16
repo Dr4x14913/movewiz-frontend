@@ -19,6 +19,7 @@ let contentHeight = 'auto'
 const variantClass = computed(() => ({
   'card--borderless': props.variant === 'borderless',
   'card--classic': props.variant === 'classic',
+  'card--default': props.variant === 'default',
   'card--collapsible': props.collapsible,
 }))
 
@@ -65,7 +66,6 @@ watch(() => props.defaultExpanded, (val) => {
   background-color: var(--color-card-bg);
   border: 2px solid var(--color-secondary-green);
   border-radius: 16px;
-  padding: 1.5rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 8px rgba(46, 125, 50, 0.1);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -77,6 +77,10 @@ watch(() => props.defaultExpanded, (val) => {
   box-shadow: 0 6px 20px rgba(46, 125, 50, 0.15);
 }
 
+.card--default {
+  padding: 1.5rem;
+}
+
 .card--borderless:hover {
   box-shadow: none;
 }
@@ -84,20 +88,18 @@ watch(() => props.defaultExpanded, (val) => {
 .card--borderless {
   border: none;
   border-radius: 0;
-  padding: 1.5rem;
   background: transparent;
   box-shadow: none;
   animation: cardEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Classic: traditional professional card — squarish, clean lines, green border */
 .card--classic {
   border: 2px solid var(--color-secondary-green);
   border-radius: 8px;
-  padding: 1.25rem;
   background-color: var(--color-card-bg);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  padding: 1.5rem;
 }
 
 .card--classic:hover {

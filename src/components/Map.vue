@@ -41,6 +41,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'location-selected': [data: { lat: number; lng: number; address: string }]
+  'marker-clicked': [name: string],
 }>()
 
 const mapContainer = ref<HTMLDivElement | null>(null)
@@ -164,6 +165,9 @@ function updateAdditionalMarkers() {
     allPoints.push([m.lat, m.lng])
     const mk = L.marker([m.lat, m.lng], { icon: getIcon(m.color) })
       .bindTooltip(m.tooltip, { direction: 'top', offset: [0, -10] })
+      .on('click', () => {
+        emit('marker-clicked', m.tooltip)
+      })
     additionalMarkersLayer?.addLayer(mk)
     markerLayer.push(mk)
   })
