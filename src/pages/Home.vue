@@ -58,5 +58,24 @@ import Card from '../components/Card.vue'
   flex-wrap: wrap;
 }
 
+@media (max-width: 600px) {
+  .hero {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .hero__title {
+    font-size: 2rem;
+  }
+
+  .hero__tagline {
+    font-size: 1rem;
+  }
+
+  .features {
+    gap: 1rem;
+    padding: 1rem;
+  }
+}
+
 
 </style>

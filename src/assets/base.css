@@ -82,3 +82,10 @@ p {
 .text-secondary {
   color: var(--color-text-medium);
 }
+
+/* Mobile heading sizes */
+@media (max-width: 600px) {
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+}

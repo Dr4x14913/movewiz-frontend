@@ -105,4 +105,15 @@ defineExpose({ token, value })
 .captcha-input__captcha-actions input {
   flex: 1;
 }
+
+@media (max-width: 600px) {
+  .captcha-input__captcha-actions {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .captcha-input__captcha-actions .btn-secondary {
+    width: 100%;
+  }
+}
 </style>

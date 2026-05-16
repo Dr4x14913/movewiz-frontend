@@ -301,4 +301,16 @@ function formatDate(dateStr: string): string {
 .event-page__clear:hover {
   background: var(--color-text-dark);
 }
+
+@media (max-width: 600px) {
+  .event-page__field {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .event-page__comments {
+    max-width: 100%;
+    text-align: left;
+  }
+}
 </style>

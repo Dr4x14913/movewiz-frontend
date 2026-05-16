@@ -201,4 +201,16 @@ function goBack() {
 .send-message__actions .btn-secondary {
   min-width: 150px;
 }
+
+@media (max-width: 600px) {
+  .send-message__actions {
+    flex-direction: column;
+  }
+
+  .send-message__actions .btn-primary,
+  .send-message__actions .btn-secondary {
+    min-width: auto;
+    width: 100%;
+  }
+}
 </style>

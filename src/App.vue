@@ -107,12 +107,22 @@ onUnmounted(() => {
 @media (max-width: 600px) {
   .navbar {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .navbar__brand {
+    font-size: 1.4rem;
   }
 
   .navbar__links {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .navbar__links a {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.8rem;
   }
 }
 </style>

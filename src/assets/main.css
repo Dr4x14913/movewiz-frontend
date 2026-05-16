@@ -136,12 +136,18 @@ label {
 /* Page Layout */
 .page {
   max-width: 40vw;
-  min-width: 500px;
   margin: 0 auto;
 }
 
 @media (max-width: 1200px) {
   .page {
     max-width: 600px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    max-width: 100%;
+    padding: 1.5rem 1rem;
   }
 }

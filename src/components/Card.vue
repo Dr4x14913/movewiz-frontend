@@ -155,5 +155,27 @@ watch(() => props.defaultExpanded, (val) => {
   }
 }
 
+@media (max-width: 600px) {
+  .card--default,
+  .card--classic {
+    padding: 1rem;
+  }
+
+  .card__title {
+    font-size: 1.1rem;
+  }
+
+  @keyframes cardEnter {
+    from {
+      opacity: 0;
+      transform: translateX(-20vw);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
 
 </style>
