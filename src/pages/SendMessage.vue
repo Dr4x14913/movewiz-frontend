@@ -112,7 +112,7 @@ function goBack() {
         </Card>
 
         <div class="send-message__actions">
-          <button type="button" class="btn-secondary" @click="goBack()">{{ $t('common.clear') }}</button>
+          <button type="button" class="btn-secondary" @click="goBack()">{{ $t('common.back') }}</button>
           <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('sendMessage.submit') }}</button>
         </div>
       </form>

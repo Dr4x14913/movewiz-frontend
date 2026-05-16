@@ -169,6 +169,7 @@ export default {
     },
   },
   common: {
+    back: 'Go Back',
     clear: 'Show all',
     address: {
       label: 'Address',
