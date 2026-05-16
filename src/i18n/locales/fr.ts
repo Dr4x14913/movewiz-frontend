@@ -39,7 +39,7 @@ export default {
       eventName: 'Nom de l\'événement',
       date: 'Date',
       comments: 'Commentaires',
-      commentsPlaceholder: 'Notes optionnelles sur l\'événement...',
+      commentsPlaceholder: 'Donnez les détails de l\'événement...',
     },
     verification: {
       title: 'Vérification',
