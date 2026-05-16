@@ -124,6 +124,23 @@ export default {
     },
     submit: 'Save Changes',
   },
+  sendMessage: {
+    title: 'Send Message',
+    subtitle: 'Send a message to this participant.',
+    senderEmail: 'Your Email',
+    message: 'Message',
+    messagePlaceholder: 'Type your message here...',
+    submit: 'Send Message',
+    buttonLabel: 'Send a message',
+    hiddenEmailTooltip: 'Participant has hidden their email',
+    popup: {
+      successTitle: 'Message sent!',
+      successDesc: 'Your message has been sent to the participant.',
+      errorTitle: 'Failed to send message',
+      errorDefault: 'An error occurred. Please try again.',
+      tooManyRequests: 'Too many messages sent. Please wait before trying again.',
+    },
+  },
   about: {
     title: 'This is it',
   },

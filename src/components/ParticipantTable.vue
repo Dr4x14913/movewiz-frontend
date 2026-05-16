@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+import { router } from '../router'
+
 interface Participant {
   firstName: string
   lastName: string
@@ -10,6 +12,7 @@ interface Participant {
   phoneNumber?: string
   email?: string
   showEmail?: boolean
+  contactToken?: string
   registrationDate?: string
   address?: string
 }
@@ -46,6 +49,10 @@ watch(filteredParticipants, (newval) => {
 }, { immediate: true })
 
 watch(() => props.modelValue, (newVal) => searchQuery.value = newVal)
+
+function goSendMessage(token: string) {
+  router.push({ path: '/sendMessage', query: { token } })
+}
 </script>
 
 <template>
@@ -98,7 +105,16 @@ watch(() => props.modelValue, (newVal) => searchQuery.value = newVal)
           </td>
           <td class="participant-table__email">
             <span v-if="p.showEmail && p.email">{{ p.email }}</span>
-            <span v-else class="participant-table__none">—</span>
+            <span v-else>
+              <button
+                v-if="p.contactToken"
+                @click="goSendMessage(p.contactToken)"
+                class="participant-table__email-btn"
+                :title="$t('sendMessage.hiddenEmailTooltip')"
+                type="button"
+              >{{ $t('sendMessage.buttonLabel') }}</button>
+              <span v-else class="participant-table__none">—</span>
+            </span>
           </td>
           <td class="participant-table__address">
             <span v-if="p.address">{{ p.address }}</span>
@@ -264,6 +280,24 @@ watch(() => props.modelValue, (newVal) => searchQuery.value = newVal)
 
 .participant-table__none {
   color: var(--color-text-medium);
+}
+
+.participant-table__email-btn {
+  background: none;
+  border: 1px solid var(--color-primary-orange);
+  border-radius: 50px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-primary-orange);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.participant-table__email-btn:hover {
+  background-color: var(--color-primary-orange);
+  color: white;
 }
 
 @media (max-width: 600px) {

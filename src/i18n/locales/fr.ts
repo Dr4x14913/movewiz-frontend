@@ -124,6 +124,22 @@ export default {
     },
     submit: 'Enregistrer les modifications',
   },
+  sendMessage: {
+    title: 'Envoyer un message',
+    subtitle: 'Envoyez un message à ce participant.',
+    senderEmail: 'Votre e-mail',
+    message: 'Message',
+    messagePlaceholder: 'Écrivez votre message ici...',
+    submit: 'Envoyer',
+    buttonLabel: 'Contacter',
+    hiddenEmailTooltip: 'Le participant a masqué son e-mail',
+    popup: {
+      successTitle: 'Message envoyé !',
+      successDesc: 'Votre message a été envoyé au participant.',
+      errorTitle: 'Échec de l\'envoi',
+      errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+    },
+  },
   about: {
     title: 'C\'est ça',
   },
@@ -153,6 +169,7 @@ export default {
       successDesc: 'Vous êtes inscrit à cet événement.',
       errorTitle: 'Échec de l\'inscription',
       errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+      tooManyRequests: 'Trop de messages envoyés. Veuillez patienter avant de réessayer.',
     },
   },
   common: {

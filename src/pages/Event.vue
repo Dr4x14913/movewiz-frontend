@@ -31,6 +31,7 @@ interface ParticipantData {
   phoneNumber?: string
   email?: string
   showEmail?: boolean
+  contactToken?: string
   address?: string
 }
 
