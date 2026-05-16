@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Card from '../components/Card.vue'
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -7,13 +8,12 @@ import Card from '../components/Card.vue'
     <h1 class="hero__title">{{ $t('hero.title') }}</h1>
     <p class="hero__tagline">{{ $t('hero.tagline') }}</p>
     <p class="hero__description">{{ $t('hero.description') }}</p>
-    <a href="/create" class="btn-primary">{{ $t('hero.getStarted') }}</a>
   </section>
 
   <section class="features">
     <Card :title="$t('features.create.title')">
       <p>{{ $t('features.create.desc') }}</p>
-      <a href="/create" class="btn-primary">{{ $t('features.create.btn') }}</a>
+      <RouterLink to="/create" class="btn-primary">{{ $t('features.create.btn') }}</RouterLink>
     </Card>
   </section>
 </template>
