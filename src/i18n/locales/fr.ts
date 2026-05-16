@@ -108,6 +108,22 @@ export default {
     },
     submit: 'Enregistrer les modifications',
   },
+  editParticipant: {
+    title: 'Modifier le participant',
+    subtitle: 'Mettez à jour vos détails d\'inscription ci-dessous.',
+    loading: 'Chargement des détails...',
+    notFound: {
+      title: 'Participant introuvable',
+      desc: 'Ce participant est introuvable ou le token de modification est invalide.',
+    },
+    popup: {
+      successTitle: 'Participant mis à jour avec succès !',
+      successDesc: 'Vos détails ont été sauvegardés.',
+      errorTitle: 'Échec de la mise à jour',
+      errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+    },
+    submit: 'Enregistrer les modifications',
+  },
   about: {
     title: 'C\'est ça',
   },

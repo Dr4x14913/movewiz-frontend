@@ -108,6 +108,22 @@ export default {
     },
     submit: 'Save Changes',
   },
+  editParticipant: {
+    title: 'Edit Participant',
+    subtitle: 'Update your registration details below.',
+    loading: 'Loading participant details...',
+    notFound: {
+      title: 'Participant Not Found',
+      desc: 'This participant could not be found or the edit token is invalid.',
+    },
+    popup: {
+      successTitle: 'Participant updated successfully!',
+      successDesc: 'Your details have been saved.',
+      errorTitle: 'Failed to update participant',
+      errorDefault: 'An error occurred. Please try again.',
+    },
+    submit: 'Save Changes',
+  },
   about: {
     title: 'This is it',
   },
