@@ -2,28 +2,24 @@ export default {
   nav: {
     home: 'Home',
     about: 'About',
-    createEvent: 'Create Event',
+    createEvent: 'Create an event',
   },
   hero: {
-    title: 'MovieWiz',
-    tagline: 'Find and organize movie nights near you',
+    title: 'MoveWiz',
+    tagline: 'Movewiz, event carpooling in 3 clicks!',
+    description: 'No more wondering "If only I knew you were coming, we could have carooled together!" at events, parties, and gatherings.',
     getStarted: 'Get Started',
   },
   features: {
-    discover: {
-      title: 'Discover Events',
-      desc: 'Find movie screenings and gatherings in your area.',
-      btn: 'Learn More',
-    },
     create: {
-      title: 'Create Events',
-      desc: 'Organize your own movie night with friends.',
+      title: 'Organize Carpooling',
+      desc: 'Create a carpool for your event (wedding, birthday, training, meeting…) and invite participants to share rides.',
       btn: 'Create Now',
     },
   },
   createEvent: {
     title: 'Create an Event',
-    subtitle: 'Fill in the details below to organize your movie night.',
+    subtitle: 'Fill in the details below to create your carpool event',
     popup: {
       successTitle: 'Event created successfully!',
       successDesc: 'You can now access your event:',
@@ -94,7 +90,7 @@ export default {
   },
   editEvent: {
     title: 'Edit Event',
-    subtitle: 'Update the details below to modify your movie night.',
+    subtitle: 'Update the details below to modify your event.',
     loading: 'Loading event details...',
     notFound: {
       title: 'Event Not Found',

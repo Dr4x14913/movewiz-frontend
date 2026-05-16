@@ -6,18 +6,14 @@ import Card from '../components/Card.vue'
   <section class="hero">
     <h1 class="hero__title">{{ $t('hero.title') }}</h1>
     <p class="hero__tagline">{{ $t('hero.tagline') }}</p>
-    <a href="#" class="btn-primary">{{ $t('hero.getStarted') }}</a>
+    <p class="hero__description">{{ $t('hero.description') }}</p>
+    <a href="/create" class="btn-primary">{{ $t('hero.getStarted') }}</a>
   </section>
 
   <section class="features">
-    <Card :title="$t('features.discover.title')">
-      <p>{{ $t('features.discover.desc') }}</p>
-      <a href="#" class="btn-secondary">{{ $t('features.discover.btn') }}</a>
-    </Card>
-
     <Card :title="$t('features.create.title')">
       <p>{{ $t('features.create.desc') }}</p>
-      <a href="/create" class="btn-accent">{{ $t('features.create.btn') }}</a>
+      <a href="/create" class="btn-primary">{{ $t('features.create.btn') }}</a>
     </Card>
   </section>
 </template>
@@ -41,7 +37,17 @@ import Card from '../components/Card.vue'
   font-family: var(--font-body);
   font-size: 1.25rem;
   color: var(--color-text-medium);
+  margin-bottom: 1rem;
+}
+
+.hero__description {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text-dark);
   margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .features {

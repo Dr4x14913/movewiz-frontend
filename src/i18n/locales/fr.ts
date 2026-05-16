@@ -5,25 +5,21 @@ export default {
     createEvent: 'Créer un événement',
   },
   hero: {
-    title: 'MovieWiz',
-    tagline: 'Trouvez et organisez des soirées cinéma près de chez vous',
+    title: 'MoveWiz',
+    tagline: 'Movewiz, le covoiturage événementiel en 3 clics !',
+    description: 'Finie la réunion, la formation et les fêtes entre amis où des participants se retrouvant sur le lieu de l\'événement se disent "Si j\'avais su que tu venais, on aurait pu venir ensemble !".',
     getStarted: 'Commencer',
   },
   features: {
-    discover: {
-      title: 'Découvrir les événements',
-      desc: 'Trouvez des projections et des rassemblements cinéphiles près de chez vous.',
-      btn: 'En savoir plus',
-    },
     create: {
-      title: 'Créer des événements',
-      desc: 'Organisez votre propre soirée cinéma avec des amis.',
+      title: 'Organiser un covoiturage',
+      desc: 'Créez le covoiturage de votre événement (mariage, anniversaire, formation, réunion…) et invitez les participants à partager leurs voitures.',
       btn: 'Créer maintenant',
     },
   },
   createEvent: {
     title: 'Créer un événement',
-    subtitle: 'Remplissez les détails ci-dessous pour organiser votre soirée cinéma.',
+    subtitle: 'Remplissez les détails ci-dessous pour créer votre covoiturage.',
     popup: {
       successTitle: 'Événement créé avec succès !',
       successDesc: 'Vous pouvez maintenant accéder à votre événement :',
@@ -94,7 +90,7 @@ export default {
   },
   editEvent: {
     title: 'Modifier l\'événement',
-    subtitle: 'Mettez à jour les détails ci-dessous pour modifier votre soirée cinéma.',
+    subtitle: 'Mettez à jour les détails ci-dessous pour modifier votre événement.',
     loading: 'Chargement des détails...',
     notFound: {
       title: 'Événement introuvable',
