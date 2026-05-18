@@ -163,6 +163,7 @@ function onPopupClose() {
         </div>
 
         <LocationPicker
+          required
           :label="t('registerParticipant.details.location')"
           :placeholder="t('common.address.placeholder')"
           :mainMarkerLabel="t('registerParticipant.markerLabel')"
