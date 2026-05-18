@@ -36,6 +36,8 @@ const notifyMe = ref(false)
 const lat = ref<number | null>(null)
 const long_ = ref<number | null>(null)
 
+const locationPickerRef = ref<{ resetLocation: () => void } | null>(null)
+
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
@@ -51,6 +53,7 @@ function clearForm() {
   notifyMe.value = false
   lat.value = null
   long_.value = null
+  locationPickerRef.value?.resetLocation()
 }
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
@@ -70,13 +73,12 @@ async function submitForm() {
       token: props.token,
       eventPageUrl: props.eventPageUrl,
       editParticipantPageUrl: props.editParticipantPageUrl,
+      latitude: lat.value,
+      longitude: long_.value,
+      notifyMe: notifyMe.value,
+      phoneNumber: phoneNumber.value,
+      comments: comments.value,
     }
-
-    if (phoneNumber.value) body.phoneNumber = phoneNumber.value
-    if (comments.value) body.comments = comments.value
-    if (notifyMe.value) body.notifyMe = notifyMe.value
-    if (lat.value !== null) body.latitude = lat.value
-    if (long_.value !== null) body.longitude = long_.value
 
     const response = await fetch('/api/registerParticipant', {
       method: 'POST',
@@ -90,7 +92,12 @@ async function submitForm() {
       form_resp.value = FormResponse.Error
       try {
         const resp = await response.json()
-        form_resp_msg.value = resp.error || t('registerParticipant.popup.errorDefault')
+        const errorMsg = resp.error || t('registerParticipant.popup.errorDefault')
+        if (errorMsg.includes('latitude') || errorMsg.includes('longitude')) {
+          form_resp_msg.value = t('registerParticipant.popup.errorMissingLocation')
+        } else {
+          form_resp_msg.value = errorMsg
+        }
       } catch {
         form_resp_msg.value = t('registerParticipant.popup.errorDefault')
       }
@@ -163,6 +170,7 @@ function onPopupClose() {
         </div>
 
         <LocationPicker
+          ref="locationPickerRef"
           required
           :label="t('registerParticipant.details.location')"
           :placeholder="t('common.address.placeholder')"

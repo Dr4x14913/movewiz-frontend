@@ -63,7 +63,14 @@ function getLocation() {
   }
 }
 
-defineExpose({ getLocation, setAddress })
+function resetLocation() {
+  address.value = ''
+  lat.value = props.defaultLat
+  lng.value = props.defaultLng
+  hasMarker.value = false
+}
+
+defineExpose({ getLocation, setAddress, resetLocation })
 </script>
 
 <template>

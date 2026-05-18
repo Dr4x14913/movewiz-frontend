@@ -166,6 +166,7 @@ export default {
       successDesc: 'You have been registered for this event.',
       errorTitle: 'Registration failed',
       errorDefault: 'An error occurred. Please try again.',
+      errorMissingLocation: 'The address you entered could not be recognized. Please try typing it again or select it from the suggestions.',
     },
   },
   common: {

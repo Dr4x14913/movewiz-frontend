@@ -166,6 +166,7 @@ export default {
       errorTitle: 'Échec de l\'inscription',
       errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
       tooManyRequests: 'Trop de messages envoyés. Veuillez patienter avant de réessayer.',
+      errorMissingLocation: "L'adresse que vous avez saisie n'a pas pu être reconnue. Veuillez la retaper ou la sélectionner parmi les suggestions.",
     },
   },
   common: {
