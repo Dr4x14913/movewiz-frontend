@@ -27,6 +27,7 @@ export default {
       writeLink: 'Modifier l\'événement',
       errorTitle: 'Échec de la création de l\'événement',
       errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+      tooManyRequests: 'Trop de requêtes. Veuillez patienter un moment avant de réessayer.',
     },
     contact: {
       title: 'Informations de contact',
@@ -134,6 +135,7 @@ export default {
       successDesc: 'Votre message a été envoyé au participant.',
       errorTitle: 'Échec de l\'envoi',
       errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+      tooManyRequests: 'Trop de messages envoyés. Veuillez patienter avant de réessayer.',
     },
   },
   about: {

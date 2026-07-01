@@ -76,7 +76,7 @@ async function submitForm() {
     if (!response.ok) {
       form_resp.value = FormResponse.Error
       if (response.status === 429) {
-        form_resp_msg.value = t('createEvent.popup.errorDefault')
+        form_resp_msg.value = t('createEvent.popup.tooManyRequests')
       } else {
         try {
           const resp = await response.json()

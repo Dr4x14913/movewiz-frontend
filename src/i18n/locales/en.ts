@@ -27,6 +27,7 @@ export default {
       writeLink: 'Edit event',
       errorTitle: 'Failed to create event',
       errorDefault: 'An error occurred. Please try again.',
+      tooManyRequests: 'Too many requests. Please wait a moment before trying again.',
     },
     contact: {
       title: 'Contact Information',
