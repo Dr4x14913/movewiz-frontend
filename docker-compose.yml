@@ -1,9 +1,8 @@
 services:
   movewiz:
-    env_file: stack.env
     build:
       context: .
       args:
-        BACKEND_BASE_URL: "${BACKEND_BASE_URL}"
+        VITE_BACKEND_BASE_URL: "${VITE_BACKEND_BASE_URL}"
     ports:
       - "8088:80"

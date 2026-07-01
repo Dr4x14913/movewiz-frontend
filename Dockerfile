@@ -1,7 +1,7 @@
 # Build stage
 FROM node:24-alpine AS build
-ARG BACKEND_BASE_URL
-ENV BACKEND_BASE_URL=${BACKEND_BASE_URL}
+ARG VITE_BACKEND_BASE_URL
+ENV VITE_BACKEND_BASE_URL=${VITE_BACKEND_BASE_URL}
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
