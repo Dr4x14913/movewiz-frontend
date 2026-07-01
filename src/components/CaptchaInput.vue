@@ -22,7 +22,7 @@ const value = ref('')
 
 async function fetchCaptcha() {
   try {
-    const res = await api(props.endpoint, { cache: 'no-store' })
+    const res = await api(`${props.endpoint}?_t=${Date.now()}`, { cache: 'no-store' })
     const data = await res.json()
     token.value = data.token
     image.value = 'data:image/png;base64,' + data.image
