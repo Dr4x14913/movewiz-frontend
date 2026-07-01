@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
+import { api } from '../api'
 import Card from '../components/Card.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import PopUp from '../components/PopUp.vue'
@@ -48,7 +49,7 @@ onMounted(async () => {
 
 async function fetchEvent() {
   try {
-    const res = await fetch('/api/getEvent?token=' + props.token + '&isEdit=true')
+    const res = await api('/api/getEvent?token=' + props.token + '&isEdit=true')
     const data = await res.json()
     if (!res.ok) {
       isErrored.value = true
@@ -84,7 +85,7 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
 async function submitForm() {
   isSubmitting.value = true
   try {
-    const response = await fetch('/api/editEvent', {
+    const response = await api('/api/editEvent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

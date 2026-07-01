@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { api } from '../api'
 import Card from './Card.vue'
 import LocationPicker from './LocationPicker.vue'
 import PopUp from './PopUp.vue'
@@ -80,7 +81,7 @@ async function submitForm() {
       comments: comments.value,
     }
 
-    const response = await fetch('/api/registerParticipant', {
+    const response = await api('/api/registerParticipant', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router.ts'
+import { api } from '../api'
 import Card from '../components/Card.vue'
 import Map from '../components/Map.vue'
 import RegisterParticipant from '../components/RegisterParticipant.vue'
@@ -87,7 +88,7 @@ function redirectWithToken() {
 
 async function fetchEvent(): Promise<EventData | null> {
   try {
-    const res = await fetch('/api/getEvent?token=' + tokenValue.value)
+    const res = await api('/api/getEvent?token=' + tokenValue.value)
     const data = await res.json()
     if (!res.ok) {
       isErrored.value = true
@@ -107,7 +108,7 @@ function goHome() {
 
 async function fetchParticipants() {
   try {
-    const res = await fetch('/api/getParticipants?token=' + tokenValue.value)
+    const res = await api('/api/getParticipants?token=' + tokenValue.value)
     const data = await res.json()
     if (res.ok && Array.isArray(data)) {
       const enriched = await Promise.all(data.map(async (p: ParticipantData) => {

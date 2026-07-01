@@ -1,6 +1,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { api } from '../api'
 import Spinner from './Spinner.vue'
 
 const props = withDefaults(defineProps<{
@@ -21,7 +22,7 @@ const value = ref('')
 
 async function fetchCaptcha() {
   try {
-    const res = await fetch(props.endpoint, { cache: 'no-store' })
+    const res = await api(props.endpoint, { cache: 'no-store' })
     const data = await res.json()
     token.value = data.token
     image.value = 'data:image/png;base64,' + data.image

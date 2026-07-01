@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { api } from '../api'
 import Card from '../components/Card.vue'
 import CaptchaInput from '../components/CaptchaInput.vue'
 import PopUp from '../components/PopUp.vue'
@@ -30,7 +31,7 @@ const isSubmitting = ref(false)
 async function submitForm() {
   isSubmitting.value = true
   try {
-    const response = await fetch('/api/contactParticipant', {
+    const response = await api('/api/contactParticipant', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,6 +1,45 @@
-# .
+# Movewiz Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+
+The frontend makes direct calls to the backend. The backend URL is set via `BACKEND_BASE_URL` and embedded in the JS bundle at build time.
+
+```
+Browser → nginx:80 (static files, SPA fallback)
+Browser → backend (direct API calls)
+```
+
+**Prerequisite:** The backend must enable CORS (`Access-Control-Allow-Origin`) for the frontend's origin.
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Environment
+
+Copy `.env.example` to `.env` and set the backend URL:
+
+```
+BACKEND_BASE_URL=http://localhost:3033
+```
+
+- **Local dev:** `.env` is read by Vite automatically.
+- **Docker:** pass `BACKEND_BASE_URL` as a build arg in `docker-compose.yml`. Changing the URL requires a rebuild.
+
+### Development
+
+```sh
+npm run dev
+```
+
+### Production (Docker)
+
+```sh
+docker compose up --build
+```
+
+This builds the frontend with the backend URL from `docker-compose.yml` and serves it on port `8088`. To change the backend target, update the `BACKEND_BASE_URL` build arg in `docker-compose.yml` and rebuild.
 
 ## Recommended IDE Setup
 
@@ -22,21 +61,3 @@ TypeScript cannot handle type information for `.vue` imports by default, so we r
 ## Customize configuration
 
 See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
