@@ -1,5 +1,6 @@
 services:
   movewiz:
+    image: movewiz-frontend:local
     build:
       context: .
       args:

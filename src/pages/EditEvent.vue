@@ -26,7 +26,6 @@ const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
 
-//const picker = ref<InstanceType<typeof import('./LocationPicker.vue')>['default'] | null>(null)
 const picker = ref(null)
 const first_name = ref('')
 const last_name = ref('')
@@ -139,7 +138,6 @@ function goHome() {
   </div>
   <div class="page edit-event">
     <h1>{{ $t('editEvent.title') }}</h1>
-    <p class="edit-event__subtitle">{{ $t('editEvent.subtitle') }}</p>
 
     <div v-if="isLoading" class="edit-event__loading">
       <p>{{ $t('editEvent.loading') }}</p>
@@ -157,103 +155,113 @@ function goHome() {
         <Spinner :size="48" />
       </div>
       <form @submit.prevent="submitForm" class="edit-event__form" :class="{ 'edit-event__form--disabled': isSubmitting }">
-      <Card variant="classic" :title="$t('createEvent.contact.title')">
-        <div class="edit-event__row">
-          <div class="edit-event__field">
-            <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
-            <input id="first-name" type="text" v-model="first_name" required />
-          </div>
+        <div class="edit-event__cards">
+          <Card variant="borderless" class="edit-event__form-card">
+            <div class="edit-event__row">
+              <div class="edit-event__field">
+                <label for="event-name">{{ $t('createEvent.details.eventName') }} <span class="edit-event__required">*</span></label>
+                <input id="event-name" type="text" v-model="event_name" required />
+              </div>
 
-          <div class="edit-event__field">
-            <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
-            <input id="last-name" type="text" v-model="last_name" required />
-          </div>
+              <div class="edit-event__field">
+                <label for="date">{{ $t('createEvent.details.date') }} <span class="edit-event__required">*</span></label>
+                <input id="date" type="date" v-model="date" required />
+              </div>
+
+              <div class="edit-event__field">
+                <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
+                <input id="first-name" type="text" v-model="first_name" />
+              </div>
+
+              <div class="edit-event__field">
+                <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
+                <input id="last-name" type="text" v-model="last_name" />
+              </div>
+
+              <div class="edit-event__field">
+                <label for="email">{{ $t('createEvent.contact.email') }}</label>
+                <input id="email" type="email" v-model="email" />
+              </div>
+
+              <div class="edit-event__field">
+                <label for="comments">{{ $t('createEvent.details.comments') }}</label>
+                <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
+              </div>
+            </div>
+          </Card>
+
+          <Card variant="borderless" class="edit-event__form-card">
+            <LocationPicker
+              ref="picker"
+              :label="t('common.address.label')"
+              :placeholder="t('common.address.placeholder')"
+              :required="true"
+              :height="'350px'"
+              @location-selected="onLocationSelected"
+            />
+
+            <input type="hidden" name="lat" :value="lat" />
+            <input type="hidden" name="long" :value="long_" />
+          </Card>
+
+          <Card variant="borderless" class="edit-event__form-card">
+          </Card>
         </div>
 
-        <div class="edit-event__field">
-          <label for="email">{{ $t('createEvent.contact.email') }}</label>
-          <input id="email" type="email" v-model="email" required />
+        <div class="edit-event__actions">
+          <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('editEvent.submit') }}</button>
         </div>
-      </Card>
-
-      <Card variant="borderless" :title="$t('createEvent.details.title')">
-        <div class="edit-event__field">
-          <label for="event-name">{{ $t('createEvent.details.eventName') }}</label>
-          <input id="event-name" type="text" v-model="event_name" required />
-        </div>
-
-        <div class="edit-event__field">
-          <label for="date">{{ $t('createEvent.details.date') }}</label>
-          <input id="date" type="date" v-model="date" required />
-        </div>
-
-        <LocationPicker
-          ref="picker"
-          :label="t('common.address.label')"
-          :placeholder="t('common.address.placeholder')"
-          :required="true"
-          @location-selected="onLocationSelected"
-        />
-
-        <div class="edit-event__field">
-          <label for="comments">{{ $t('createEvent.details.comments') }}</label>
-          <textarea id="comments" v-model="comments" rows="3" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
-        </div>
-      </Card>
-
-      <div class="edit-event__actions">
-        <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('editEvent.submit') }}</button>
-      </div>
-        </form>
-      </div>
+      </form>
     </div>
+  </div>
 </template>
 
 <style scoped>
-/* .page class handles layout */
-
 .edit-event h1 {
   color: var(--color-primary-green);
   margin-bottom: 0.25rem;
 }
 
-.edit-event__subtitle {
-  color: var(--color-text-medium);
-  margin-bottom: 2rem;
-  font-size: 1rem;
+.edit-event__required {
+  color: #e53935;
+}
+
+.edit-event__form-card :deep(.address-input label)::after {
+  content: ' *';
+  color: #e53935;
 }
 
 .edit-event__form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.edit-event__loading {
-  text-align: center;
-  padding: 2rem;
-  color: var(--color-text-medium);
+.edit-event__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
-.edit-event__error {
-  margin-top: 1.5rem;
-}
-
-.edit-event__btn {
-  margin-top: 1rem;
+.edit-event__form-card {
+  flex: 1;
+  min-width: 500px;
+  overflow: visible;
+  margin-top: 0;
 }
 
 .edit-event__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .edit-event__field {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .edit-event__field:last-child {
@@ -280,9 +288,15 @@ function goHome() {
   transform: scale(1.01);
 }
 
+.edit-event__form input,
+.edit-event__form textarea {
+  padding: 0.625rem 1rem;
+}
+
 .edit-event__actions {
   text-align: center;
   padding-top: 0.5rem;
+  animation: fadeIn 0.6s ease-out 0.2s both;
 }
 
 .edit-event__form-wrapper {
@@ -307,11 +321,60 @@ function goHome() {
 
 .edit-event__actions .btn-primary {
   min-width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.edit-event__actions .btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.edit-event__actions .btn-primary:hover::after {
+  transform: translateX(100%);
+}
+
+.edit-event__loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-medium);
+}
+
+.edit-event__error {
+  margin-top: 1.5rem;
+}
+
+.edit-event__btn {
+  margin-top: 1rem;
 }
 
 @media (max-width: 600px) {
   .edit-event__row {
     grid-template-columns: 1fr;
+  }
+
+  .edit-event__form-card {
+    min-width: 100%;
+  }
+
+  .edit-event__actions .btn-primary {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

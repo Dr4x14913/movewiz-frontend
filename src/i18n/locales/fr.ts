@@ -89,7 +89,6 @@ export default {
   },
   editEvent: {
     title: 'Modifier l\'événement',
-    subtitle: 'Mettez à jour les détails ci-dessous pour modifier votre événement.',
     loading: 'Chargement des détails...',
     notFound: {
       title: 'Événement introuvable',

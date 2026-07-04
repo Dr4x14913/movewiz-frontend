@@ -89,7 +89,6 @@ export default {
   },
   editEvent: {
     title: 'Edit Event',
-    subtitle: 'Update the details below to modify your event.',
     loading: 'Loading event details...',
     notFound: {
       title: 'Event Not Found',
