@@ -19,7 +19,6 @@ export default {
   },
   createEvent: {
     title: 'Créer un événement',
-    subtitle: 'Remplissez les détails ci-dessous pour créer votre covoiturage.',
     popup: {
       successTitle: 'Événement créé avec succès !',
       successDesc: 'Vous pouvez maintenant accéder à votre événement :',
@@ -30,22 +29,21 @@ export default {
       tooManyRequests: 'Trop de requêtes. Veuillez patienter un moment avant de réessayer.',
     },
     contact: {
-      title: 'Informations de contact',
       firstName: 'Prénom',
       lastName: 'Nom',
       email: 'E-mail',
     },
     details: {
-      title: 'Détails de l\'événement',
       eventName: 'Nom de l\'événement',
       date: 'Date',
-      comments: 'Commentaires',
-      commentsPlaceholder: 'Donnez les détails de l\'événement...',
+      comments: 'Précisions',
+      commentsPlaceholder: 'Quelques détails sur l\'événement...',
     },
     verification: {
       title: 'Vérification',
     },
     submit: 'Créer l\'événement',
+    required: '* Champs obligatoires',
   },
   eventPage: {
     title: 'Événement',

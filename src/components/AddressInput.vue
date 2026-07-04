@@ -128,7 +128,6 @@ defineExpose({ closeSuggestions })
 .address-input {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
   margin-bottom: 1rem;
 }
 

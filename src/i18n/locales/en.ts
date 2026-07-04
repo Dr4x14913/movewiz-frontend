@@ -19,7 +19,6 @@ export default {
   },
   createEvent: {
     title: 'Create an Event',
-    subtitle: 'Fill in the details below to create your carpool event',
     popup: {
       successTitle: 'Event created successfully!',
       successDesc: 'You can now access your event:',
@@ -30,22 +29,21 @@ export default {
       tooManyRequests: 'Too many requests. Please wait a moment before trying again.',
     },
     contact: {
-      title: 'Contact Information',
       firstName: 'First Name',
       lastName: 'Last Name',
       email: 'Email',
     },
     details: {
-      title: 'Event Details',
       eventName: 'Event Name',
       date: 'Date',
-      comments: 'Comments',
+      comments: 'Details',
       commentsPlaceholder: 'Tell the world what is this event about...',
     },
     verification: {
       title: 'Verification',
     },
     submit: 'Create Event',
+    required: '* Required fields',
   },
   eventPage: {
     title: 'Event',
