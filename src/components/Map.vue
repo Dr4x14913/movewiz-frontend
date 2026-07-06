@@ -1,6 +1,20 @@
 <template>
-  <div class="map-container">
-    <div ref="mapContainer" class="map-container__map"></div>
+  <div ref="mapContainer" class="map-container">
+    <div class="map-container__map-inner"></div>
+    <button
+      class="map-container__fullscreen-btn"
+      :title="isFullscreen ? t('common.map.fullscreenExit') : t('common.map.fullscreenEnter')"
+      @click="toggleFullscreen"
+    >
+      <!-- Expand icon (not fullscreen) -->
+      <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      </svg>
+      <!-- Compress icon (fullscreen) -->
+      <svg v-else xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+      </svg>
+    </button>
   </div>
 </template>
 
@@ -45,6 +59,7 @@ const emit = defineEmits<{
 }>()
 
 const mapContainer = ref<HTMLDivElement | null>(null)
+const isFullscreen = ref(false)
 let map: L.Map | null = null
 let marker: L.Marker | null = null
 let additionalMarkersLayer: L.LayerGroup | null = null
@@ -191,7 +206,10 @@ function onMapClick(e: L.LeafletMouseEvent) {
 function initializeMap() {
   if (!mapContainer.value) return
 
-  map = L.map(mapContainer.value).setView([props.lat, props.lng], props.zoom)
+  const innerEl = mapContainer.value.querySelector('.map-container__map-inner') as HTMLDivElement
+  if (!innerEl) return
+
+  map = L.map(innerEl).setView([props.lat, props.lng], props.zoom)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -221,12 +239,38 @@ function cleanupMap() {
   }
 }
 
+function handleFullscreenChange() {
+  const wasFullscreen = isFullscreen.value
+  isFullscreen.value = !!document.fullscreenElement
+  // Only trigger invalidateSize if the state actually changed
+  if (wasFullscreen !== isFullscreen.value && map) {
+    // Small delay to let the DOM finish transitioning
+    setTimeout(() => map?.invalidateSize(), 100)
+  }
+}
+
+function toggleFullscreen() {
+  if (!mapContainer.value) return
+
+  if (!document.fullscreenElement) {
+    mapContainer.value.requestFullscreen().catch((err) => {
+      console.error('Failed to enter fullscreen:', err)
+    })
+  } else {
+    document.exitFullscreen().catch((err) => {
+      console.error('Failed to exit fullscreen:', err)
+    })
+  }
+}
+
 onMounted(() => {
   initializeMap()
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
 })
 
 onUnmounted(() => {
   cleanupMap()
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
 })
 
 watch(props, (new_val) => {
@@ -239,15 +283,75 @@ watch(props, (new_val) => {
 
 <style scoped>
 .map-container {
+  position: relative;
   margin-top: 1rem;
   border: 2px solid var(--color-secondary-green);
   border-radius: 16px;
   overflow: hidden;
 }
 
-.map-container__map {
+.map-container__map-inner {
   height: v-bind(height);
   width: 100%;
+}
+
+.map-container__fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background-color: var(--color-bg-cream);
+  border: 1px solid var(--color-secondary-green);
+  border-radius: 8px;
+  color: var(--color-text-dark);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.map-container__fullscreen-btn:hover {
+  background-color: var(--color-primary-green);
+  color: #ffffff;
+  border-color: var(--color-primary-green);
+  box-shadow: 0 4px 10px rgba(139, 195, 74, 0.4);
+}
+
+.map-container__fullscreen-btn:active {
+  transform: scale(0.95);
+}
+
+/* Fullscreen mode: full viewport */
+.map-container:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.map-container:fullscreen .map-container__map-inner {
+  height: 100%;
+}
+
+/* Firefox fullscreen vendor prefix */
+.map-container:-moz-full-screen {
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.map-container:-moz-full-screen .map-container__map-inner {
+  height: 100%;
 }
 </style>
 

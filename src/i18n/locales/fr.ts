@@ -180,5 +180,9 @@ export default {
       placeholder: 'Entrez le captcha',
       refresh: 'Rafraîchir',
     },
+    map: {
+      fullscreenEnter: 'Agrandir la carte en plein écran',
+      fullscreenExit: 'Quitter le plein écran',
+    },
   },
 }

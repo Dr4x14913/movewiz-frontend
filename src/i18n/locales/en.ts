@@ -179,5 +179,9 @@ export default {
       placeholder: 'Enter captcha',
       refresh: 'Refresh',
     },
+    map: {
+      fullscreenEnter: 'Expand map to fullscreen',
+      fullscreenExit: 'Exit fullscreen',
+    },
   },
 }
