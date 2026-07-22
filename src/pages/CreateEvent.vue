@@ -5,7 +5,7 @@ import Card from '../components/Card.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import CaptchaInput from '../components/CaptchaInput.vue'
 import PopUp from '../components/PopUp.vue'
-import Spinner from '../components/Spinner.vue'
+import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
 
 enum FormResponse {
@@ -24,7 +24,6 @@ const lat = ref(46.603354)
 const long_ = ref(1.888334)
 const comments = ref('')
 const captcha = ref()
-const displayMainMarker = ref(false)
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const captcha_refresh_count = ref(0)
@@ -114,80 +113,71 @@ function onPopupClose() {
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="create-event__required-legend">{{ $t('createEvent.required') }}</p>
 
-    <div class="create-event__form-wrapper">
-      <div v-if="isSubmitting" class="create-event__spinner-overlay">
-        <Spinner :size="48" />
-      </div>
-      <form @submit.prevent="submitForm" class="create-event__form" :class="{ 'create-event__form--disabled': isSubmitting }">
-        <div class="create-event__cards">
-          <Card variant="borderless" class="create-event__form-card">
-            <div class="create-event__row">
-              <div class="create-event__field">
-                <label for="event-name">{{ $t('createEvent.details.eventName') }} <span class="create-event__required">*</span></label>
-                <input id="event-name" type="text" v-model="event_name" required />
-              </div>
-
-              <div class="create-event__field">
-                <label for="date">{{ $t('createEvent.details.date') }} <span class="create-event__required">*</span></label>
-                <input id="date" type="date" v-model="date" required />
-              </div>
-
-              <div class="create-event__field">
-                <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
-                <input id="first-name" type="text" v-model="first_name" />
-              </div>
-
-              <div class="create-event__field">
-                <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
-                <input id="last-name" type="text" v-model="last_name" />
-              </div>
-
-              <div class="create-event__field">
-                <label for="email">{{ $t('createEvent.contact.email') }}</label>
-                <input id="email" type="email" v-model="email"/>
-              </div>
-
-              <div class="create-event__field">
-                <label for="comments">{{ $t('createEvent.details.comments') }}</label>
-                <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
-              </div>
-
-              <div class="create-event__field">
-                <label>{{ $t('common.captcha.title') }} <span class="create-event__required">*</span></label>
-                <CaptchaInput
-                  ref="captcha"
-                  :title="t('common.captcha.title')"
-                  :placeholder="t('common.captcha.placeholder')"
-                  :refreshCount="captcha_refresh_count"
-                />
-              </div>
+    <FormLayout :submitting="isSubmitting" @submit="submitForm">
+      <div class="create-event__cards">
+        <Card variant="borderless" class="create-event__form-card">
+          <div class="create-event__row">
+            <div class="create-event__field">
+              <label for="event-name">{{ $t('createEvent.details.eventName') }} <span class="create-event__required">*</span></label>
+              <input id="event-name" type="text" v-model="event_name" required />
             </div>
-          </Card>
 
-          <Card variant="borderless" class="create-event__form-card">
-            <LocationPicker
-              :label="t('common.address.label')"
-              :placeholder="t('common.address.placeholder')"
-              :required=true
-              :height="'350px'"
-              @location-selected="onLocationSelected"
-            />
+            <div class="create-event__field">
+              <label for="date">{{ $t('createEvent.details.date') }} <span class="create-event__required">*</span></label>
+              <input id="date" type="date" v-model="date" required />
+            </div>
 
-            <input type="hidden" name="lat" :value="lat" />
-            <input type="hidden" name="long" :value="long_" />
+            <div class="create-event__field">
+              <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
+              <input id="first-name" type="text" v-model="first_name" />
+            </div>
 
-          </Card>
+            <div class="create-event__field">
+              <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
+              <input id="last-name" type="text" v-model="last_name" />
+            </div>
 
-          <Card variant="borderless" class="create-event__form-card">
-          </Card>
-        </div>
+            <div class="create-event__field">
+              <label for="email">{{ $t('createEvent.contact.email') }}</label>
+              <input id="email" type="email" v-model="email"/>
+            </div>
 
-        <div class="create-event__actions">
-          <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('createEvent.submit') }}</button>
-        </div>
-      </form>
+            <div class="create-event__field">
+              <label for="comments">{{ $t('createEvent.details.comments') }}</label>
+              <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
+            </div>
+
+            <div class="create-event__field">
+              <label>{{ $t('common.captcha.title') }} <span class="create-event__required">*</span></label>
+              <CaptchaInput
+                ref="captcha"
+                :title="t('common.captcha.title')"
+                :placeholder="t('common.captcha.placeholder')"
+                :refreshCount="captcha_refresh_count"
+              />
+            </div>
+          </div>
+        </Card>
+
+        <Card variant="borderless" class="create-event__form-card">
+          <LocationPicker
+            :label="t('common.address.label')"
+            :placeholder="t('common.address.placeholder')"
+            :required=true
+            :height="'350px'"
+            @location-selected="onLocationSelected"
+          />
+
+          <input type="hidden" name="lat" :value="lat" />
+          <input type="hidden" name="long" :value="long_" />
+
+        </Card>
+
+        <Card variant="borderless" class="create-event__form-card">
+        </Card>
       </div>
-    </div>
+    </FormLayout>
+  </div>
 </template>
 
 <style scoped>
@@ -209,18 +199,6 @@ function onPopupClose() {
 .create-event__form-card :deep(.address-input label)::after {
   content: ' *';
   color: #e53935;
-}
-
-.create-event__subtitle {
-  color: var(--color-text-medium);
-  margin-bottom: 2rem;
-  font-size: 1rem;
-}
-
-.create-event__form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 .create-event__cards {
@@ -280,51 +258,6 @@ function onPopupClose() {
   padding: 0.625rem 1rem;
 }
 
-.create-event__actions {
-  text-align: center;
-  padding-top: 0.5rem;
-  animation: fadeIn 0.6s ease-out 0.2s both;
-}
-
-.create-event__form-wrapper {
-  position: relative;
-}
-
-.create-event__spinner-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(253, 252, 245, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  border-radius: inherit;
-}
-
-.create-event__form--disabled {
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.create-event__actions .btn-primary {
-  min-width: 200px;
-  position: relative;
-  overflow: hidden;
-}
-
-.create-event__actions .btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
-  transform: translateX(-100%);
-  transition: transform 0.5s ease;
-}
-
-.create-event__actions .btn-primary:hover::after {
-  transform: translateX(100%);
-}
-
 @media (max-width: 600px) {
   .create-event__row {
     grid-template-columns: 1fr;
@@ -332,22 +265,6 @@ function onPopupClose() {
 
   .create-event__form-card {
     min-width: 100%;
-  }
-
-  .create-event__actions .btn-primary {
-    min-width: auto;
-    width: 100%;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>

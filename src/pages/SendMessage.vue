@@ -4,7 +4,7 @@ import { api } from '../api'
 import Card from '../components/Card.vue'
 import CaptchaInput from '../components/CaptchaInput.vue'
 import PopUp from '../components/PopUp.vue'
-import Spinner from '../components/Spinner.vue'
+import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router'
 
@@ -86,38 +86,35 @@ function goBack() {
     <h1>{{ $t('sendMessage.title') }}</h1>
     <p class="send-message__subtitle">{{ $t('sendMessage.subtitle') }}</p>
 
-    <div class="send-message__form-wrapper">
-      <div v-if="isSubmitting" class="send-message__spinner-overlay">
-        <Spinner :size="48" />
-      </div>
-      <form @submit.prevent="submitForm" class="send-message__form" :class="{ 'send-message__form--disabled': isSubmitting }">
-        <Card variant="classic" :title="$t('sendMessage.title')">
-          <div class="send-message__field">
-            <label for="sender-email">{{ $t('sendMessage.senderEmail') }}</label>
-            <input id="sender-email" type="email" v-model="senderEmail" required />
-          </div>
+    <FormLayout :submitting="isSubmitting" @submit="submitForm">
+      <Card variant="classic" :title="$t('sendMessage.title')">
+        <div class="send-message__field">
+          <label for="sender-email">{{ $t('sendMessage.senderEmail') }}</label>
+          <input id="sender-email" type="email" v-model="senderEmail" required />
+        </div>
 
-          <div class="send-message__field">
-            <label for="message">{{ $t('sendMessage.message') }}</label>
-            <textarea id="message" v-model="message" rows="5" required :placeholder="$t('sendMessage.messagePlaceholder')"></textarea>
-          </div>
-        </Card>
+        <div class="send-message__field">
+          <label for="message">{{ $t('sendMessage.message') }}</label>
+          <textarea id="message" v-model="message" rows="5" required :placeholder="$t('sendMessage.messagePlaceholder')"></textarea>
+        </div>
+      </Card>
 
-        <Card :title="$t('common.captcha.title')">
-          <CaptchaInput
-            ref="captcha"
-            :title="t('common.captcha.title')"
-            :placeholder="t('common.captcha.placeholder')"
-            :refreshCount="captcha_refresh_count"
-          />
-        </Card>
+      <Card :title="$t('common.captcha.title')">
+        <CaptchaInput
+          ref="captcha"
+          :title="t('common.captcha.title')"
+          :placeholder="t('common.captcha.placeholder')"
+          :refreshCount="captcha_refresh_count"
+        />
+      </Card>
 
+      <template #actions>
         <div class="send-message__actions">
           <button type="button" class="btn-secondary" @click="goBack()">{{ $t('common.back') }}</button>
           <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('sendMessage.submit') }}</button>
         </div>
-      </form>
-    </div>
+      </template>
+    </FormLayout>
   </div>
 </template>
 
@@ -131,12 +128,6 @@ function goBack() {
   color: var(--color-text-medium);
   margin-bottom: 2rem;
   font-size: 1rem;
-}
-
-.send-message__form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
 }
 
 .send-message__field {
@@ -169,30 +160,10 @@ function goBack() {
 }
 
 .send-message__actions {
-  display: flex;
-  justify-content: center;
+  text-align: center;
   gap: 1rem;
-  padding-top: 0.5rem;
-}
-
-.send-message__form-wrapper {
-  position: relative;
-}
-
-.send-message__spinner-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(253, 252, 245, 0.8);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 10;
-  border-radius: inherit;
-}
-
-.send-message__form--disabled {
-  pointer-events: none;
-  opacity: 0.5;
 }
 
 .send-message__actions .btn-primary {

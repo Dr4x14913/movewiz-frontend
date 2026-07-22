@@ -4,7 +4,7 @@ import { api } from '../api'
 import Card from '../components/Card.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import PopUp from '../components/PopUp.vue'
-import Spinner from '../components/Spinner.vue'
+import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router'
 
@@ -168,75 +168,66 @@ function goHome() {
       </Card>
     </div>
 
-    <div v-else class="edit-participant__form-wrapper">
-      <div v-if="isSubmitting" class="edit-participant__spinner-overlay">
-        <Spinner :size="48" />
-      </div>
-      <form @submit.prevent="submitForm" class="edit-participant__form" :class="{ 'edit-participant__form--disabled': isSubmitting }">
-        <Card variant="classic" :title="$t('createEvent.contact.title')">
-          <div class="edit-participant__row">
-            <div class="edit-participant__field">
-              <label for="edit-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
-              <input id="edit-first-name" type="text" v-model="firstName" required />
-            </div>
-
-            <div class="edit-participant__field">
-              <label for="edit-last-name">{{ $t('registerParticipant.contact.lastName') }}</label>
-              <input id="edit-last-name" type="text" v-model="lastName" required />
-            </div>
+    <FormLayout v-else :submitting="isSubmitting" @submit="submitForm">
+      <Card variant="classic" :title="$t('createEvent.contact.title')">
+        <div class="edit-participant__row">
+          <div class="edit-participant__field">
+            <label for="edit-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
+            <input id="edit-first-name" type="text" v-model="firstName" required />
           </div>
 
           <div class="edit-participant__field">
-            <label for="edit-email">{{ $t('registerParticipant.contact.email') }}</label>
-            <input id="edit-email" type="email" v-model="email" disabled />
+            <label for="edit-last-name">{{ $t('registerParticipant.contact.lastName') }}</label>
+            <input id="edit-last-name" type="text" v-model="lastName" required />
           </div>
-        </Card>
-
-        <Card variant="borderless" :title="$t('registerParticipant.details.title')">
-          <div class="edit-participant__field">
-            <label for="edit-mode">{{ $t('registerParticipant.details.mode') }}</label>
-            <select id="edit-mode" v-model="mode" required>
-              <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
-              <option value="passenger">{{ $t('registerParticipant.details.passenger') }}</option>
-            </select>
-          </div>
-
-          <div class="edit-participant__field">
-            <label for="edit-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
-            <input id="edit-phone" type="tel" v-model="phoneNumber" required />
-          </div>
-
-          <div class="edit-participant__field">
-            <label for="edit-comments">{{ $t('registerParticipant.details.comments') }}</label>
-            <textarea id="edit-comments" v-model="comments" rows="3" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
-          </div>
-
-          <LocationPicker
-            ref="picker"
-            :label="t('registerParticipant.details.location')"
-            :placeholder="t('common.address.placeholder')"
-            :mainMarkerLabel="t('registerParticipant.markerLabel')"
-            @location-selected="onLocationSelected"
-          />
-
-          <div class="edit-participant__checkboxes">
-            <label class="edit-participant__checkbox">
-              <input type="checkbox" v-model="hideEmail" />
-              {{ $t('registerParticipant.details.hideEmail') }}
-            </label>
-
-            <label class="edit-participant__checkbox">
-              <input type="checkbox" v-model="notifyMe" />
-              {{ $t('registerParticipant.details.notifyMe') }}
-            </label>
-          </div>
-        </Card>
-
-        <div class="edit-participant__actions">
-          <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('editParticipant.submit') }}</button>
         </div>
-      </form>
-    </div>
+
+        <div class="edit-participant__field">
+          <label for="edit-email">{{ $t('registerParticipant.contact.email') }}</label>
+          <input id="edit-email" type="email" v-model="email" disabled />
+        </div>
+      </Card>
+
+      <Card variant="borderless" :title="$t('registerParticipant.details.title')">
+        <div class="edit-participant__field">
+          <label for="edit-mode">{{ $t('registerParticipant.details.mode') }}</label>
+          <select id="edit-mode" v-model="mode" required>
+            <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
+            <option value="passenger">{{ $t('registerParticipant.details.passenger') }}</option>
+          </select>
+        </div>
+
+        <div class="edit-participant__field">
+          <label for="edit-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
+          <input id="edit-phone" type="tel" v-model="phoneNumber" required />
+        </div>
+
+        <div class="edit-participant__field">
+          <label for="edit-comments">{{ $t('registerParticipant.details.comments') }}</label>
+          <textarea id="edit-comments" v-model="comments" rows="3" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
+        </div>
+
+        <LocationPicker
+          ref="picker"
+          :label="t('registerParticipant.details.location')"
+          :placeholder="t('common.address.placeholder')"
+          :mainMarkerLabel="t('registerParticipant.markerLabel')"
+          @location-selected="onLocationSelected"
+        />
+
+        <div class="edit-participant__checkboxes">
+          <label class="edit-participant__checkbox">
+            <input type="checkbox" v-model="hideEmail" />
+            {{ $t('registerParticipant.details.hideEmail') }}
+          </label>
+
+          <label class="edit-participant__checkbox">
+            <input type="checkbox" v-model="notifyMe" />
+            {{ $t('registerParticipant.details.notifyMe') }}
+          </label>
+        </div>
+      </Card>
+    </FormLayout>
   </div>
 </template>
 
@@ -250,12 +241,6 @@ function goHome() {
   color: var(--color-text-medium);
   margin-bottom: 2rem;
   font-size: 1rem;
-}
-
-.edit-participant__form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
 }
 
 .edit-participant__loading {
@@ -326,35 +311,6 @@ function goHome() {
   font-size: 0.9rem;
   color: var(--color-text-dark);
   cursor: pointer;
-}
-
-.edit-participant__actions {
-  text-align: center;
-  padding-top: 0.5rem;
-}
-
-.edit-participant__form-wrapper {
-  position: relative;
-}
-
-.edit-participant__spinner-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(253, 252, 245, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  border-radius: inherit;
-}
-
-.edit-participant__form--disabled {
-  pointer-events: none;
-  opacity: 0.5;
-}
-
-.edit-participant__actions .btn-primary {
-  min-width: 200px;
 }
 
 @media (max-width: 600px) {
