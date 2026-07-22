@@ -5,6 +5,7 @@ import Card from './Card.vue'
 import LocationPicker from './LocationPicker.vue'
 import PopUp from './PopUp.vue'
 import Spinner from './Spinner.vue'
+import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
 
 enum FormResponse {
@@ -128,53 +129,53 @@ function onPopupClose() {
     <PopUp :title="t('registerParticipant.popup.successTitle')" :message="form_resp_msg" type='success' @close='onPopupClose' />
   </div>
   <div class="register-participant">
-    <Card collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
-      <div v-if="isSubmitting" class="register-participant__spinner-overlay">
-        <Spinner :size="48" />
-      </div>
-      <form @submit.prevent="submitForm" class="register-participant__form" :class="{ 'register-participant__form--disabled': isSubmitting }">
+    <p class="form__required-legend">{{ $t('registerParticipant.required') }}</p>
+
+    <FormLayout :submitting="isSubmitting" @submit="submitForm">
+      <Card variant="borderless">
         <div class="register-participant__row">
           <div class="register-participant__field">
-            <label for="reg-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
+            <label for="reg-first-name">{{ $t('registerParticipant.contact.firstName') }} <span class="form__required">*</span></label>
             <input id="reg-first-name" type="text" v-model="firstName" required />
           </div>
 
           <div class="register-participant__field">
-            <label for="reg-last-name">{{ $t('registerParticipant.contact.lastName') }}</label>
+            <label for="reg-last-name">{{ $t('registerParticipant.contact.lastName') }} <span class="form__required">*</span></label>
             <input id="reg-last-name" type="text" v-model="lastName" required />
           </div>
+
+          <div class="register-participant__field">
+            <label for="reg-email">{{ $t('registerParticipant.contact.email') }} <span class="form__required">*</span></label>
+            <input id="reg-email" type="email" v-model="email" required />
+          </div>
+
+          <div class="register-participant__field">
+            <label for="reg-mode">{{ $t('registerParticipant.details.mode') }} <span class="form__required">*</span></label>
+            <select id="reg-mode" v-model="mode" required>
+              <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
+              <option value="passenger">{{ $t('registerParticipant.details.passenger') }}</option>
+            </select>
+          </div>
+
+          <div class="register-participant__field">
+            <label for="reg-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
+            <input id="reg-phone" type="tel" v-model="phoneNumber"/>
+          </div>
+
+          <div class="register-participant__field">
+            <label for="reg-comments">{{ $t('registerParticipant.details.comments') }}</label>
+            <textarea id="reg-comments" v-model="comments" rows="4" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
+          </div>
         </div>
+      </Card>
 
-        <div class="register-participant__field">
-          <label for="reg-email">{{ $t('registerParticipant.contact.email') }}</label>
-          <input id="reg-email" type="email" v-model="email" required />
-        </div>
-
-        <h3 class="register-participant__section-title">{{ $t('registerParticipant.details.title') }}</h3>
-
-        <div class="register-participant__field">
-          <label for="reg-mode">{{ $t('registerParticipant.details.mode') }}</label>
-          <select id="reg-mode" v-model="mode" required>
-            <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
-            <option value="passenger">{{ $t('registerParticipant.details.passenger') }}</option>
-          </select>
-        </div>
-
-        <div class="register-participant__field">
-          <label for="reg-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
-          <input id="reg-phone" type="tel" v-model="phoneNumber" required />
-        </div>
-
-        <div class="register-participant__field">
-          <label for="reg-comments">{{ $t('registerParticipant.details.comments') }}</label>
-          <textarea id="reg-comments" v-model="comments" rows="3" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
-        </div>
-
+      <Card variant="borderless">
         <LocationPicker
           ref="locationPickerRef"
           required
           :label="t('registerParticipant.details.location')"
           :placeholder="t('common.address.placeholder')"
+          :height="'350px'"
           :mainMarkerLabel="t('registerParticipant.markerLabel')"
           @location-selected="onLocationSelected"
         />
@@ -193,43 +194,25 @@ function onPopupClose() {
             {{ $t('registerParticipant.details.notifyMe') }}
           </label>
         </div>
-
-        <div class="register-participant__actions">
-          <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('registerParticipant.submit') }}</button>
-        </div>
-      </form>
-    </Card>
+      </Card>
+    </FormLayout>
   </div>
 </template>
 
 <style scoped>
 /* .page class handles layout */
 
-.register-participant__section-title {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-primary-orange);
-  color: var(--color-text-dark);
-}
-
-.register-participant__form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
 .register-participant__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .register-participant__field {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .register-participant__field:last-child {
@@ -241,12 +224,13 @@ function onPopupClose() {
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--color-text-dark);
+  transition: color 0.2s ease;
 }
 
 .register-participant__field input,
 .register-participant__field textarea,
 .register-participant__field select {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 .register-participant__field input:focus,
@@ -254,6 +238,7 @@ function onPopupClose() {
 .register-participant__field select:focus {
   border-color: var(--color-primary-green);
   box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
+  transform: scale(1.01);
 }
 
 .register-participant__checkboxes {
@@ -273,15 +258,6 @@ function onPopupClose() {
   cursor: pointer;
 }
 
-.register-participant__actions {
-  text-align: center;
-  padding-top: 0.5rem;
-}
-
-.register-participant__actions .btn-primary {
-  min-width: 200px;
-}
-
 .register-participant__spinner-overlay {
   position: absolute;
   inset: 0;
@@ -291,11 +267,6 @@ function onPopupClose() {
   justify-content: center;
   z-index: 10;
   border-radius: inherit;
-}
-
-.register-participant__form--disabled {
-  pointer-events: none;
-  opacity: 0.5;
 }
 
 @media (max-width: 600px) {

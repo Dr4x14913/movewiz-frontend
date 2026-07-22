@@ -6,6 +6,7 @@ import { api } from '../api'
 import Card from '../components/Card.vue'
 import Map from '../components/Map.vue'
 import RegisterParticipant from '../components/RegisterParticipant.vue'
+import FormLayout from '../components/FormLayout.vue'
 import ParticipantTable from '../components/ParticipantTable.vue'
 
 const { locale, t } = useI18n()
@@ -165,68 +166,72 @@ function formatDate(dateStr: string): string {
       </form>
     </Card>
 
-    <div v-else class="event-page__content">
-      <div v-if="isLoading" class="event-page__loading">
-        <p>{{ $t('eventPage.loading') }}</p>
-      </div>
-
-      <Card v-else-if="isErrored" :title="$t('eventPage.notFound.title')">
-        <p class="text-secondary">{{ $t('eventPage.notFound.desc') }}</p>
-        <button class="btn-primary event-page__btn" @click="goHome()">{{ $t('eventPage.goHome') }}</button>
-      </Card>
-
-      <Card v-else-if="eventData" variant="borderless" :title="eventData.eventName">
-
-        <div class="event-page__field">
-          <span class="event-page__label">{{ $t('eventPage.fields.date') }}</span>
-          <span>{{ formatDate(eventData.datePicker) }}</span>
+    <div v-else>
+      <FormLayout :noSubmitBtn="true">
+        <div v-if="isLoading" class="event-page__loading">
+          <p>{{ $t('eventPage.loading') }}</p>
         </div>
 
-        <div class="event-page__field">
-          <span class="event-page__label">{{ $t('eventPage.fields.contact') }}</span>
-          <span>{{ eventData.firstName }} {{ eventData.lastName }}</span>
-        </div>
+        <Card v-else-if="isErrored" :title="$t('eventPage.notFound.title')">
+          <p class="text-secondary">{{ $t('eventPage.notFound.desc') }}</p>
+          <button class="btn-primary event-page__btn" @click="goHome()">{{ $t('eventPage.goHome') }}</button>
+        </Card>
 
-        <div class="event-page__field">
-          <span class="event-page__label">{{ $t('eventPage.fields.email') }}</span>
-          <span>{{ eventData.email }}</span>
-        </div>
+        <Card v-else-if="eventData" variant="borderless" :title="eventData.eventName">
 
-        <div class="event-page__field">
-          <span class="event-page__label">{{ $t('eventPage.fields.address') }}</span>
-          <span>{{ eventData.address }}</span>
-        </div>
+          <div class="event-page__field">
+            <span class="event-page__label">{{ $t('eventPage.fields.date') }}</span>
+            <span>{{ formatDate(eventData.datePicker) }}</span>
+          </div>
 
-        <div v-if="eventData.comments" class="event-page__field">
-          <span class="event-page__label">{{ $t('eventPage.fields.comments') }}</span>
-          <p class="event-page__comments">{{ eventData.comments }}</p>
-        </div>
+          <div class="event-page__field">
+            <span class="event-page__label">{{ $t('eventPage.fields.contact') }}</span>
+            <span>{{ eventData.firstName }} {{ eventData.lastName }}</span>
+          </div>
 
-        <Map
-          :lat="eventData.latitude"
-          :lng="eventData.longitude"
-          :zoom="10"
-          :additional-markers="participantMarkers"
-          :fit-markers="true"
-          :displayMainMarker="true"
-          :is_editable="false"
-          height="350px"
-          @marker-clicked="onParticipantClick"
+          <div class="event-page__field">
+            <span class="event-page__label">{{ $t('eventPage.fields.email') }}</span>
+            <span>{{ eventData.email }}</span>
+          </div>
+
+          <div class="event-page__field">
+            <span class="event-page__label">{{ $t('eventPage.fields.address') }}</span>
+            <span>{{ eventData.address }}</span>
+          </div>
+
+          <div v-if="eventData.comments" class="event-page__field">
+            <span class="event-page__label">{{ $t('eventPage.fields.comments') }}</span>
+            <p class="event-page__comments">{{ eventData.comments }}</p>
+          </div>
+
+          <Map
+            :lat="eventData.latitude"
+            :lng="eventData.longitude"
+            :zoom="10"
+            :additional-markers="participantMarkers"
+            :fit-markers="true"
+            :displayMainMarker="true"
+            :is_editable="false"
+            height="350px"
+            @marker-clicked="onParticipantClick"
+          />
+          <button v-if="searchText" @click="searchText = ''" class="event-page__clear">{{ $t('common.clear') }}</button>
+        </Card>
+
+        <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
+          <ParticipantTable v-model="searchText" :participants="participants" @filtered="onFiltered" />
+        </Card>
+      </FormLayout>
+
+      <Card collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
+        <RegisterParticipant
+          v-if="!isErrored && eventData"
+          :token="tokenValue"
+          :event-page-url="eventPageUrl"
+          :edit-participant-page-url="editParticipantPageUrl"
+          @registered="fetchParticipants"
         />
-        <button v-if="searchText" @click="searchText = ''" class="event-page__clear">{{ $t('common.clear') }}</button>
       </Card>
-
-      <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
-        <ParticipantTable v-model="searchText" :participants="participants" @filtered="onFiltered" />
-      </Card>
-
-      <RegisterParticipant
-        v-if="!isErrored && eventData"
-        :token="tokenValue"
-        :event-page-url="eventPageUrl"
-        :edit-participant-page-url="editParticipantPageUrl"
-        @registered="fetchParticipants"
-      />
     </div>
   </div>
 </template>

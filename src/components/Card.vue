@@ -62,6 +62,10 @@ watch(() => props.defaultExpanded, (val) => {
 
 <style scoped>
 .card {
+  flex: 1;
+  min-width: 500px;
+  overflow: visible;
+  margin-top: 0;
   position: relative;
   background-color: var(--color-card-bg);
   border: 2px solid var(--color-secondary-green);

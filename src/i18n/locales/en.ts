@@ -141,6 +141,7 @@ export default {
   registerParticipant: {
     toggle: 'Register for this event',
     submit: 'Register',
+    required: '* Required fields',
     markerLabel: 'Your address',
     contact: {
       firstName: 'First Name',

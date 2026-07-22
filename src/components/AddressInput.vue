@@ -88,7 +88,7 @@ defineExpose({ closeSuggestions })
 <template>
   <div class="address-input">
     <label :for="inputId">
-      {{ label }}
+      {{ label }}<span v-if="props.required" class="form__required"> *</span>
     </label>
     <div class="address-input__wrapper">
       <input

@@ -111,71 +111,67 @@ function onPopupClose() {
   </div>
   <div class="page create-event">
     <h1>{{ $t('createEvent.title') }}</h1>
-    <p class="create-event__required-legend">{{ $t('createEvent.required') }}</p>
+    <p class="form__required-legend">{{ $t('createEvent.required') }}</p>
 
     <FormLayout :submitting="isSubmitting" @submit="submitForm">
-      <div class="create-event__cards">
-        <Card variant="borderless" class="create-event__form-card">
-          <div class="create-event__row">
-            <div class="create-event__field">
-              <label for="event-name">{{ $t('createEvent.details.eventName') }} <span class="create-event__required">*</span></label>
-              <input id="event-name" type="text" v-model="event_name" required />
-            </div>
-
-            <div class="create-event__field">
-              <label for="date">{{ $t('createEvent.details.date') }} <span class="create-event__required">*</span></label>
-              <input id="date" type="date" v-model="date" required />
-            </div>
-
-            <div class="create-event__field">
-              <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
-              <input id="first-name" type="text" v-model="first_name" />
-            </div>
-
-            <div class="create-event__field">
-              <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
-              <input id="last-name" type="text" v-model="last_name" />
-            </div>
-
-            <div class="create-event__field">
-              <label for="email">{{ $t('createEvent.contact.email') }}</label>
-              <input id="email" type="email" v-model="email"/>
-            </div>
-
-            <div class="create-event__field">
-              <label for="comments">{{ $t('createEvent.details.comments') }}</label>
-              <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
-            </div>
-
-            <div class="create-event__field">
-              <label>{{ $t('common.captcha.title') }} <span class="create-event__required">*</span></label>
-              <CaptchaInput
-                ref="captcha"
-                :title="t('common.captcha.title')"
-                :placeholder="t('common.captcha.placeholder')"
-                :refreshCount="captcha_refresh_count"
-              />
-            </div>
+      <Card variant="borderless" class="create-event__form-card">
+        <div class="create-event__row">
+          <div class="create-event__field">
+            <label for="event-name">{{ $t('createEvent.details.eventName') }} <span class="form__required">*</span></label>
+            <input id="event-name" type="text" v-model="event_name" required />
           </div>
-        </Card>
 
-        <Card variant="borderless" class="create-event__form-card">
-          <LocationPicker
-            :label="t('common.address.label')"
-            :placeholder="t('common.address.placeholder')"
-            :required=true
-            :height="'350px'"
-            @location-selected="onLocationSelected"
-          />
+          <div class="create-event__field">
+            <label for="date">{{ $t('createEvent.details.date') }} <span class="form__required">*</span></label>
+            <input id="date" type="date" v-model="date" required />
+          </div>
 
-          <input type="hidden" name="lat" :value="lat" />
-          <input type="hidden" name="long" :value="long_" />
+          <div class="create-event__field">
+            <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
+            <input id="first-name" type="text" v-model="first_name" />
+          </div>
 
-        </Card>
+          <div class="create-event__field">
+            <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
+            <input id="last-name" type="text" v-model="last_name" />
+          </div>
 
-        <Card variant="borderless" class="create-event__form-card">
-        </Card>
-      </div>
+          <div class="create-event__field">
+            <label for="email">{{ $t('createEvent.contact.email') }}</label>
+            <input id="email" type="email" v-model="email"/>
+          </div>
+
+          <div class="create-event__field">
+            <label for="comments">{{ $t('createEvent.details.comments') }}</label>
+            <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
+          </div>
+
+          <div class="create-event__field">
+            <label>{{ $t('common.captcha.title') }} <span class="form__required">*</span></label>
+            <CaptchaInput
+              ref="captcha"
+              :title="t('common.captcha.title')"
+              :placeholder="t('common.captcha.placeholder')"
+              :refreshCount="captcha_refresh_count"
+            />
+          </div>
+        </div>
+      </Card>
+
+      <Card variant="borderless" class="create-event__form-card">
+        <LocationPicker
+          :label="t('common.address.label')"
+          :placeholder="t('common.address.placeholder')"
+          :required=true
+          :height="'350px'"
+          @location-selected="onLocationSelected"
+        />
+
+        <input type="hidden" name="lat" :value="lat" />
+        <input type="hidden" name="long" :value="long_" />
+
+      </Card>
+
     </FormLayout>
   </div>
 </template>
@@ -185,36 +181,6 @@ function onPopupClose() {
   color: var(--color-primary-green);
   margin-bottom: 0.25rem;
 }
-
-.create-event__required-legend {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.8rem;
-  color: var(--color-text-medium);
-}
-
-.create-event__required {
-  color: #e53935;
-}
-
-.create-event__form-card :deep(.address-input label)::after {
-  content: ' *';
-  color: #e53935;
-}
-
-.create-event__cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
-}
-
-.create-event__form-card {
-  flex: 1;
-  min-width: 500px;
-  overflow: visible;
-  margin-top: 0;
-}
-
 
 .create-event__row {
   display: grid;

@@ -133,6 +133,17 @@ label {
   color: var(--color-text-dark);
 }
 
+/* Required Field Legend */
+.form__required-legend {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: var(--color-text-medium);
+}
+
+.form__required {
+  color: #e53935;
+}
+
 /* Page Layout */
 .page {
   max-width: 70vw;

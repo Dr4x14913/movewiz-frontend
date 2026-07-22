@@ -1,9 +1,13 @@
 import Spinner from './Spinner.vue'
 
 <script setup lang="ts">
-defineProps<{
+const props = withDefaults(defineProps<{
   submitting?: boolean
-}>()
+  noSubmitBtn?: boolean 
+}>(), {
+  submitting: false,
+  noSubmitBtn: false
+})
 
 defineEmits<{
   submit: []
@@ -25,8 +29,8 @@ defineEmits<{
       <slot />
       <div class="form-layout__actions">
         <slot name="actions">
-          <button type="submit" class="btn-primary" :disabled="submitting">
-            Submit
+          <button v-if="!noSubmitBtn" type="submit" class="btn-primary" :disabled="submitting">
+            {{ $t('registerParticipant.submit') }}
           </button>
         </slot>
       </div>
@@ -52,8 +56,9 @@ defineEmits<{
 
 .form-layout__form {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 1rem;
+  align-items: flex-start;
 }
 
 .form-layout__form--disabled {
@@ -68,7 +73,7 @@ defineEmits<{
 }
 
 .form-layout__actions .btn-primary {
-  min-width: 200px;
+  min-width: 300px;
   position: relative;
   overflow: hidden;
 }
