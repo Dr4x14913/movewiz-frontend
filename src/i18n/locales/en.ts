@@ -175,10 +175,8 @@ export default {
       label: 'Address',
       placeholder: 'Start typing an address...',
     },
-    captcha: {
+    verification: {
       title: 'Verification',
-      placeholder: 'Enter captcha',
-      refresh: 'Refresh',
     },
     map: {
       fullscreenEnter: 'Expand map to fullscreen',

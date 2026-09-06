@@ -73,7 +73,7 @@ defineEmits<{
 }
 
 .form-layout__actions .btn-primary {
-  min-width: 300px;
+  min-width: 400px;
   position: relative;
   overflow: hidden;
 }

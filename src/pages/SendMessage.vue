@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { api } from '../api'
 import Card from '../components/Card.vue'
-import CaptchaInput from '../components/CaptchaInput.vue'
+import Turnstile from '../components/Turnstile.vue'
 import PopUp from '../components/PopUp.vue'
 import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
@@ -22,8 +22,9 @@ const props = defineProps<{
 
 const senderEmail = ref('')
 const message = ref('')
-const captcha = ref(null)
-const captcha_refresh_count = ref(0)
+const turnstileSiteKey: string = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
+const turnstileWidget = ref<InstanceType<typeof Turnstile> | null>(null)
+const turnstileToken = ref('')
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
@@ -38,13 +39,11 @@ async function submitForm() {
       },
       body: JSON.stringify({
         contactToken: props.token,
-        captchaToken: captcha.value?.token,
-        answer: captcha.value?.value,
+        turnstileToken: turnstileToken.value || turnstileWidget.value?.getResponse() || '',
         senderEmail: senderEmail.value,
         message: message.value,
       }),
     })
-    captcha_refresh_count.value++
     if (!response.ok) {
       form_resp.value = FormResponse.Error
       if (response.status === 429) {
@@ -63,6 +62,9 @@ async function submitForm() {
     }
   } finally {
     isSubmitting.value = false
+    // Turnstile tokens are single-use: reset the widget for the next attempt
+    turnstileToken.value = ''
+    turnstileWidget.value?.reset()
   }
 }
 
@@ -99,12 +101,11 @@ function goBack() {
         </div>
       </Card>
 
-      <Card :title="$t('common.captcha.title')">
-        <CaptchaInput
-          ref="captcha"
-          :title="t('common.captcha.title')"
-          :placeholder="t('common.captcha.placeholder')"
-          :refreshCount="captcha_refresh_count"
+      <Card v-if="turnstileSiteKey" :title="$t('common.verification.title')">
+        <Turnstile
+          ref="turnstileWidget"
+          :sitekey="turnstileSiteKey"
+          @token="turnstileToken = $event"
         />
       </Card>
 

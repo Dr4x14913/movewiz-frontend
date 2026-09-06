@@ -5,5 +5,6 @@ services:
       context: .
       args:
         VITE_BACKEND_BASE_URL: "${VITE_BACKEND_BASE_URL}"
+        VITE_TURNSTILE_SITE_KEY: "${VITE_TURNSTILE_SITE_KEY}"
     ports:
       - "8088:80"

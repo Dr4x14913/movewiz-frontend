@@ -176,10 +176,8 @@ export default {
       label: 'Adresse',
       placeholder: 'Commencez à taper une adresse...',
     },
-    captcha: {
+    verification: {
       title: 'Vérification',
-      placeholder: 'Entrez le captcha',
-      refresh: 'Rafraîchir',
     },
     map: {
       fullscreenEnter: 'Agrandir la carte en plein écran',

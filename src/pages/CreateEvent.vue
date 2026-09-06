@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from '../api'
 import Card from '../components/Card.vue'
 import LocationPicker from '../components/LocationPicker.vue'
-import CaptchaInput from '../components/CaptchaInput.vue'
+import Turnstile from '../components/Turnstile.vue'
 import PopUp from '../components/PopUp.vue'
 import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
@@ -23,10 +23,11 @@ const address = ref('')
 const lat = ref(46.603354)
 const long_ = ref(1.888334)
 const comments = ref('')
-const captcha = ref()
+const turnstileSiteKey: string = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
+const turnstileWidget = ref<InstanceType<typeof Turnstile> | null>(null)
+const turnstileToken = ref('')
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
-const captcha_refresh_count = ref(0)
 const isSubmitting = ref(false)
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
@@ -66,12 +67,10 @@ async function submitForm() {
         editPageUrl: window.location.origin + '/edit',
         datePicker: date.value,
         comments: comments.value,
-        answer: captcha.value.value,
-        captchaToken: captcha.value.token,
+        turnstileToken: turnstileToken.value || turnstileWidget.value?.getResponse() || '',
         eventName: event_name.value,
       }),
     })
-    captcha_refresh_count.value++
     if (!response.ok) {
       form_resp.value = FormResponse.Error
       if (response.status === 429) {
@@ -94,6 +93,9 @@ async function submitForm() {
     }
   } finally {
     isSubmitting.value = false
+    // Turnstile tokens are single-use: reset the widget for the next attempt
+    turnstileToken.value = ''
+    turnstileWidget.value?.reset()
   }
 }
 
@@ -146,13 +148,12 @@ function onPopupClose() {
             <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
           </div>
 
-          <div class="create-event__field">
-            <label>{{ $t('common.captcha.title') }} <span class="form__required">*</span></label>
-            <CaptchaInput
-              ref="captcha"
-              :title="t('common.captcha.title')"
-              :placeholder="t('common.captcha.placeholder')"
-              :refreshCount="captcha_refresh_count"
+          <div v-if="turnstileSiteKey" class="create-event__field">
+            <label>{{ $t('common.verification.title') }}</label>
+            <Turnstile
+              ref="turnstileWidget"
+              :sitekey="turnstileSiteKey"
+              @token="turnstileToken = $event"
             />
           </div>
         </div>
