@@ -29,6 +29,11 @@ interface AdditionalMarker {
   lng: number
   tooltip: string
   color: string
+  address?: string
+  phone?: string
+  email?: string
+  contactUrl?: string
+  comments?: string
 }
 
 const { t } = useI18n()
@@ -74,6 +79,30 @@ function getIcon(color: string) {
     iconSize: [18, 18],
     iconAnchor: [9, 9],
   })
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function buildMarkerHtml(m: AdditionalMarker): string {
+  const rows = [`<div class="map-marker-popup__name">${escapeHtml(m.tooltip)}</div>`]
+  if (m.comments)
+    rows.push(`<div class="map-marker-popup__comments">${escapeHtml(m.comments)}</div>`)
+  if (m.address)
+    rows.push(`<div class="map-marker-popup__row">${escapeHtml(m.address)}</div>`)
+  if (m.phone)
+    rows.push(`<div class="map-marker-popup__row">${escapeHtml(m.phone)}</div>`)
+  if (m.email)
+    rows.push(`<div class="map-marker-popup__row">${escapeHtml(m.email)}</div>`)
+  else if (m.contactUrl)
+    rows.push(`<div class="map-marker-popup__row"><a class="map-marker-popup__contact" href="${escapeHtml(m.contactUrl)}">${escapeHtml(t('sendMessage.buttonLabel'))}</a></div>`)
+  return rows.join('')
 }
 
 // Orange icon for main event marker
@@ -179,7 +208,13 @@ function updateAdditionalMarkers() {
   props.additionalMarkers.forEach((m) => {
     allPoints.push([m.lat, m.lng])
     const mk = L.marker([m.lat, m.lng], { icon: getIcon(m.color) })
-      .bindTooltip(m.tooltip, { direction: 'top', offset: [0, -10] })
+      .bindTooltip(buildMarkerHtml(m), {
+        direction: 'top',
+        offset: [0, -10],
+        className: 'map-marker-tooltip',
+        opacity: 1,
+      })
+      .bindPopup(buildMarkerHtml(m), { className: 'map-marker-popup' })
       .on('click', () => {
         emit('marker-clicked', m.tooltip)
       })
@@ -397,5 +432,89 @@ watch(props, (new_val) => {
 
 .map-legend__dot--primary-green {
   background-color: var(--color-primary-green);
+}
+
+.map-marker-tooltip {
+  background: var(--color-bg-cream);
+  border: 1px solid var(--color-secondary-green);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  padding: 0.5rem 0.75rem;
+  max-width: 250px;
+}
+
+.map-marker-tooltip.leaflet-tooltip-top::before {
+  border-top-color: var(--color-secondary-green);
+}
+
+.map-marker-tooltip.leaflet-tooltip-bottom::before {
+  border-bottom-color: var(--color-secondary-green);
+}
+
+.map-marker-popup .leaflet-popup-content-wrapper {
+  background: var(--color-bg-cream);
+  border: 2px solid var(--color-secondary-green);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  color: var(--color-text-dark);
+}
+
+.map-marker-popup .leaflet-popup-content {
+  margin: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 260px;
+}
+
+.map-marker-popup .leaflet-popup-tip {
+  background: var(--color-bg-cream);
+  border: 1px solid var(--color-secondary-green);
+}
+
+.map-marker-popup .leaflet-popup-close-button {
+  color: var(--color-text-medium);
+}
+
+.map-marker-popup__name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-text-dark);
+}
+
+.map-marker-popup__row {
+  color: var(--color-text-dark);
+  word-break: break-word;
+}
+
+.map-marker-popup__comments {
+  color: var(--color-text-medium);
+  font-style: italic;
+  word-break: break-word;
+  margin-bottom: 0.25rem;
+}
+
+.map-marker-popup__contact {
+  display: inline-block;
+  border: 1px solid var(--color-primary-orange);
+  border-radius: 50px;
+  padding: 0.15rem 0.6rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-primary-orange);
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.map-marker-popup__contact:hover {
+  background-color: var(--color-primary-orange);
+  color: #ffffff;
 }
 </style>

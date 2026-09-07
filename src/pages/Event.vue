@@ -35,6 +35,7 @@ interface ParticipantData {
   showEmail?: boolean
   contactToken?: string
   address?: string
+  comments?: string
 }
 
 const props = defineProps<{
@@ -60,6 +61,13 @@ const participantMarkers = computed(() => {
       lng: p.longitude!,
       tooltip: `${p.firstName} ${p.lastName}`,
       color: p.mode == 'driver' ? '--color-secondary-green' : '--color-primary-green',
+      address: p.address,
+      phone: p.phoneNumber,
+      email: p.showEmail ? p.email : undefined,
+      contactUrl: !p.showEmail && p.contactToken
+        ? window.location.origin + '/sendMessage?token=' + p.contactToken
+        : undefined,
+      comments: p.comments,
     }))
 })
 
@@ -140,10 +148,6 @@ function onFiltered(p: ParticipantData[]) {
   filteredParticipants.value = p
 }
 
-function onParticipantClick(name: string) {
-  searchText.value = name
-}
-
 function formatDate(dateStr: string): string {
   const dsLocale = locale.value === 'fr' ? 'fr-FR' : 'en-US'
   return new Date(dateStr).toLocaleDateString(dsLocale, {
@@ -213,17 +217,16 @@ function formatDate(dateStr: string): string {
             :displayMainMarker="true"
             :is_editable="false"
             height="350px"
-            @marker-clicked="onParticipantClick"
           />
           <button v-if="searchText" @click="searchText = ''" class="event-page__clear">{{ $t('common.clear') }}</button>
         </Card>
 
         <Card v-if="!isErrored && eventData" collapsible default-expanded :title="$t('eventPage.participants.title')" variant="borderless">
-          <ParticipantTable v-model="searchText" :participants="participants" @filtered="onFiltered" />
+          <ParticipantTable :name-filter="searchText" :participants="participants" @filtered="onFiltered" />
         </Card>
       </FormLayout>
 
-      <Card collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
+      <Card v-if="!isErrored" collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
         <RegisterParticipant
           v-if="!isErrored && eventData"
           :token="tokenValue"

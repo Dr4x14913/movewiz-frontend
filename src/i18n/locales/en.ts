@@ -72,8 +72,8 @@ export default {
     participants: {
       title: 'Participants',
       empty: 'No participants yet. Be the first to register!',
-      search: 'Search by name or address',
-      all: 'All modes',
+      filterPlaceholder: 'Filter…',
+      resetFilters: 'Reset filters',
       table: {
         name: 'Name',
         mode: 'Mode',
@@ -81,10 +81,10 @@ export default {
         email: 'Email',
         address: 'Address',
         location: 'Location',
-        date: 'Registration date',
       },
       driver: 'Driver',
       passenger: 'Passenger',
+      showComments: 'Show comments',
     },
   },
   editEvent: {

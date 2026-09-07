@@ -62,6 +62,7 @@ watch(() => props.defaultExpanded, (val) => {
 
 <style scoped>
 .card {
+  box-sizing: border-box;
   flex: 1;
   min-width: 500px;
   overflow: visible;
@@ -160,6 +161,10 @@ watch(() => props.defaultExpanded, (val) => {
 }
 
 @media (max-width: 600px) {
+  .card {
+    min-width: 100%;
+  }
+
   .card--default,
   .card--classic {
     padding: 1rem;

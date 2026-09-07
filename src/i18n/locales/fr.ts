@@ -72,8 +72,8 @@ export default {
     participants: {
       title: 'Participants',
       empty: 'Aucun participant pour le moment. Inscrivez-vous en premier !',
-      search: 'Rechercher par nom ou adresse',
-      all: 'Tous',
+      filterPlaceholder: 'Filtrer…',
+      resetFilters: 'Réinitialiser les filtres',
       table: {
         name: 'Nom',
         mode: 'Mode',
@@ -81,10 +81,10 @@ export default {
         email: 'E-mail',
         address: 'Adresse',
         location: 'Position',
-        date: "Date d'inscription",
       },
       driver: 'Conducteur',
       passenger: 'Passager',
+      showComments: 'Voir les commentaires',
     },
   },
   editEvent: {
