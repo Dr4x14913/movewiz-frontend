@@ -60,6 +60,7 @@ const participantMarkers = computed(() => {
       lat: p.latitude!,
       lng: p.longitude!,
       tooltip: `${p.firstName} ${p.lastName}`,
+      mode: p.mode,
       color: p.mode == 'driver' ? '--color-secondary-green' : '--color-primary-green',
       address: p.address,
       phone: p.phoneNumber,

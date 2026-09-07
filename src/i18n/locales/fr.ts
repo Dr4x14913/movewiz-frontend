@@ -73,6 +73,7 @@ export default {
       title: 'Participants',
       empty: 'Aucun participant pour le moment. Inscrivez-vous en premier !',
       filterPlaceholder: 'Filtrer…',
+      filterAll: 'Tous',
       resetFilters: 'Réinitialiser les filtres',
       table: {
         name: 'Nom',
@@ -85,6 +86,7 @@ export default {
       driver: 'Conducteur',
       passenger: 'Passager',
       showComments: 'Voir les commentaires',
+      legendHint: 'Cliquez sur une pastille pour voir les détails d\'un participant.',
     },
   },
   editEvent: {
@@ -182,6 +184,8 @@ export default {
     map: {
       fullscreenEnter: 'Agrandir la carte en plein écran',
       fullscreenExit: 'Quitter le plein écran',
+      legend: 'Légende',
+      legendToggle: 'Afficher/masquer la légende',
     },
   },
 }

@@ -29,6 +29,7 @@ interface AdditionalMarker {
   lng: number
   tooltip: string
   color: string
+  mode?: string
   address?: string
   phone?: string
   email?: string
@@ -69,15 +70,20 @@ let map: L.Map | null = null
 let marker: L.Marker | null = null
 let additionalMarkersLayer: L.LayerGroup | null = null
 let legendControl: L.Control | null = null
+let legendCollapsed = false
 
 // Custom icon for additional markers
 
-function getIcon(color: string) {
+function getIcon(m: AdditionalMarker) {
   return L.divIcon({
     className: '',
-    html: `<div style="background-color:var(${color});width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 3px rgba(0,0,0,0.4)"></div>`,
-    iconSize: [18, 18],
-    iconAnchor: [9, 9],
+    html: `
+      <div class="map-participant-marker">
+        <div class="map-participant-marker__name">${escapeHtml(m.tooltip)}</div>
+        <div class="map-participant-marker__dot" style="background-color:var(${m.color})"></div>
+      </div>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
   })
 }
 
@@ -92,6 +98,11 @@ function escapeHtml(value: string): string {
 
 function buildMarkerHtml(m: AdditionalMarker): string {
   const rows = [`<div class="map-marker-popup__name">${escapeHtml(m.tooltip)}</div>`]
+  if (m.mode) {
+    const modeLabel = m.mode === 'driver' ? t('eventPage.participants.driver') : t('eventPage.participants.passenger')
+    const modeClass = m.mode === 'driver' ? 'map-marker-popup__mode--driver' : 'map-marker-popup__mode--passenger'
+    rows.push(`<div class="map-marker-popup__mode-row"><span class="map-marker-popup__mode ${modeClass}">${escapeHtml(modeLabel)}</span></div>`)
+  }
   if (m.comments)
     rows.push(`<div class="map-marker-popup__comments">${escapeHtml(m.comments)}</div>`)
   if (m.address)
@@ -158,21 +169,41 @@ function updateLegend() {
   if (!hasEvent && !hasParticipants) return
 
   const content = L.DomUtil.create('div', 'map-legend')
-  
+  if (legendCollapsed) content.classList.add('map-legend--collapsed')
+
+  const header = L.DomUtil.create('div', 'map-legend__header', content)
+  const title = L.DomUtil.create('span', 'map-legend__title', header)
+  title.textContent = t('common.map.legend')
+  const toggle = L.DomUtil.create('button', 'map-legend__toggle', header)
+  toggle.type = 'button'
+  toggle.setAttribute('aria-expanded', String(!legendCollapsed))
+  toggle.setAttribute('aria-label', t('common.map.legendToggle'))
+  toggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+  toggle.addEventListener('click', () => {
+    legendCollapsed = !legendCollapsed
+    content.classList.toggle('map-legend--collapsed', legendCollapsed)
+    toggle.setAttribute('aria-expanded', String(!legendCollapsed))
+  })
+
+  const body = L.DomUtil.create('div', 'map-legend__body', content)
+
   if (hasEvent) {
-    const item = L.DomUtil.create('div', 'map-legend__item', content)
+    const item = L.DomUtil.create('div', 'map-legend__item', body)
     const dot = L.DomUtil.create('span', 'map-legend__dot map-legend__dot--orange', item)
     item.appendChild(document.createTextNode(props.mainMarkerLabel || t('eventPage.legend.event')))
   }
 
   if (hasParticipants) {
-    const itemDriver = L.DomUtil.create('div', 'map-legend__item', content)
+    const itemDriver = L.DomUtil.create('div', 'map-legend__item', body)
     L.DomUtil.create('span', 'map-legend__dot map-legend__dot--secondary-green', itemDriver)
     itemDriver.appendChild(document.createTextNode(t('eventPage.participants.driver')))
 
-    const itemPassenger = L.DomUtil.create('div', 'map-legend__item', content)
+    const itemPassenger = L.DomUtil.create('div', 'map-legend__item', body)
     L.DomUtil.create('span', 'map-legend__dot map-legend__dot--primary-green', itemPassenger)
     itemPassenger.appendChild(document.createTextNode(t('eventPage.participants.passenger')))
+
+    const hint = L.DomUtil.create('div', 'map-legend__hint', body)
+    hint.textContent = t('eventPage.participants.legendHint')
   }
 
   legendControl = new L.Control({ position: 'bottomright' })
@@ -207,7 +238,7 @@ function updateAdditionalMarkers() {
   const markerLayer: L.Marker[] = []
   props.additionalMarkers.forEach((m) => {
     allPoints.push([m.lat, m.lng])
-    const mk = L.marker([m.lat, m.lng], { icon: getIcon(m.color) })
+    const mk = L.marker([m.lat, m.lng], { icon: getIcon(m) })
       .bindTooltip(buildMarkerHtml(m), {
         direction: 'top',
         offset: [0, -10],
@@ -393,12 +424,71 @@ watch(props, (new_val) => {
 <style>
 .map-legend {
   background: var(--color-bg-cream);
-  padding: 0.75rem;
+  max-width: 200px;
+  padding: 0.625rem 0.75rem;
   border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
   font-family: var(--font-body);
   font-size: 0.85rem;
   color: var(--color-text-dark);
+}
+
+.map-legend__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.map-legend__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-medium);
+}
+
+.map-legend__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-medium);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.map-legend__toggle:hover {
+  color: var(--color-text-dark);
+}
+
+.map-legend__toggle svg {
+  transition: transform 0.2s ease;
+}
+
+.map-legend__toggle:hover svg {
+  transform: scale(1.15);
+}
+
+.map-legend--collapsed .map-legend__toggle svg {
+  transform: rotate(-90deg);
+}
+
+.map-legend--collapsed .map-legend__toggle:hover svg {
+  transform: rotate(-90deg) scale(1.15);
+}
+
+.map-legend__body {
+  margin-top: 0.375rem;
+}
+
+.map-legend--collapsed .map-legend__body {
+  display: none;
 }
 
 .map-legend__item {
@@ -434,8 +524,18 @@ watch(props, (new_val) => {
   background-color: var(--color-primary-green);
 }
 
+.map-legend__hint {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-input-border);
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--color-text-medium);
+}
+
 .map-marker-tooltip {
   background: var(--color-bg-cream);
+
   border: 1px solid var(--color-secondary-green);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
@@ -486,6 +586,67 @@ watch(props, (new_val) => {
   font-size: 1rem;
   margin-bottom: 0.3rem;
   color: var(--color-text-dark);
+}
+
+.map-marker-popup__mode-row {
+  margin-bottom: 0.3rem;
+}
+
+.map-marker-popup__mode {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 50px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+.map-marker-popup__mode--driver {
+  background-color: var(--color-secondary-green);
+}
+
+.map-marker-popup__mode--passenger {
+  background-color: var(--color-primary-green);
+}
+
+/* Participant marker: name pill anchored above a centered dot */
+.map-participant-marker {
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+.map-participant-marker__dot {
+  position: absolute;
+  top: -9px;
+  left: -9px;
+  width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+}
+
+.map-participant-marker__name {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 0 8px;
+  border: 1px solid var(--color-secondary-green);
+  border-radius: 50px;
+  background-color: var(--color-bg-cream);
+  color: var(--color-text-dark);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .map-marker-popup__row {

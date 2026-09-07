@@ -73,6 +73,7 @@ export default {
       title: 'Participants',
       empty: 'No participants yet. Be the first to register!',
       filterPlaceholder: 'Filter…',
+      filterAll: 'All',
       resetFilters: 'Reset filters',
       table: {
         name: 'Name',
@@ -85,6 +86,7 @@ export default {
       driver: 'Driver',
       passenger: 'Passenger',
       showComments: 'Show comments',
+      legendHint: 'Click on a pill to see details about the participant.',
     },
   },
   editEvent: {
@@ -181,6 +183,8 @@ export default {
     map: {
       fullscreenEnter: 'Expand map to fullscreen',
       fullscreenExit: 'Exit fullscreen',
+      legend: 'Legend',
+      legendToggle: 'Toggle legend',
     },
   },
 }

@@ -26,7 +26,7 @@ const emit = defineEmits<{
   filtered: [participants: Participant[]]
 }>()
 
-const checkedModes = ref<string[]>([])
+const modeFilter = ref('')
 const colFilters = ref({ name: '', phone: '', email: '', address: '' })
 
 // Tooltip for a participant's comments, teleported to <body> so it can
@@ -90,7 +90,7 @@ function matches(value: string | undefined, filter: string): boolean {
 
 const filteredParticipants = computed(() => {
   return props.participants.filter(p => {
-    if (checkedModes.value.length > 0 && !checkedModes.value.includes(p.mode)) return false
+    if (modeFilter.value !== '' && p.mode !== modeFilter.value) return false
 
     return matches(`${p.firstName} ${p.lastName}`, colFilters.value.name)
       && matches(p.phoneNumber, colFilters.value.phone)
@@ -100,12 +100,12 @@ const filteredParticipants = computed(() => {
 })
 
 const hasActiveFilters = computed(() =>
-  checkedModes.value.length > 0 ||
+  modeFilter.value !== '' ||
   Object.values(colFilters.value).some(v => v.trim() !== '')
 )
 
 function resetFilters() {
-  checkedModes.value = []
+  modeFilter.value = ''
   colFilters.value = { name: '', phone: '', email: '', address: '' }
 }
 
@@ -129,16 +129,8 @@ function goSendMessage(token: string) {
       {{ $t('eventPage.participants.empty') }}
     </div>
     <div v-else>
-      <div class="participant-table__filters">
-        <label class="participant-table__mode-check">
-          <input type="checkbox" value="driver" v-model="checkedModes" />
-          {{ $t('eventPage.participants.driver') }}
-        </label>
-        <label class="participant-table__mode-check">
-          <input type="checkbox" value="passenger" v-model="checkedModes" />
-          {{ $t('eventPage.participants.passenger') }}
-        </label>
-        <button v-if="hasActiveFilters" @click="resetFilters" class="participant-table__reset" type="button">
+      <div v-if="hasActiveFilters" class="participant-table__filters">
+        <button @click="resetFilters" class="participant-table__reset" type="button">
           {{ $t('eventPage.participants.resetFilters') }}
         </button>
       </div>
@@ -154,7 +146,13 @@ function goSendMessage(token: string) {
           </tr>
           <tr class="participant-table__filter-row">
             <td><input v-model="colFilters.name" type="text" class="participant-table__col-filter" :placeholder="$t('eventPage.participants.filterPlaceholder')" :aria-label="$t('eventPage.participants.table.name')" /></td>
-            <td></td>
+            <td>
+              <select v-model="modeFilter" class="participant-table__col-filter" :aria-label="$t('eventPage.participants.table.mode')">
+                <option value="">{{ $t('eventPage.participants.filterAll') }}</option>
+                <option value="driver">{{ $t('eventPage.participants.driver') }}</option>
+                <option value="passenger">{{ $t('eventPage.participants.passenger') }}</option>
+              </select>
+            </td>
             <td><input v-model="colFilters.phone" type="text" class="participant-table__col-filter" :placeholder="$t('eventPage.participants.filterPlaceholder')" :aria-label="$t('eventPage.participants.table.phone')" /></td>
             <td><input v-model="colFilters.email" type="text" class="participant-table__col-filter" :placeholder="$t('eventPage.participants.filterPlaceholder')" :aria-label="$t('eventPage.participants.table.email')" /></td>
             <td><input v-model="colFilters.address" type="text" class="participant-table__col-filter" :placeholder="$t('eventPage.participants.filterPlaceholder')" :aria-label="$t('eventPage.participants.table.address')" /></td>
@@ -174,12 +172,7 @@ function goSendMessage(token: string) {
                 @click="toggleDescTooltip($event, p.comments, idx)"
                 @blur="closeDescTooltip"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-                  <circle cx="9.75" cy="14" r="1" fill="currentColor" stroke="none"/>
-                  <circle cx="12.5" cy="14" r="1" fill="currentColor" stroke="none"/>
-                  <circle cx="15.25" cy="14" r="1" fill="currentColor" stroke="none"/>
-                </svg>
+                <i class="fa-regular fa-comment-dots" style="font-size: 1.1rem;"></i>
               </button>
             </span>
           </td>
@@ -240,28 +233,6 @@ function goSendMessage(token: string) {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-}
-
-.participant-table__mode-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--color-input-border);
-  border-radius: 50px;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  background-color: var(--color-bg-cream);
-  color: var(--color-text-dark);
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-}
-
-.participant-table__mode-check input[type="checkbox"] {
-  margin: 0;
-  accent-color: var(--color-primary-green);
-  cursor: pointer;
 }
 
 .participant-table__reset {
