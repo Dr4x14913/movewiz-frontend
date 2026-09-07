@@ -143,16 +143,21 @@ function updateMarker(latitude: number, longitude: number) {
 }
 
 async function reverseGeocode(latitude: number, longitude: number) {
+  let address = ''
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
     )
-    const data = await res.json()
-    const address = data.display_name || ''
-    emit('location-selected', { lat: latitude, lng: longitude, address })
+    if (res.ok) {
+      const data = await res.json()
+      address = data.display_name || ''
+    }
   } catch (e) {
     console.error('Error reverse geocoding:', e)
   }
+  // Always emit (empty address on geocoding failure) so the parent updates
+  // lat/lng and the user can type the address manually.
+  emit('location-selected', { lat: latitude, lng: longitude, address })
 }
 
 function updateLegend() {

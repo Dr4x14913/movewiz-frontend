@@ -70,7 +70,11 @@ function resetLocation() {
   hasMarker.value = false
 }
 
-defineExpose({ getLocation, setAddress, resetLocation })
+function hasLocation() {
+  return hasMarker.value
+}
+
+defineExpose({ getLocation, setAddress, resetLocation, hasLocation })
 </script>
 
 <template>

@@ -26,6 +26,7 @@ export default {
       writeLink: 'Modifier l\'événement',
       errorTitle: 'Échec de la création de l\'événement',
       errorDefault: 'Une erreur est survenue. Veuillez réessayer.',
+      errorMissingLocation: "L'adresse que vous avez saisie n'a pas pu être reconnue. Veuillez la retaper ou la sélectionner parmi les suggestions.",
       tooManyRequests: 'Trop de requêtes. Veuillez patienter un moment avant de réessayer.',
     },
     contact: {

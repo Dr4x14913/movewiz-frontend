@@ -37,8 +37,12 @@ const comments = ref('')
 const notifyMe = ref(false)
 const lat = ref<number | null>(null)
 const long_ = ref<number | null>(null)
+const address = ref('')
 
-const locationPickerRef = ref<{ resetLocation: () => void } | null>(null)
+const locationPickerRef = ref<{
+  getLocation: () => { address: string; lat: number; lng: number }
+  resetLocation: () => void
+} | null>(null)
 
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
@@ -55,17 +59,23 @@ function clearForm() {
   notifyMe.value = false
   lat.value = null
   long_.value = null
+  address.value = ''
   locationPickerRef.value?.resetLocation()
 }
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   lat.value = data.lat
   long_.value = data.lng
+  address.value = data.address
 }
 
 async function submitForm() {
   isSubmitting.value = true
   try {
+    // The address sent to the backend is the text currently in the address
+    // field (the user may have edited it after the reverse geocode).
+    const pickerLocation = locationPickerRef.value?.getLocation()
+    const effectiveAddress = pickerLocation ? pickerLocation.address : address.value
     const body: any = {
       firstName: firstName.value,
       lastName: lastName.value,
@@ -77,6 +87,7 @@ async function submitForm() {
       editParticipantPageUrl: props.editParticipantPageUrl,
       latitude: lat.value,
       longitude: long_.value,
+      address: effectiveAddress,
       notifyMe: notifyMe.value,
       phoneNumber: phoneNumber.value,
       comments: comments.value,

@@ -26,7 +26,10 @@ const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
 
-const picker = ref(null)
+const picker = ref<{
+  getLocation: () => { address: string; lat: number; lng: number }
+  setAddress: (address: string, lat: number, lng: number) => void
+} | null>(null)
 const first_name = ref('')
 const last_name = ref('')
 const email = ref('')
@@ -84,6 +87,10 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
 async function submitForm() {
   isSubmitting.value = true
   try {
+    // The address sent to the backend is the text currently in the address
+    // field (the user may have edited it after the reverse geocode).
+    const pickerLocation = picker.value?.getLocation()
+    const effectiveAddress = pickerLocation ? pickerLocation.address : address.value
     const response = await api('/api/editEvent', {
       method: 'POST',
       headers: {
@@ -96,7 +103,7 @@ async function submitForm() {
         email: email.value,
         eventName: event_name.value,
         datePicker: date.value,
-        address: address.value,
+        address: effectiveAddress,
         latitude: lat.value,
         longitude: long_.value,
         comments: comments.value,

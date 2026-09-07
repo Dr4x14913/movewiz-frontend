@@ -26,6 +26,11 @@ const comments = ref('')
 const turnstileSiteKey: string = import.meta.env.VITE_TURNSTILE_SITE_KEY || ''
 const turnstileWidget = ref<InstanceType<typeof Turnstile> | null>(null)
 const turnstileToken = ref('')
+const locationPickerRef = ref<{
+  getLocation: () => { address: string; lat: number; lng: number }
+  resetLocation: () => void
+  hasLocation: () => boolean
+} | null>(null)
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
@@ -45,12 +50,25 @@ function resetForm() {
   comments.value = ''
   lat.value = 46.603354
   long_.value = 1.888334
+  locationPickerRef.value?.resetLocation()
 }
 
 
 async function submitForm() {
+  // A typed address only has coordinates once the user picked it from the
+  // suggestions or clicked the map — without that, the default map center
+  // would be silently stored, so ask for a location selection instead.
+  if (!locationPickerRef.value?.hasLocation()) {
+    form_resp.value = FormResponse.Error
+    form_resp_msg.value = t('createEvent.popup.errorMissingLocation')
+    return
+  }
   isSubmitting.value = true
   try {
+    // The address sent to the backend is the text currently in the address
+    // field (the user may have edited it after the reverse geocode).
+    const pickerLocation = locationPickerRef.value?.getLocation()
+    const effectiveAddress = pickerLocation ? pickerLocation.address : address.value
     const response = await api('/api/createEvent', {
       method: 'POST',
       headers: {
@@ -60,7 +78,7 @@ async function submitForm() {
         firstName: first_name.value,
         lastName: last_name.value,
         email: email.value,
-        address: address.value,
+        address: effectiveAddress,
         latitude: lat.value,
         longitude: long_.value,
         eventPageUrl: window.location.origin + '/event',
@@ -161,6 +179,7 @@ function onPopupClose() {
 
       <Card variant="borderless" class="create-event__form-card">
         <LocationPicker
+          ref="locationPickerRef"
           :label="t('common.address.label')"
           :placeholder="t('common.address.placeholder')"
           :required=true

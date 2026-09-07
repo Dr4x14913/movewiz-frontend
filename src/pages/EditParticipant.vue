@@ -26,7 +26,10 @@ const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
 
-const picker = ref(null)
+const picker = ref<{
+  getLocation: () => { address: string; lat: number; lng: number }
+  setAddress: (address: string, lat: number, lng: number) => void
+} | null>(null)
 const firstName = ref('')
 const lastName = ref('')
 const email = ref('')
@@ -35,6 +38,7 @@ const phoneNumber = ref('')
 const comments = ref('')
 const lat = ref(0)
 const long_ = ref(0)
+const address = ref('')
 const notifyMe = ref(false)
 const hideEmail = ref(false)
 
@@ -70,8 +74,10 @@ async function fetchParticipant() {
     isLoading.value = false
     await nextTick()
     if (participant.latitude && participant.longitude) {
-      const address = await reverseGeocode(participant.latitude, participant.longitude)
-      picker.value?.setAddress(address, participant.latitude, participant.longitude)
+      // Prefill from the address stored by the frontend at registration /
+      // previous edit time — no geocoding on the read path.
+      address.value = participant.address || ''
+      picker.value?.setAddress(participant.address || '', participant.latitude, participant.longitude)
     }
   } catch (err) {
     console.error(err)
@@ -80,27 +86,19 @@ async function fetchParticipant() {
   }
 }
 
-async function reverseGeocode(lat: number, lng: number): Promise<string> {
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-    )
-    const data = await res.json()
-    return data.display_name || ''
-  } catch (e) {
-    console.error('Reverse geocode failed:', e)
-    return ''
-  }
-}
-
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   lat.value = data.lat
   long_.value = data.lng
+  address.value = data.address
 }
 
 async function submitForm() {
   isSubmitting.value = true
   try {
+    // The address sent to the backend is the text currently in the address
+    // field (the user may have edited it after the reverse geocode).
+    const pickerLocation = picker.value?.getLocation()
+    const effectiveAddress = pickerLocation ? pickerLocation.address : address.value
     const response = await api('/api/editParticipant', {
       method: 'POST',
       headers: {
@@ -115,6 +113,7 @@ async function submitForm() {
         comments: comments.value,
         latitude: lat.value,
         longitude: long_.value,
+        address: effectiveAddress,
         notifyMe: notifyMe.value,
         showEmail: !hideEmail.value,
       }),
