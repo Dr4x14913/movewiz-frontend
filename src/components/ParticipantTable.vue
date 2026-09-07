@@ -288,7 +288,7 @@ function goSendMessage(token: string) {
 }
 
 .participant-table__scroll {
-  max-height: 400px;
+  max-height: 600px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
