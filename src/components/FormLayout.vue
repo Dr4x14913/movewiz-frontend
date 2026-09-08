@@ -54,11 +54,13 @@ defineEmits<{
   border-radius: inherit;
 }
 
+/* stretch (not flex-start) so cards sharing a row (e.g. event page
+   details + participants) get the same height */
 .form-layout__form {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .form-layout__form--disabled {

@@ -70,7 +70,9 @@ let map: L.Map | null = null
 let marker: L.Marker | null = null
 let additionalMarkersLayer: L.LayerGroup | null = null
 let legendControl: L.Control | null = null
-let legendCollapsed = false
+// Folded by default on mobile (same 600px breakpoint as the CSS media
+// queries); a manual toggle is kept across legend rebuilds.
+let legendCollapsed = window.matchMedia('(max-width: 600px)').matches
 
 // Custom icon for additional markers
 

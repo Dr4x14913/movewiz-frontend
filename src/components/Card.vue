@@ -63,6 +63,8 @@ watch(() => props.defaultExpanded, (val) => {
 <style scoped>
 .card {
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 500px;
   overflow: visible;
@@ -145,7 +147,10 @@ watch(() => props.defaultExpanded, (val) => {
   transform: rotate(180deg);
 }
 
+/* flex: 1 lets the content area fill a stretched card (side-by-side
+   layout); in auto-height cards it simply resolves to content height */
 .card__content {
+  flex: 1;
   transition: max-height 0.35s ease;
 }
 

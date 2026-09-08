@@ -29,31 +29,43 @@ const emit = defineEmits<{
 const modeFilter = ref('')
 const colFilters = ref({ name: '', phone: '', email: '', address: '' })
 
-// Tooltip for a participant's comments, teleported to <body> so it can
-// overflow the card / table scroll area. Positioned with fixed coords.
-interface DescTooltipState {
+// Tooltips for a participant's comments or address, teleported to <body>
+// so they can overflow the card / table scroll area. Positioned with fixed
+// coords. The comments tooltip is toggled on click; the address tooltip
+// follows the cursor (shown on hover, hidden when the cursor leaves).
+interface TooltipState {
   idx: number
   text: string
   top: number
   left: number
 }
 
-const descTooltip = ref<DescTooltipState | null>(null)
-const descTooltipEl = ref<HTMLDivElement | null>(null)
+const TOOLTIP_MAX_WIDTH = 266 // 250px max-width + padding/border, for clamping before render
 
-async function openDescTooltip(e: MouseEvent, text: string, idx: number) {
+const descTooltip = ref<TooltipState | null>(null)
+const descTooltipEl = ref<HTMLDivElement | null>(null)
+const addrTooltip = ref<TooltipState | null>(null)
+const addrTooltipEl = ref<HTMLDivElement | null>(null)
+
+async function showCellTooltip(e: MouseEvent, text: string, idx: number, which: 'desc' | 'addr') {
+  // Only one tooltip at a time
+  if (which === 'desc') addrTooltip.value = null
+  else descTooltip.value = null
+
+  const state = which === 'desc' ? descTooltip : addrTooltip
+  const elRef = which === 'desc' ? descTooltipEl : addrTooltipEl
   const anchor = (e.currentTarget as HTMLElement).getBoundingClientRect()
-  const MAX_WIDTH = 266 // 250px max-width + padding/border, for clamping before render
-  let left = Math.min(anchor.left, window.innerWidth - MAX_WIDTH - 8)
+  let left = Math.min(anchor.left, window.innerWidth - TOOLTIP_MAX_WIDTH - 8)
   left = Math.max(8, left)
-  descTooltip.value = { idx, text, top: anchor.bottom + 6, left }
+  state.value = { idx, text, top: anchor.bottom + 6, left }
   await nextTick()
-  const el = descTooltipEl.value
-  if (!el || !descTooltip.value) return
-  if (left + el.offsetWidth > window.innerWidth - 8)
-    descTooltip.value.left = window.innerWidth - el.offsetWidth - 8
-  if (descTooltip.value.top + el.offsetHeight > window.innerHeight - 8)
-    descTooltip.value.top = anchor.top - el.offsetHeight - 6
+  const el = elRef.value
+  const current = state.value
+  if (!el || !current || current.idx !== idx) return
+  if (current.left + el.offsetWidth > window.innerWidth - 8)
+    current.left = window.innerWidth - el.offsetWidth - 8
+  if (current.top + el.offsetHeight > window.innerHeight - 8)
+    current.top = anchor.top - el.offsetHeight - 6
 }
 
 function toggleDescTooltip(e: MouseEvent, text: string, idx: number) {
@@ -61,25 +73,107 @@ function toggleDescTooltip(e: MouseEvent, text: string, idx: number) {
     descTooltip.value = null
     return
   }
-  void openDescTooltip(e, text, idx)
+  void showCellTooltip(e, text, idx, 'desc')
+}
+
+function openAddrTooltip(e: MouseEvent, text: string, idx: number) {
+  void showCellTooltip(e, text, idx, 'addr')
 }
 
 function closeDescTooltip() {
   descTooltip.value = null
 }
 
+function closeAddrTooltip() {
+  addrTooltip.value = null
+}
+
 function onViewportScrollOrResize() {
   closeDescTooltip()
+  closeAddrTooltip()
+}
+
+// Clicking an address copies it to the clipboard. The green check marks the
+// copied row briefly so the user gets feedback.
+const copiedIdx = ref<number | null>(null)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
+
+async function copyAddress(text: string, idx: number) {
+  const ok = await copyToClipboard(text)
+  if (!ok) return
+  copiedIdx.value = idx
+  clearTimeout(copiedTimer)
+  copiedTimer = setTimeout(() => { copiedIdx.value = null }, 1500)
+  closeAddrTooltip()
+}
+
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+    throw new Error('Clipboard API unavailable')
+  } catch {
+    // Fallback for browsers / contexts without the async clipboard API
+    try {
+      const ta = document.createElement('textarea')
+      ta.value = text
+      ta.setAttribute('readonly', '')
+      ta.style.position = 'fixed'
+      ta.style.opacity = '0'
+      document.body.appendChild(ta)
+      ta.select()
+      ta.setSelectionRange(0, text.length)
+      const ok = document.execCommand('copy')
+      document.body.removeChild(ta)
+      return ok
+    } catch {
+      return false
+    }
+  }
+}
+
+// When this table sits side by side with the event details card (event
+// page), the details card acts as the height anchor: its height becomes the
+// participants card's max-height, so the table fills the column or scrolls
+// internally instead of making the section taller than the details card.
+// Guarded to a no-op anywhere the expected sibling card is missing.
+const rootEl = ref<HTMLDivElement | null>(null)
+let anchorCard: HTMLElement | null = null
+let anchorObserver: ResizeObserver | null = null
+
+function syncAnchorHeight() {
+  const ownCard = rootEl.value?.closest('.card')
+  if (!ownCard || !anchorCard) return
+  // Same flex row <=> top edges aligned (cards in different rows are
+  // hundreds of px apart, a 50px tolerance also covers hover transforms)
+  const sideBySide = Math.abs(ownCard.getBoundingClientRect().top - anchorCard.getBoundingClientRect().top) < 50
+  ownCard.style.maxHeight = sideBySide ? `${anchorCard.offsetHeight}px` : ''
 }
 
 onMounted(() => {
   window.addEventListener('scroll', onViewportScrollOrResize, true)
   window.addEventListener('resize', onViewportScrollOrResize)
+
+  const ownCard = rootEl.value?.closest('.card')
+  anchorCard = (ownCard?.parentElement?.querySelector('.card') ?? null) as HTMLElement | null
+  if (anchorCard === ownCard) anchorCard = null
+  syncAnchorHeight()
+  window.addEventListener('resize', syncAnchorHeight)
+  if (anchorCard && typeof ResizeObserver !== 'undefined') {
+    anchorObserver = new ResizeObserver(syncAnchorHeight)
+    anchorObserver.observe(anchorCard)
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onViewportScrollOrResize, true)
   window.removeEventListener('resize', onViewportScrollOrResize)
+  window.removeEventListener('resize', syncAnchorHeight)
+  anchorObserver?.disconnect()
+  anchorObserver = null
+  clearTimeout(copiedTimer)
 })
 
 function matches(value: string | undefined, filter: string): boolean {
@@ -111,6 +205,9 @@ function resetFilters() {
 
 watch(filteredParticipants, (newval) => {
   descTooltip.value = null
+  addrTooltip.value = null
+  copiedIdx.value = null
+  clearTimeout(copiedTimer)
   emit('filtered', newval)
 }, { immediate: true })
 
@@ -124,7 +221,7 @@ function goSendMessage(token: string) {
 </script>
 
 <template>
-  <div class="participant-table">
+  <div ref="rootEl" class="participant-table">
     <div v-if="participants.length === 0" class="participant-table__empty">
       {{ $t('eventPage.participants.empty') }}
     </div>
@@ -199,7 +296,15 @@ function goSendMessage(token: string) {
             </span>
           </td>
           <td class="participant-table__address">
-            <span v-if="p.address" class="participant-table__addr-scroll">{{ p.address }}</span>
+            <div v-if="p.address" class="participant-table__addr-wrap">
+              <span
+                class="participant-table__addr-scroll"
+                @mouseenter="openAddrTooltip($event, p.address, idx)"
+                @mouseleave="closeAddrTooltip"
+                @click="copyAddress(p.address, idx)"
+              >{{ p.address }}</span>
+              <i v-if="copiedIdx === idx" class="fa-solid fa-check participant-table__addr-copied" aria-hidden="true"></i>
+            </div>
             <span v-else class="participant-table__none">—</span>
           </td>
         </tr>
@@ -216,11 +321,28 @@ function goSendMessage(token: string) {
         class="participant-table__desc-tooltip"
         :style="{ top: descTooltip.top + 'px', left: descTooltip.left + 'px' }"
       >{{ descTooltip.text }}</div>
+      <div
+        v-if="addrTooltip"
+        ref="addrTooltipEl"
+        role="tooltip"
+        class="participant-table__desc-tooltip"
+        :style="{ top: addrTooltip.top + 'px', left: addrTooltip.left + 'px' }"
+      >{{ addrTooltip.text }}</div>
     </Teleport>
   </div>
 </template>
 
 <style scoped>
+/* Fills the card's content area when the card is stretched (wide screen
+   side-by-side layout), so this column matches the details column height.
+   On auto-height cards (mobile) 100% resolves to content height. */
+.participant-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+}
+
 .participant-table__empty {
   text-align: center;
   padding: 1.5rem;
@@ -277,18 +399,41 @@ function goSendMessage(token: string) {
   border-color: var(--color-primary-green);
 }
 
+.participant-table__phone {
+  white-space: nowrap;
+}
+
+/* Flex lives on a wrapper, not the <td>: a flex display on a table cell
+   breaks row-height sync and border-collapse, offsetting the row lines. */
 .participant-table__address {
   max-width: 240px;
 }
 
+.participant-table__addr-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
 .participant-table__addr-scroll {
+  flex: 1;
+  min-width: 0;
   display: block;
   overflow-x: auto;
   white-space: nowrap;
+  cursor: copy;
+}
+
+.participant-table__addr-copied {
+  flex-shrink: 0;
+  color: var(--color-secondary-green);
+  font-size: 0.9rem;
 }
 
 .participant-table__scroll {
-  max-height: 600px;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
