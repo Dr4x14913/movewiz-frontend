@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { api } from '../api'
 import Card from '../components/Card.vue'
+import CardRow from '../components/CardRow.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import Turnstile from '../components/Turnstile.vue'
 import PopUp from '../components/PopUp.vue'
@@ -134,41 +135,41 @@ function onPopupClose() {
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="form__required-legend">{{ $t('createEvent.required') }}</p>
 
-    <FormLayout :submitting="isSubmitting" @submit="submitForm">
-      <Card variant="borderless" class="create-event__form-card">
-        <div class="create-event__row">
-          <div class="create-event__field">
+    <FormLayout :submitting="isSubmitting" @submit="submitForm" >
+      <CardRow>
+      <Card variant="borderless">
+        <div class="form__row">
+          <div class="form__field">
             <label for="event-name">{{ $t('createEvent.details.eventName') }} <span class="form__required">*</span></label>
             <input id="event-name" type="text" v-model="event_name" required />
           </div>
 
-          <div class="create-event__field">
+          <div class="form__field">
             <label for="date">{{ $t('createEvent.details.date') }} <span class="form__required">*</span></label>
             <input id="date" type="date" v-model="date" required />
           </div>
 
-          <div class="create-event__field">
+          <div class="form__field">
             <label for="first-name">{{ $t('createEvent.contact.firstName') }}</label>
             <input id="first-name" type="text" v-model="first_name" />
           </div>
 
-          <div class="create-event__field">
+          <div class="form__field">
             <label for="last-name">{{ $t('createEvent.contact.lastName') }}</label>
             <input id="last-name" type="text" v-model="last_name" />
           </div>
 
-          <div class="create-event__field">
+          <div class="form__field">
             <label for="email">{{ $t('createEvent.contact.email') }}</label>
             <input id="email" type="email" v-model="email"/>
           </div>
 
-          <div class="create-event__field">
+          <div class="form__field">
             <label for="comments">{{ $t('createEvent.details.comments') }}</label>
             <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
           </div>
 
-          <div v-if="turnstileSiteKey" class="create-event__field create-event__field--full">
-            <label>{{ $t('common.verification.title') }}</label>
+          <div v-if="turnstileSiteKey" class="form__field form__field--full">
             <Turnstile
               ref="turnstileWidget"
               :sitekey="turnstileSiteKey"
@@ -178,7 +179,7 @@ function onPopupClose() {
         </div>
       </Card>
 
-      <Card variant="borderless" class="create-event__form-card">
+      <Card variant="borderless">
         <LocationPicker
           ref="locationPickerRef"
           :label="t('common.address.label')"
@@ -192,77 +193,16 @@ function onPopupClose() {
         <input type="hidden" name="long" :value="long_" />
 
       </Card>
+      </CardRow>
 
     </FormLayout>
   </div>
 </template>
 
 <style scoped>
+/* row/field/label styles live in assets/main.css (.form__row, .form__field) */
 .create-event h1 {
   color: var(--color-primary-green);
   margin-bottom: 0.25rem;
-}
-
-/* minmax(0, 1fr) (not bare 1fr) so columns can shrink below their content
-   width: the 300px-wide Turnstile iframe and the date input (~213px
-   intrinsic) would otherwise force the grid wider than the card, pushing
-   the second column under the location picker once Turnstile renders. */
-.create-event__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-/* The Turnstile widget is a fixed 300px-wide iframe: give it the whole row
-   so it can never dictate a column width. */
-.create-event__field--full {
-  grid-column: 1 / -1;
-}
-
-.create-event__field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.5rem;
-}
-
-.create-event__field:last-child {
-  margin-bottom: 0;
-}
-
-.create-event__field label {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--color-text-dark);
-  transition: color 0.2s ease;
-}
-
-/* No transform on focus: a transform rasterizes the input into a layer
-   and the 1.01 scale made the typed text render blurred. */
-.create-event__field input,
-.create-event__field textarea {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.create-event__field input:focus,
-.create-event__field textarea:focus {
-  border-color: var(--color-primary-green);
-  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
-}
-
-.create-event__form input,
-.create-event__form textarea {
-  padding: 0.625rem 1rem;
-}
-
-@media (max-width: 600px) {
-  .create-event__row {
-    grid-template-columns: 1fr;
-  }
-
-  .create-event__form-card {
-    min-width: 100%;
-  }
 }
 </style>

@@ -145,23 +145,23 @@ function onPopupClose() {
 
     <FormLayout :submitting="isSubmitting" @submit="submitForm">
       <Card variant="borderless">
-        <div class="register-participant__row">
-          <div class="register-participant__field">
+        <div class="form__row">
+          <div class="form__field">
             <label for="reg-first-name">{{ $t('registerParticipant.contact.firstName') }} <span class="form__required">*</span></label>
             <input id="reg-first-name" type="text" v-model="firstName" required />
           </div>
 
-          <div class="register-participant__field">
+          <div class="form__field">
             <label for="reg-last-name">{{ $t('registerParticipant.contact.lastName') }} <span class="form__required">*</span></label>
             <input id="reg-last-name" type="text" v-model="lastName" required />
           </div>
 
-          <div class="register-participant__field">
+          <div class="form__field">
             <label for="reg-email">{{ $t('registerParticipant.contact.email') }} <span class="form__required">*</span></label>
             <input id="reg-email" type="email" v-model="email" required />
           </div>
 
-          <div class="register-participant__field">
+          <div class="form__field">
             <label for="reg-mode">{{ $t('registerParticipant.details.mode') }} <span class="form__required">*</span></label>
             <select id="reg-mode" v-model="mode" required>
               <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
@@ -169,12 +169,12 @@ function onPopupClose() {
             </select>
           </div>
 
-          <div class="register-participant__field">
+          <div class="form__field">
             <label for="reg-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
             <input id="reg-phone" type="tel" v-model="phoneNumber"/>
           </div>
 
-          <div class="register-participant__field">
+          <div class="form__field">
             <label for="reg-comments">{{ $t('registerParticipant.details.comments') }}</label>
             <textarea id="reg-comments" v-model="comments" rows="4" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
           </div>
@@ -195,13 +195,13 @@ function onPopupClose() {
         <input type="hidden" name="reg-lat" :value="lat" />
         <input type="hidden" name="reg-long" :value="long_" />
 
-        <div class="register-participant__checkboxes">
-          <label class="register-participant__checkbox">
+        <div class="form__checkboxes">
+          <label class="form__checkbox">
             <input type="checkbox" v-model="hideEmail" />
             {{ $t('registerParticipant.details.hideEmail') }}
           </label>
 
-          <label class="register-participant__checkbox">
+          <label class="form__checkbox">
             <input type="checkbox" v-model="notifyMe" />
             {{ $t('registerParticipant.details.notifyMe') }}
           </label>
@@ -211,80 +211,3 @@ function onPopupClose() {
   </div>
 </template>
 
-<style scoped>
-/* .page class handles layout */
-
-.register-participant__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.register-participant__field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.5rem;
-}
-
-.register-participant__field:last-child {
-  margin-bottom: 0;
-}
-
-.register-participant__field label {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--color-text-dark);
-  transition: color 0.2s ease;
-}
-
-.register-participant__field input,
-.register-participant__field textarea,
-.register-participant__field select {
-  /* No transform on focus: a transform rasterizes the input into a layer
-     and the 1.01 scale made the typed text render blurred. */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.register-participant__field input:focus,
-.register-participant__field textarea:focus,
-.register-participant__field select:focus {
-  border-color: var(--color-primary-green);
-  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
-}
-
-.register-participant__checkboxes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.register-participant__checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  color: var(--color-text-dark);
-  cursor: pointer;
-}
-
-.register-participant__spinner-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(253, 252, 245, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  border-radius: inherit;
-}
-
-@media (max-width: 600px) {
-  .register-participant__row {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

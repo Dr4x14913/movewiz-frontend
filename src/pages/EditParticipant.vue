@@ -2,6 +2,7 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { api } from '../api'
 import Card from '../components/Card.vue'
+import CardRow from '../components/CardRow.vue'
 import LocationPicker from '../components/LocationPicker.vue'
 import PopUp from '../components/PopUp.vue'
 import FormLayout from '../components/FormLayout.vue'
@@ -167,25 +168,25 @@ function goHome() {
     </div>
 
     <FormLayout v-else :submitting="isSubmitting" :submit-label="t('editParticipant.submit')" @submit="submitForm">
-      <div class="edit-participant__cards">
-        <Card variant="borderless" class="edit-participant__form-card">
-          <div class="edit-participant__row">
-            <div class="edit-participant__field">
+      <CardRow>
+        <Card variant="borderless">
+          <div class="form__row">
+            <div class="form__field">
               <label for="edit-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
               <input id="edit-first-name" type="text" v-model="firstName" required />
             </div>
 
-            <div class="edit-participant__field">
+            <div class="form__field">
               <label for="edit-last-name">{{ $t('registerParticipant.contact.lastName') }}</label>
               <input id="edit-last-name" type="text" v-model="lastName" required />
             </div>
 
-            <div class="edit-participant__field">
+            <div class="form__field">
               <label for="edit-email">{{ $t('registerParticipant.contact.email') }}</label>
               <input id="edit-email" type="email" v-model="email" disabled />
             </div>
 
-            <div class="edit-participant__field">
+            <div class="form__field">
               <label for="edit-mode">{{ $t('registerParticipant.details.mode') }}</label>
               <select id="edit-mode" v-model="mode" required>
                 <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
@@ -193,19 +194,19 @@ function goHome() {
               </select>
             </div>
 
-            <div class="edit-participant__field">
+            <div class="form__field">
               <label for="edit-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
               <input id="edit-phone" type="tel" v-model="phoneNumber" required />
             </div>
 
-            <div class="edit-participant__field">
+            <div class="form__field">
               <label for="edit-comments">{{ $t('registerParticipant.details.comments') }}</label>
               <textarea id="edit-comments" v-model="comments" rows="3" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
             </div>
           </div>
         </Card>
 
-        <Card variant="borderless" class="edit-participant__form-card">
+        <Card variant="borderless">
           <LocationPicker
             ref="picker"
             :label="t('registerParticipant.details.location')"
@@ -216,44 +217,26 @@ function goHome() {
             @location-selected="onLocationSelected"
           />
 
-          <div class="edit-participant__checkboxes">
-            <label class="edit-participant__checkbox">
+          <div class="form__checkboxes">
+            <label class="form__checkbox">
               <input type="checkbox" v-model="hideEmail" />
               {{ $t('registerParticipant.details.hideEmail') }}
             </label>
 
-            <label class="edit-participant__checkbox">
+            <label class="form__checkbox">
               <input type="checkbox" v-model="notifyMe" />
               {{ $t('registerParticipant.details.notifyMe') }}
             </label>
           </div>
         </Card>
-      </div>
+      </CardRow>
     </FormLayout>
   </div>
 </template>
 
 <style scoped>
-
-.edit-participant__cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
-  flex: 0 0 100%;
-}
-
-.edit-participant__form-card {
-  flex: 1;
-  min-width: 500px;
-  overflow: visible;
-  margin-top: 0;
-}
-
-.edit-participant__form input,
-.edit-participant__form textarea {
-  padding: 0.625rem 1rem;
-}
+/* row/field/checkbox styles live in assets/main.css (.form__row, .form__field,
+   .form__checkboxes, .form__checkbox) */
 
 .edit-participant h1 {
   color: var(--color-primary-green);
@@ -272,74 +255,5 @@ function goHome() {
 
 .edit-participant__btn {
   margin-top: 1rem;
-}
-
-/* Same grid as create event: minmax(0, 1fr) (not bare 1fr) so columns can
-   shrink below their content width and never force the card wider. */
-.edit-participant__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.edit-participant__field {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 0.5rem;
-}
-
-.edit-participant__field:last-child {
-  margin-bottom: 0;
-}
-
-.edit-participant__field label {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--color-text-dark);
-  transition: color 0.2s ease;
-}
-
-.edit-participant__field input,
-.edit-participant__field textarea,
-.edit-participant__field select {
-  /* No transform on focus: a transform rasterizes the input into a layer
-     and the 1.01 scale made the typed text render blurred. */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.edit-participant__field input:focus,
-.edit-participant__field textarea:focus,
-.edit-participant__field select:focus {
-  border-color: var(--color-primary-green);
-  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
-}
-
-.edit-participant__checkboxes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.edit-participant__checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  color: var(--color-text-dark);
-  cursor: pointer;
-}
-
-@media (max-width: 600px) {
-  .edit-participant__row {
-    grid-template-columns: 1fr;
-  }
-
-  .edit-participant__form-card {
-    min-width: 100%;
-  }
 }
 </style>
