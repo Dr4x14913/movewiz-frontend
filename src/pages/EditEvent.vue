@@ -270,14 +270,15 @@ function goHome() {
 
 .edit-event__field input,
 .edit-event__field textarea {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  /* No transform on focus: a transform rasterizes the input into a layer
+     and the 1.01 scale made the typed text render blurred. */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .edit-event__field input:focus,
 .edit-event__field textarea:focus {
   border-color: var(--color-primary-green);
   box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
-  transform: scale(1.01);
 }
 
 .edit-event__form input,

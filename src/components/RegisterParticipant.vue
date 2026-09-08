@@ -24,7 +24,7 @@ const emit = defineEmits<{
   registered: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const firstName = ref('')
 const lastName = ref('')
@@ -91,6 +91,7 @@ async function submitForm() {
       notifyMe: notifyMe.value,
       phoneNumber: phoneNumber.value,
       comments: comments.value,
+      language: locale.value,
     }
 
     const response = await api('/api/registerParticipant', {
@@ -241,7 +242,9 @@ function onPopupClose() {
 .register-participant__field input,
 .register-participant__field textarea,
 .register-participant__field select {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  /* No transform on focus: a transform rasterizes the input into a layer
+     and the 1.01 scale made the typed text render blurred. */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .register-participant__field input:focus,
@@ -249,7 +252,6 @@ function onPopupClose() {
 .register-participant__field select:focus {
   border-color: var(--color-primary-green);
   box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
-  transform: scale(1.01);
 }
 
 .register-participant__checkboxes {

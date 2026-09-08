@@ -14,7 +14,7 @@ enum FormResponse {
   None,
 }
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const props = defineProps<{
   token?: string
@@ -42,6 +42,7 @@ async function submitForm() {
         turnstileToken: turnstileToken.value || turnstileWidget.value?.getResponse() || '',
         senderEmail: senderEmail.value,
         message: message.value,
+        language: locale.value,
       }),
     })
     if (!response.ok) {

@@ -13,7 +13,7 @@ enum FormResponse {
   Success,
   None,
 }
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const first_name = ref('')
 const last_name = ref('')
 const email = ref('')
@@ -87,6 +87,7 @@ async function submitForm() {
         comments: comments.value,
         turnstileToken: turnstileToken.value || turnstileWidget.value?.getResponse() || '',
         eventName: event_name.value,
+        language: locale.value,
       }),
     })
     if (!response.ok) {
@@ -166,7 +167,7 @@ function onPopupClose() {
             <textarea id="comments" v-model="comments" rows="4" :placeholder="$t('createEvent.details.commentsPlaceholder')"></textarea>
           </div>
 
-          <div v-if="turnstileSiteKey" class="create-event__field">
+          <div v-if="turnstileSiteKey" class="create-event__field create-event__field--full">
             <label>{{ $t('common.verification.title') }}</label>
             <Turnstile
               ref="turnstileWidget"
@@ -202,11 +203,21 @@ function onPopupClose() {
   margin-bottom: 0.25rem;
 }
 
+/* minmax(0, 1fr) (not bare 1fr) so columns can shrink below their content
+   width: the 300px-wide Turnstile iframe and the date input (~213px
+   intrinsic) would otherwise force the grid wider than the card, pushing
+   the second column under the location picker once Turnstile renders. */
 .create-event__row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.75rem;
   margin-bottom: 0.75rem;
+}
+
+/* The Turnstile widget is a fixed 300px-wide iframe: give it the whole row
+   so it can never dictate a column width. */
+.create-event__field--full {
+  grid-column: 1 / -1;
 }
 
 .create-event__field {
@@ -227,16 +238,17 @@ function onPopupClose() {
   transition: color 0.2s ease;
 }
 
+/* No transform on focus: a transform rasterizes the input into a layer
+   and the 1.01 scale made the typed text render blurred. */
 .create-event__field input,
 .create-event__field textarea {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .create-event__field input:focus,
 .create-event__field textarea:focus {
   border-color: var(--color-primary-green);
   box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
-  transform: scale(1.01);
 }
 
 .create-event__form input,

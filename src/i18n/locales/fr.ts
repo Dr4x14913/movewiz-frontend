@@ -30,6 +30,7 @@ export default {
       tooManyRequests: 'Trop de requêtes. Veuillez patienter un moment avant de réessayer.',
     },
     contact: {
+      title: 'Vos coordonnées',
       firstName: 'Prénom',
       lastName: 'Nom',
       email: 'E-mail',
