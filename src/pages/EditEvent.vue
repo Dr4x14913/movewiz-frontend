@@ -207,8 +207,6 @@ function goHome() {
           <input type="hidden" name="long" :value="long_" />
         </Card>
 
-        <Card variant="borderless" class="edit-event__form-card">
-        </Card>
       </div>
     </FormLayout>
   </div>
@@ -234,6 +232,9 @@ function goHome() {
   flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-start;
+  /* Take the whole row so the cards stretch to full page width and the
+     submit button always wraps below (same layout as EditParticipant). */
+  flex: 0 0 100%;
 }
 
 .edit-event__form-card {

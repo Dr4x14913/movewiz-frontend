@@ -3,10 +3,12 @@ import Spinner from './Spinner.vue'
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   submitting?: boolean
-  noSubmitBtn?: boolean 
+  noSubmitBtn?: boolean
+  submitLabel?: string
 }>(), {
   submitting: false,
-  noSubmitBtn: false
+  noSubmitBtn: false,
+  submitLabel: undefined
 })
 
 defineEmits<{
@@ -30,7 +32,7 @@ defineEmits<{
       <div class="form-layout__actions">
         <slot name="actions">
           <button v-if="!noSubmitBtn" type="submit" class="btn-primary" :disabled="submitting">
-            {{ $t('registerParticipant.submit') }}
+            {{ submitLabel ?? $t('registerParticipant.submit') }}
           </button>
         </slot>
       </div>

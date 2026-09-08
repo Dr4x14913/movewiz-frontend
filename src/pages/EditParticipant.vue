@@ -154,7 +154,6 @@ function goHome() {
   </div>
   <div class="page edit-participant">
     <h1>{{ $t('editParticipant.title') }}</h1>
-    <p class="edit-participant__subtitle">{{ $t('editParticipant.subtitle') }}</p>
 
     <div v-if="isLoading" class="edit-participant__loading">
       <p>{{ $t('editParticipant.loading') }}</p>
@@ -167,80 +166,98 @@ function goHome() {
       </Card>
     </div>
 
-    <FormLayout v-else :submitting="isSubmitting" @submit="submitForm">
-      <Card variant="borderless" :title="$t('registerParticipant.details.title')">
-        <div class="edit-participant__field">
-          <label for="edit-mode">{{ $t('registerParticipant.details.mode') }}</label>
-          <select id="edit-mode" v-model="mode" required>
-            <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
-            <option value="passenger">{{ $t('registerParticipant.details.passenger') }}</option>
-          </select>
-        </div>
+    <FormLayout v-else :submitting="isSubmitting" :submit-label="t('editParticipant.submit')" @submit="submitForm">
+      <div class="edit-participant__cards">
+        <Card variant="borderless" class="edit-participant__form-card">
+          <div class="edit-participant__row">
+            <div class="edit-participant__field">
+              <label for="edit-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
+              <input id="edit-first-name" type="text" v-model="firstName" required />
+            </div>
 
-        <div class="edit-participant__field">
-          <label for="edit-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
-          <input id="edit-phone" type="tel" v-model="phoneNumber" required />
-        </div>
+            <div class="edit-participant__field">
+              <label for="edit-last-name">{{ $t('registerParticipant.contact.lastName') }}</label>
+              <input id="edit-last-name" type="text" v-model="lastName" required />
+            </div>
 
-        <div class="edit-participant__field">
-          <label for="edit-comments">{{ $t('registerParticipant.details.comments') }}</label>
-          <textarea id="edit-comments" v-model="comments" rows="3" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
-        </div>
+            <div class="edit-participant__field">
+              <label for="edit-email">{{ $t('registerParticipant.contact.email') }}</label>
+              <input id="edit-email" type="email" v-model="email" disabled />
+            </div>
 
-        <LocationPicker
-          ref="picker"
-          :label="t('registerParticipant.details.location')"
-          :placeholder="t('common.address.placeholder')"
-          :mainMarkerLabel="t('registerParticipant.markerLabel')"
-          @location-selected="onLocationSelected"
-        />
+            <div class="edit-participant__field">
+              <label for="edit-mode">{{ $t('registerParticipant.details.mode') }}</label>
+              <select id="edit-mode" v-model="mode" required>
+                <option value="driver">{{ $t('registerParticipant.details.driver') }}</option>
+                <option value="passenger">{{ $t('registerParticipant.details.passenger') }}</option>
+              </select>
+            </div>
 
-        <div class="edit-participant__checkboxes">
-          <label class="edit-participant__checkbox">
-            <input type="checkbox" v-model="hideEmail" />
-            {{ $t('registerParticipant.details.hideEmail') }}
-          </label>
+            <div class="edit-participant__field">
+              <label for="edit-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
+              <input id="edit-phone" type="tel" v-model="phoneNumber" required />
+            </div>
 
-          <label class="edit-participant__checkbox">
-            <input type="checkbox" v-model="notifyMe" />
-            {{ $t('registerParticipant.details.notifyMe') }}
-          </label>
-        </div>
-      </Card>
-
-      <Card variant="classic" :title="$t('createEvent.contact.title')">
-        <div class="edit-participant__row">
-          <div class="edit-participant__field">
-            <label for="edit-first-name">{{ $t('registerParticipant.contact.firstName') }}</label>
-            <input id="edit-first-name" type="text" v-model="firstName" required />
+            <div class="edit-participant__field">
+              <label for="edit-comments">{{ $t('registerParticipant.details.comments') }}</label>
+              <textarea id="edit-comments" v-model="comments" rows="3" :placeholder="$t('registerParticipant.details.commentsPlaceholder')"></textarea>
+            </div>
           </div>
+        </Card>
 
-          <div class="edit-participant__field">
-            <label for="edit-last-name">{{ $t('registerParticipant.contact.lastName') }}</label>
-            <input id="edit-last-name" type="text" v-model="lastName" required />
+        <Card variant="borderless" class="edit-participant__form-card">
+          <LocationPicker
+            ref="picker"
+            :label="t('registerParticipant.details.location')"
+            :placeholder="t('common.address.placeholder')"
+            :mainMarkerLabel="t('registerParticipant.markerLabel')"
+            required
+            :height="'350px'"
+            @location-selected="onLocationSelected"
+          />
+
+          <div class="edit-participant__checkboxes">
+            <label class="edit-participant__checkbox">
+              <input type="checkbox" v-model="hideEmail" />
+              {{ $t('registerParticipant.details.hideEmail') }}
+            </label>
+
+            <label class="edit-participant__checkbox">
+              <input type="checkbox" v-model="notifyMe" />
+              {{ $t('registerParticipant.details.notifyMe') }}
+            </label>
           </div>
-        </div>
-
-        <div class="edit-participant__field">
-          <label for="edit-email">{{ $t('registerParticipant.contact.email') }}</label>
-          <input id="edit-email" type="email" v-model="email" disabled />
-        </div>
-      </Card>
-
+        </Card>
+      </div>
     </FormLayout>
   </div>
 </template>
 
 <style scoped>
+
+.edit-participant__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  flex: 0 0 100%;
+}
+
+.edit-participant__form-card {
+  flex: 1;
+  min-width: 500px;
+  overflow: visible;
+  margin-top: 0;
+}
+
+.edit-participant__form input,
+.edit-participant__form textarea {
+  padding: 0.625rem 1rem;
+}
+
 .edit-participant h1 {
   color: var(--color-primary-green);
   margin-bottom: 0.25rem;
-}
-
-.edit-participant__subtitle {
-  color: var(--color-text-medium);
-  margin-bottom: 2rem;
-  font-size: 1rem;
 }
 
 .edit-participant__loading {
@@ -257,17 +274,19 @@ function goHome() {
   margin-top: 1rem;
 }
 
+/* Same grid as create event: minmax(0, 1fr) (not bare 1fr) so columns can
+   shrink below their content width and never force the card wider. */
 .edit-participant__row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .edit-participant__field {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .edit-participant__field:last-child {
@@ -317,6 +336,10 @@ function goHome() {
 @media (max-width: 600px) {
   .edit-participant__row {
     grid-template-columns: 1fr;
+  }
+
+  .edit-participant__form-card {
+    min-width: 100%;
   }
 }
 </style>

@@ -87,28 +87,29 @@ function goBack() {
   </div>
   <div class="page send-message">
     <h1>{{ $t('sendMessage.title') }}</h1>
-    <p class="send-message__subtitle">{{ $t('sendMessage.subtitle') }}</p>
 
     <FormLayout :submitting="isSubmitting" @submit="submitForm">
-      <Card variant="classic" :title="$t('sendMessage.title')">
-        <div class="send-message__field">
-          <label for="sender-email">{{ $t('sendMessage.senderEmail') }}</label>
-          <input id="sender-email" type="email" v-model="senderEmail" required />
-        </div>
+      <div class="send-message__cards">
+        <Card variant="borderless"">
+          <div class="send-message__row">
+            <div class="send-message__field">
+              <label for="sender-email">{{ $t('sendMessage.senderEmail') }}</label>
+              <input id="sender-email" type="email" v-model="senderEmail" required />
+            </div>
 
-        <div class="send-message__field">
-          <label for="message">{{ $t('sendMessage.message') }}</label>
-          <textarea id="message" v-model="message" rows="5" required :placeholder="$t('sendMessage.messagePlaceholder')"></textarea>
-        </div>
-      </Card>
+            <div class="send-message__field">
+              <label for="message">{{ $t('sendMessage.message') }}</label>
+              <textarea id="message" v-model="message" rows="5" required :placeholder="$t('sendMessage.messagePlaceholder')"></textarea>
+            </div>
 
-      <Card v-if="turnstileSiteKey" :title="$t('common.verification.title')">
-        <Turnstile
-          ref="turnstileWidget"
-          :sitekey="turnstileSiteKey"
-          @token="turnstileToken = $event"
-        />
-      </Card>
+            <Turnstile
+              ref="turnstileWidget"
+              :sitekey="turnstileSiteKey"
+              @token="turnstileToken = $event"
+            />
+          </div>
+        </Card>
+      </div>
 
       <template #actions>
         <div class="send-message__actions">
@@ -126,10 +127,31 @@ function goBack() {
   margin-bottom: 0.25rem;
 }
 
-.send-message__subtitle {
-  color: var(--color-text-medium);
-  margin-bottom: 2rem;
-  font-size: 1rem;
+.send-message__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  flex: 0 0 100%;
+}
+
+.send-message__form-card {
+  flex: 1;
+  min-width: 500px;
+  overflow: visible;
+  margin-top: 0;
+}
+
+.send-message__form input,
+.send-message__form textarea {
+  padding: 0.625rem 1rem;
+}
+
+.send-message__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .send-message__field {
@@ -179,6 +201,13 @@ function goBack() {
 @media (max-width: 600px) {
   .send-message__actions {
     flex-direction: column;
+  }
+
+  .send-message__form-card {
+    min-width: 100%;
+  }
+  .send-message__row {
+    grid-template-columns: 1fr;
   }
 
   .send-message__actions .btn-primary,
