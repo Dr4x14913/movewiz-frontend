@@ -161,11 +161,22 @@ function onPopupClose() {
   </div>
   <div v-if="form_resp == FormResponse.Success">
     <PopUp :title="t('createEvent.popup.successTitle')" type='success' @close='onPopupClose'>
-      <p class="create-event__success-msg">
-        {{ t('createEvent.popup.successDesc') }}
-        <a :href="successReadUrl" target="_blank" rel="noopener noreferrer">{{ t('createEvent.popup.readLink') }}</a> |
-        <a :href="successWriteUrl" target="_blank" rel="noopener noreferrer">{{ t('createEvent.popup.writeLink') }}</a>
-      </p>
+      <div class="create-event__success-btns">
+        <a class="btn-primary" :href="successReadUrl" target="_blank" rel="noopener noreferrer">{{ $t('createEvent.popup.viewBtn') }}</a>
+        <a class="btn-secondary" :href="successWriteUrl" target="_blank" rel="noopener noreferrer">{{ $t('createEvent.popup.editBtn') }}</a>
+      </div>
+      <div class="create-event__success-links">
+        <p class="create-event__links-title">{{ $t('createEvent.popup.linksTitle') }}</p>
+        <p class="create-event__link-row">
+          <span class="create-event__link-name">{{ $t('createEvent.popup.readLink') }}</span>
+          <span class="create-event__link-url">{{ successReadUrl }}</span>
+        </p>
+        <p class="create-event__link-row">
+          <span class="create-event__link-name">{{ $t('createEvent.popup.writeLink') }}</span>
+          <span class="create-event__link-url">{{ successWriteUrl }}</span>
+        </p>
+      </div>
+      <p class="create-event__disclaimer">{{ $t('createEvent.popup.linksDisclaimer') }}</p>
     </PopUp>
   </div>
   <PopUp v-if="showConfirm" :title="t('createEvent.confirm.title')" @close="showConfirm = false">
@@ -296,24 +307,64 @@ function onPopupClose() {
   word-break: break-word;
 }
 
-/* Success popup message: slot content is compiled in this component's scope,
-   so PopUp's scoped .popup__message styles can't reach it — mirror them here.
-   (URLs come from our own backend, :href binding keeps them reactive/safe.) */
-.create-event__success-msg {
-  text-align: center;
+/* Success popup content: slot content is compiled in this component's
+   scope, so PopUp's scoped styles can't reach it — mirror what's needed. */
+.create-event__success-btns {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.create-event__success-btns .btn-primary,
+.create-event__success-btns .btn-secondary {
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9rem;
+}
+
+.create-event__success-links {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg-cream);
+  border-radius: 8px;
+}
+
+.create-event__links-title {
+  margin: 0 0 0.375rem;
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-medium);
+}
+
+.create-event__link-row {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.create-event__link-name {
+  display: block;
+  font-weight: 600;
   color: var(--color-text-dark);
-  font-family: var(--font-body);
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
 }
 
-.create-event__success-msg a {
-  color: var(--color-primary-green);
-  text-decoration: underline;
+.create-event__link-url {
+  color: var(--color-text-medium);
+  word-break: break-all;
+  user-select: all;
+  cursor: text;
 }
 
-.create-event__success-msg a:hover {
-  color: var(--color-secondary-green);
+.create-event__disclaimer {
+  margin: 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--color-text-medium);
+  text-align: center;
 }
 
 .btn-primary:disabled {
