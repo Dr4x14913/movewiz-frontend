@@ -61,6 +61,7 @@ export default {
       desc: 'This event could not be found or the token is invalid.',
     },
     goHome: 'Go Home',
+    directions: 'Get directions',
     fields: {
       date: 'Date',
       contact: 'Contact',

@@ -61,6 +61,7 @@ export default {
       desc: 'Cet événement est introuvable ou le token est invalide.',
     },
     goHome: 'Retour à l\'accueil',
+    directions: 'Y aller',
     fields: {
       date: 'Date',
       contact: 'Contact',

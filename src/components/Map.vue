@@ -49,6 +49,11 @@ const props = withDefaults(defineProps<{
   fitMarkers?: boolean
   is_editable?: boolean
   mainMarkerLabel?: string
+  mainMarkerPopup?: {
+    name?: string
+    date?: string
+    directions?: { url: string; label: string; newTab?: boolean }
+  }
 }>(), {
   lat: 46.603354,
   lng: 1.888334,
@@ -57,6 +62,7 @@ const props = withDefaults(defineProps<{
   displayMainMarker: false,
   is_editable: true,
   mainMarkerLabel: undefined,
+  mainMarkerPopup: undefined,
 })
 
 const emit = defineEmits<{
@@ -98,6 +104,23 @@ function escapeHtml(value: string): string {
     .replace(/'/g, '&#39;')
 }
 
+// Popup for the main event marker: event name, date and an optional
+// directions link ("Y aller").
+function buildMainMarkerPopupHtml(): string {
+  const p = props.mainMarkerPopup
+  const rows: string[] = []
+  if (p?.name)
+    rows.push(`<div class="map-marker-popup__name">${escapeHtml(p.name)}</div>`)
+  if (p?.date)
+    rows.push(`<div class="map-marker-popup__row">${escapeHtml(p.date)}</div>`)
+  if (p?.directions) {
+    const d = p.directions
+    const targetAttrs = d.newTab ? ' target="_blank" rel="noopener noreferrer"' : ''
+    rows.push(`<a class="map-marker-popup__contact" href="${escapeHtml(d.url)}"${targetAttrs}>${escapeHtml(d.label)}</a>`)
+  }
+  return rows.join('')
+}
+
 function buildMarkerHtml(m: AdditionalMarker): string {
   const rows = [`<div class="map-marker-popup__name">${escapeHtml(m.tooltip)}</div>`]
   if (m.mode) {
@@ -136,6 +159,9 @@ function updateMarker(latitude: number, longitude: number) {
     marker.setLatLng([latitude, longitude])
   } else {
     marker = L.marker([latitude, longitude], { draggable: props.is_editable, icon: orangeIcon }).addTo(map)
+
+    if (props.mainMarkerPopup)
+      marker.bindPopup(buildMainMarkerPopupHtml(), { className: 'map-marker-popup' })
 
     marker.on('dragend', (e: any) => {
       const pos = e.target.getLatLng()
@@ -670,6 +696,7 @@ watch(props, (new_val) => {
 
 .map-marker-popup__contact {
   display: inline-block;
+  margin-top: 0.375rem;
   border: 1px solid var(--color-primary-orange);
   border-radius: 50px;
   padding: 0.15rem 0.6rem;
