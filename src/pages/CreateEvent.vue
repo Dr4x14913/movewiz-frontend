@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { api } from '../api'
 import Card from '../components/Card.vue'
 import CardRow from '../components/CardRow.vue'
@@ -35,6 +35,9 @@ const locationPickerRef = ref<{
 const form_resp = ref(FormResponse.None)
 const form_resp_msg = ref('')
 const isSubmitting = ref(false)
+const showConfirm = ref(false)
+const successReadUrl = ref('')
+const successWriteUrl = ref('')
 
 function onLocationSelected(data: { address: string; lat: number; lng: number }) {
   address.value = data.address
@@ -55,7 +58,30 @@ function resetForm() {
 }
 
 
-async function submitForm() {
+function formatDate(dateStr: string): string {
+  const dsLocale = locale.value === 'fr' ? 'fr-FR' : 'en-US'
+  return new Date(dateStr).toLocaleDateString(dsLocale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+const contactName = computed(() => `${first_name.value} ${last_name.value}`.trim())
+
+// Contact line of the confirmation summary: name and email merged
+// (whichever is filled in), e.g. "Jean Dupont · jean@example.com".
+const contactLine = computed(() => [contactName.value, email.value].filter(Boolean).join(' · '))
+
+// Value the API will receive (the picker's current address, which the
+// user may have edited after the reverse geocode).
+const summaryAddress = computed(
+  () => locationPickerRef.value?.getLocation()?.address ?? address.value
+)
+
+// First step: validate the location, then show the confirmation popup.
+// The API call itself only happens on "Valider" (createEvent).
+function onFormSubmit() {
   // A typed address only has coordinates once the user picked it from the
   // suggestions or clicked the map — without that, the default map center
   // would be silently stored, so ask for a location selection instead.
@@ -64,6 +90,10 @@ async function submitForm() {
     form_resp_msg.value = t('createEvent.popup.errorMissingLocation')
     return
   }
+  showConfirm.value = true
+}
+
+async function createEvent() {
   isSubmitting.value = true
   try {
     // The address sent to the backend is the text currently in the address
@@ -92,6 +122,7 @@ async function submitForm() {
       }),
     })
     if (!response.ok) {
+      showConfirm.value = false
       form_resp.value = FormResponse.Error
       if (response.status === 429) {
         form_resp_msg.value = t('createEvent.popup.tooManyRequests')
@@ -104,12 +135,12 @@ async function submitForm() {
         }
       }
     } else {
+      showConfirm.value = false
       resetForm()
-      form_resp.value = FormResponse.Success
       const resp = await response.json()
-      form_resp_msg.value = `${t('createEvent.popup.successDesc')}
-        <a href="${resp.readUrl}" target="_blank" rel="noopener">${t('createEvent.popup.readLink')}</a> |
-        <a href="${resp.writeUrl}" target="_blank" rel="noopener">${t('createEvent.popup.writeLink')}</a>`
+      successReadUrl.value = resp.readUrl
+      successWriteUrl.value = resp.writeUrl
+      form_resp.value = FormResponse.Success
     }
   } finally {
     isSubmitting.value = false
@@ -129,13 +160,43 @@ function onPopupClose() {
     <PopUp :title="t('createEvent.popup.errorTitle')" :message="form_resp_msg" type='error' @close='onPopupClose' />
   </div>
   <div v-if="form_resp == FormResponse.Success">
-    <PopUp :title="t('createEvent.popup.successTitle')" :html="form_resp_msg" type='success' @close='onPopupClose' />
+    <PopUp :title="t('createEvent.popup.successTitle')" type='success' @close='onPopupClose'>
+      <p class="create-event__success-msg">
+        {{ t('createEvent.popup.successDesc') }}
+        <a :href="successReadUrl" target="_blank" rel="noopener noreferrer">{{ t('createEvent.popup.readLink') }}</a> |
+        <a :href="successWriteUrl" target="_blank" rel="noopener noreferrer">{{ t('createEvent.popup.writeLink') }}</a>
+      </p>
+    </PopUp>
   </div>
+  <PopUp v-if="showConfirm" :title="t('createEvent.confirm.title')" @close="showConfirm = false">
+    <div class="create-event__summary">
+      <div class="create-event__summary-item">
+        <span class="create-event__summary-label">{{ $t('createEvent.details.eventName') }}</span>
+        <span>{{ event_name }} · {{ formatDate(date) }}</span>
+      </div>
+      <div v-if="contactLine" class="create-event__summary-item">
+        <span class="create-event__summary-label">{{ $t('eventPage.fields.contact') }}</span>
+        <span>{{ contactLine }}</span>
+      </div>
+      <div class="create-event__summary-item">
+        <span class="create-event__summary-label">{{ $t('common.address.label') }}</span>
+        <span>{{ summaryAddress }}</span>
+      </div>
+      <div v-if="comments" class="create-event__summary-item">
+        <span class="create-event__summary-label">{{ $t('createEvent.details.comments') }}</span>
+        <span>{{ comments }}</span>
+      </div>
+    </div>
+    <template #actions>
+      <button class="btn-secondary" type="button" @click="showConfirm = false">{{ $t('createEvent.confirm.cancel') }}</button>
+      <button class="btn-primary" type="button" :disabled="isSubmitting" @click="createEvent">{{ $t('createEvent.confirm.validate') }}</button>
+    </template>
+  </PopUp>
   <div class="page create-event">
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="form__required-legend">{{ $t('createEvent.required') }}</p>
 
-    <FormLayout :submitting="isSubmitting" @submit="submitForm" >
+    <FormLayout :submitting="isSubmitting" @submit="onFormSubmit" >
       <CardRow>
       <Card variant="borderless">
         <div class="form__row">
@@ -204,5 +265,60 @@ function onPopupClose() {
 .create-event h1 {
   color: var(--color-primary-green);
   margin-bottom: 0.25rem;
+}
+
+/* Confirmation popup summary (slot content rendered inside PopUp) */
+.create-event__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.create-event__summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.create-event__summary-label {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-medium);
+}
+
+.create-event__summary-item > span:last-child {
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+/* Success popup message: slot content is compiled in this component's scope,
+   so PopUp's scoped .popup__message styles can't reach it — mirror them here.
+   (URLs come from our own backend, :href binding keeps them reactive/safe.) */
+.create-event__success-msg {
+  text-align: center;
+  color: var(--color-text-dark);
+  font-family: var(--font-body);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.create-event__success-msg a {
+  color: var(--color-primary-green);
+  text-decoration: underline;
+}
+
+.create-event__success-msg a:hover {
+  color: var(--color-secondary-green);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 </style>

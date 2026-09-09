@@ -29,6 +29,11 @@ export default {
       errorMissingLocation: 'The address you entered could not be recognized. Please try typing it again or select it from the suggestions.',
       tooManyRequests: 'Too many requests. Please wait a moment before trying again.',
     },
+    confirm: {
+      title: 'Confirm Event Creation',
+      cancel: 'Cancel',
+      validate: 'Confirm',
+    },
     contact: {
       title: 'Your contact information',
       firstName: 'First Name',

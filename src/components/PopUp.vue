@@ -3,22 +3,19 @@
     <div v-if="show" class="popup-overlay" @click.self="onClose">
       <div class="popup" :class="`popup--${type}`">
         <div class="popup__icon">
-          <svg v-if="type === 'success'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          <svg v-else-if="type === 'error'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="16" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
-          </svg>
+          <i v-if="type === 'success'" class="fa-solid fa-circle-check" style="font-size: 2.5rem"></i>
+          <i v-else-if="type === 'error'" class="fa-solid fa-circle-xmark" style="font-size: 2.5rem"></i>
+          <i v-else class="fa-solid fa-info" style="font-size: 2.5rem"></i>
         </div>
         <h3 v-if="title" class="popup__title">{{ title }}</h3>
-        <p v-if="html" class="popup__message" v-html="html"></p>
-        <p v-else class="popup__message">{{ message }}</p>
+        <div class="popup__body">
+          <slot>
+            <p class="popup__message">{{ message }}</p>
+          </slot>
+        </div>
+        <div v-if="$slots.actions" class="popup__actions">
+          <slot name="actions" />
+        </div>
         <button class="popup__close" @click="onClose" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -35,15 +32,13 @@ import { ref } from "vue"
 const props = withDefaults(defineProps<{
   message?: string
   title?: string
-  html?: string
   type?: 'success' | 'error' | 'info'
   show?: boolean
 }>(), {
   type: 'info',
   show: true,
   message: '',
-  title: '',
-  html: ''
+  title: ''
 })
 
 const show = ref(props.show)
@@ -78,9 +73,43 @@ const emit = defineEmits<{
   padding: 2rem;
   max-width: 400px;
   width: 90%;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   position: relative;
   border-top: 4px solid var(--color-text-medium);
+}
+
+/* Only the content scrolls: title and action buttons stay visible */
+.popup__body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.popup__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .popup {
+    padding: 1.25rem;
+    max-height: 70vh;
+  }
+
+  .popup__actions {
+    flex-direction: column;
+  }
+
+  .popup__actions .btn-primary,
+  .popup__actions .btn-secondary {
+    width: 100%;
+  }
 }
 
 .popup--success {
@@ -96,8 +125,8 @@ const emit = defineEmits<{
 }
 
 .popup__icon {
-  width: 48px;
-  height: 48px;
+  width: 70px;
+  height: 70px;
   margin: 0 auto 1rem;
   border-radius: 50%;
   display: flex;
@@ -134,15 +163,6 @@ const emit = defineEmits<{
   font-family: var(--font-body);
   margin-bottom: 1.5rem;
   line-height: 1.5;
-}
-
-.popup__message a {
-  color: var(--color-primary-green);
-  text-decoration: underline;
-}
-
-.popup__message a:hover {
-  color: var(--color-secondary-green);
 }
 
 .popup__close {
