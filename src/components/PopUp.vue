@@ -1,30 +1,35 @@
 <template>
-  <Transition name="popup">
-    <div v-if="show" class="popup-overlay" @click.self="onClose">
-      <div class="popup" :class="`popup--${type}`">
-        <div class="popup__icon">
-          <i v-if="type === 'success'" class="fa-solid fa-circle-check" style="font-size: 2.5rem"></i>
-          <i v-else-if="type === 'error'" class="fa-solid fa-circle-xmark" style="font-size: 2.5rem"></i>
-          <i v-else class="fa-solid fa-info" style="font-size: 2.5rem"></i>
+  <!-- Render at the document root: a position: fixed overlay inserted deep in a
+       scrolled page can be mis-anchored on mobile browsers; a direct child of
+       <body> is immune to any ancestor stacking/containing-block quirks. -->
+  <Teleport to="body">
+    <Transition name="popup">
+      <div v-if="show" class="popup-overlay" @click.self="onClose">
+        <div class="popup" :class="`popup--${type}`">
+          <div class="popup__icon">
+            <i v-if="type === 'success'" class="fa-solid fa-circle-check" style="font-size: 2.5rem"></i>
+            <i v-else-if="type === 'error'" class="fa-solid fa-circle-xmark" style="font-size: 2.5rem"></i>
+            <i v-else class="fa-solid fa-info" style="font-size: 2.5rem"></i>
+          </div>
+          <h3 v-if="title" class="popup__title">{{ title }}</h3>
+          <div class="popup__body">
+            <slot>
+              <p class="popup__message">{{ message }}</p>
+            </slot>
+          </div>
+          <div v-if="$slots.actions" class="popup__actions">
+            <slot name="actions" />
+          </div>
+          <button class="popup__close" @click="onClose" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
-        <h3 v-if="title" class="popup__title">{{ title }}</h3>
-        <div class="popup__body">
-          <slot>
-            <p class="popup__message">{{ message }}</p>
-          </slot>
-        </div>
-        <div v-if="$slots.actions" class="popup__actions">
-          <slot name="actions" />
-        </div>
-        <button class="popup__close" @click="onClose" aria-label="Close">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -54,17 +59,17 @@ const emit = defineEmits<{
 </script>
 
 <style scoped>
+/* inset (not width/height: 100%) so the edges stay pinned to the viewport on
+   mobile, where the layout viewport changes size with the URL bar */
 .popup-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  /* above the sticky navbar (z-index 1100) so it gets dimmed too */
+  z-index: 2000;
 }
 
 .popup {
