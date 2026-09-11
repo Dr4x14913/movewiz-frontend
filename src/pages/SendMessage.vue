@@ -43,6 +43,7 @@ async function submitForm() {
         turnstileToken: turnstileToken.value || turnstileWidget.value?.getResponse() || '',
         senderEmail: senderEmail.value,
         message: message.value,
+        eventPageUrl: window.location.origin + '/event',
         language: locale.value,
       }),
     })
