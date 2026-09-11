@@ -184,6 +184,7 @@ export default {
   },
   common: {
     back: 'Retour',
+    ok: 'OK',
     clear: 'Tout afficher',
     address: {
       label: 'Adresse',

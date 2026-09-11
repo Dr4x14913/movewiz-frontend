@@ -7,6 +7,7 @@ import PopUp from './PopUp.vue'
 import Spinner from './Spinner.vue'
 import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
+import { sanitizePhone } from '../phone'
 
 enum FormResponse {
   Error,
@@ -67,6 +68,16 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
   lat.value = data.lat
   long_.value = data.lng
   address.value = data.address
+}
+
+// Keep only valid phone number characters (also covers pasted text)
+function onPhoneInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  const cleaned = sanitizePhone(input.value)
+  if (cleaned !== input.value) {
+    input.value = cleaned
+  }
+  phoneNumber.value = cleaned
 }
 
 async function submitForm() {
@@ -171,7 +182,7 @@ function onPopupClose() {
 
           <div class="form__field">
             <label for="reg-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
-            <input id="reg-phone" type="tel" v-model="phoneNumber"/>
+            <input id="reg-phone" type="tel" v-model="phoneNumber" @input="onPhoneInput"/>
           </div>
 
           <div class="form__field">

@@ -183,6 +183,7 @@ export default {
   },
   common: {
     back: 'Go Back',
+    ok: 'Ok',
     clear: 'Show all',
     address: {
       label: 'Address',

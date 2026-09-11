@@ -40,6 +40,7 @@ const address = ref('')
 const lat = ref(0)
 const long_ = ref(0)
 const comments = ref('')
+const readUrl = ref('')
 
 onMounted(async () => {
   if (!props.token) {
@@ -69,6 +70,7 @@ async function fetchEvent() {
     lat.value = event.latitude
     long_.value = event.longitude
     comments.value = event.comments || ''
+    readUrl.value = event.readUrl || ''
     isLoading.value = false
     await nextTick()
     picker.value?.setAddress(address.value, lat.value, long_.value)
@@ -135,6 +137,18 @@ function onPopupClose() {
 function goHome() {
   router.push('/')
 }
+
+function goToEvent() {
+  // The edit token can't be used on the event page, so the read URL comes
+  // from the API (same convention as createEvent's readUrl). If it carries a
+  // token for this app, navigate in-app instead of reloading the page.
+  const readToken = new URL(readUrl.value, window.location.origin).searchParams.get('token')
+  if (readToken) {
+    router.push({ path: '/event', query: { token: readToken } })
+  } else {
+    window.location.href = readUrl.value
+  }
+}
 </script>
 
 <template>
@@ -142,7 +156,12 @@ function goHome() {
     <PopUp :title="t('editEvent.popup.errorTitle')" :message="form_resp_msg" type="error" @close="onPopupClose" />
   </div>
   <div v-if="form_resp == FormResponse.Success">
-    <PopUp :title="t('editEvent.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose" />
+    <PopUp :title="t('editEvent.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose">
+      <template #actions>
+        <button v-if="readUrl" class="btn-primary" type="button" @click="goToEvent()">{{ $t('eventPage.access.btn') }}</button>
+        <button v-else class="btn-primary" type="button" @click="goHome()">{{ $t('eventPage.goHome') }}</button>
+      </template>
+    </PopUp>
   </div>
   <div class="page edit-event">
     <h1>{{ $t('editEvent.title') }}</h1>

@@ -84,7 +84,11 @@ function goBack() {
     <PopUp :title="t('sendMessage.popup.errorTitle')" :message="form_resp_msg" type="error" @close="onPopupClose" />
   </div>
   <div v-if="form_resp == FormResponse.Success">
-    <PopUp :title="t('sendMessage.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose" />
+    <PopUp :title="t('sendMessage.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose">
+      <template #actions>
+        <button class="btn-primary" type="button" @click="goBack()">{{ $t('common.ok') }}</button>
+      </template>
+    </PopUp>
   </div>
   <div class="page send-message">
     <h1>{{ $t('sendMessage.title') }}</h1>
@@ -114,8 +118,8 @@ function goBack() {
 
       <template #actions>
         <div class="send-message__actions">
-          <button type="button" class="btn-secondary" @click="goBack()">{{ $t('common.back') }}</button>
           <button type="submit" class="btn-primary" :disabled="isSubmitting">{{ $t('sendMessage.submit') }}</button>
+          <button type="button" class="btn-secondary" @click="goBack()">{{ $t('common.back') }}</button>
         </div>
       </template>
     </FormLayout>

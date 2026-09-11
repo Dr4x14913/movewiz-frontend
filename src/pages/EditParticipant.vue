@@ -8,6 +8,7 @@ import PopUp from '../components/PopUp.vue'
 import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router'
+import { sanitizePhone } from '../phone'
 
 enum FormResponse {
   Error,
@@ -66,7 +67,7 @@ async function fetchParticipant() {
     lastName.value = participant.lastName
     email.value = participant.email
     mode.value = participant.mode || 'passenger'
-    phoneNumber.value = participant.phoneNumber || ''
+    phoneNumber.value = sanitizePhone(participant.phoneNumber || '')
     comments.value = participant.comments || ''
     lat.value = participant.latitude || 0
     long_.value = participant.longitude || 0
@@ -91,6 +92,16 @@ function onLocationSelected(data: { address: string; lat: number; lng: number })
   lat.value = data.lat
   long_.value = data.lng
   address.value = data.address
+}
+
+// Keep only valid phone number characters (also covers pasted text)
+function onPhoneInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  const cleaned = sanitizePhone(input.value)
+  if (cleaned !== input.value) {
+    input.value = cleaned
+  }
+  phoneNumber.value = cleaned
 }
 
 async function submitForm() {
@@ -151,7 +162,11 @@ function goHome() {
     <PopUp :title="t('editParticipant.popup.errorTitle')" :message="form_resp_msg" type="error" @close="onPopupClose" />
   </div>
   <div v-if="form_resp == FormResponse.Success">
-    <PopUp :title="t('editParticipant.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose" />
+    <PopUp :title="t('editParticipant.popup.successTitle')" :message="form_resp_msg" type="success" @close="onPopupClose">
+      <template #actions>
+        <button class="btn-primary" type="button" @click="goHome()">{{ $t('eventPage.goHome') }}</button>
+      </template>
+    </PopUp>
   </div>
   <div class="page edit-participant">
     <h1>{{ $t('editParticipant.title') }}</h1>
@@ -196,7 +211,7 @@ function goHome() {
 
             <div class="form__field">
               <label for="edit-phone">{{ $t('registerParticipant.details.phoneNumber') }}</label>
-              <input id="edit-phone" type="tel" v-model="phoneNumber" required />
+              <input id="edit-phone" type="tel" v-model="phoneNumber" @input="onPhoneInput"/>
             </div>
 
             <div class="form__field">

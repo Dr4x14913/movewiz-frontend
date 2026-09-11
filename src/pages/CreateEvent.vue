@@ -8,6 +8,7 @@ import Turnstile from '../components/Turnstile.vue'
 import PopUp from '../components/PopUp.vue'
 import FormLayout from '../components/FormLayout.vue'
 import { useI18n } from 'vue-i18n'
+import { router } from '../router'
 
 enum FormResponse {
   Error,
@@ -153,6 +154,10 @@ async function createEvent() {
 function onPopupClose() {
     form_resp.value = FormResponse.None
 }
+
+function goHome() {
+  router.push('/')
+}
 </script>
 
 <template>
@@ -177,6 +182,9 @@ function onPopupClose() {
         </p>
       </div>
       <p class="create-event__disclaimer">{{ $t('createEvent.popup.linksDisclaimer') }}</p>
+      <template #actions>
+        <button class="btn-primary" type="button" @click="goHome()">{{ $t('eventPage.goHome') }}</button>
+      </template>
     </PopUp>
   </div>
   <PopUp v-if="showConfirm" :title="t('createEvent.confirm.title')" @close="showConfirm = false">
