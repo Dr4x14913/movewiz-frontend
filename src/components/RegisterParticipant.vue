@@ -23,6 +23,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   registered: []
+  confirmed: []
 }>()
 
 const { t, locale } = useI18n()
@@ -142,6 +143,14 @@ function onPopupClose() {
   }
   form_resp.value = FormResponse.None
 }
+
+// OK on the success popup: resets the form, closes the popup and lets the
+// event page scroll to the map and collapse the registration card.
+function onSuccessConfirm() {
+  clearForm()
+  emit('confirmed')
+  form_resp.value = FormResponse.None
+}
 </script>
 
 <template>
@@ -149,7 +158,11 @@ function onPopupClose() {
     <PopUp :title="t('registerParticipant.popup.errorTitle')" :message="form_resp_msg" type='error' @close='onPopupClose' />
   </div>
   <div v-if="form_resp == FormResponse.Success">
-    <PopUp :title="t('registerParticipant.popup.successTitle')" :message="form_resp_msg" type='success' @close='onPopupClose' />
+    <PopUp :title="t('registerParticipant.popup.successTitle')" :message="form_resp_msg" type='success' @close='onPopupClose'>
+      <template #actions>
+        <button class="btn-primary" type="button" @click="onSuccessConfirm">{{ $t('common.ok') }}</button>
+      </template>
+    </PopUp>
   </div>
   <div class="register-participant">
     <p class="form__required-legend">{{ $t('registerParticipant.required') }}</p>

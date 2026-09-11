@@ -23,14 +23,16 @@ const variantClass = computed(() => ({
   'card--collapsible': props.collapsible,
 }))
 
-async function toggle() {
+async function setExpanded(expanded: boolean) {
+  if (expanded === isExpanded.value) return
+
   if (!isExpanded.value && contentRef.value) {
     contentHeight = contentRef.value.scrollHeight + 'px'
     await nextTick()
   }
-  isExpanded.value = !isExpanded.value
+  isExpanded.value = expanded
 
-  if (isExpanded.value) {
+  if (expanded) {
     contentHeight = 'auto'
     await nextTick()
     contentRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
@@ -43,9 +45,15 @@ async function toggle() {
   }
 }
 
+function toggle() {
+  setExpanded(!isExpanded.value)
+}
+
 watch(() => props.defaultExpanded, (val) => {
   isExpanded.value = val
 })
+
+defineExpose({ collapse: () => setExpanded(false), expand: () => setExpanded(true) })
 </script>
 
 <template>

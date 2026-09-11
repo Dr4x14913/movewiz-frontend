@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { router } from '../router.ts'
 import { api } from '../api'
@@ -52,6 +52,8 @@ const filteredParticipants = ref<ParticipantData[]>([])
 const eventPageUrl = window.location.origin + '/event'
 const editParticipantPageUrl = window.location.origin + '/edit-participant'
 const searchText = ref('')
+const registerCardRef = ref<InstanceType<typeof Card> | null>(null)
+const mapScrollRef = ref<HTMLDivElement | null>(null)
 
 const participantMarkers = computed(() => {
   return filteredParticipants.value
@@ -156,6 +158,15 @@ function onFiltered(p: ParticipantData[]) {
   filteredParticipants.value = p
 }
 
+// OK on the registration success popup: collapse the registration card and
+// bring the map (now including the new marker) into view.
+function onRegisterConfirmed() {
+  registerCardRef.value?.collapse()
+  nextTick(() => {
+    mapScrollRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
+}
+
 function formatDate(dateStr: string): string {
   const dsLocale = locale.value === 'fr' ? 'fr-FR' : 'en-US'
   return new Date(dateStr).toLocaleDateString(dsLocale, {
@@ -204,17 +215,19 @@ function formatDate(dateStr: string): string {
             <p v-if="eventData.comments" class="event-page__comments">{{ eventData.comments }}</p>
           </div>
 
-          <Map
-            :lat="eventData.latitude"
-            :lng="eventData.longitude"
-            :zoom="10"
-            :additional-markers="participantMarkers"
-            :fit-markers="true"
-            :displayMainMarker="true"
-            :is_editable="false"
-            :main-marker-popup="mainMarkerPopup"
-            height="350px"
-          />
+          <div ref="mapScrollRef">
+            <Map
+              :lat="eventData.latitude"
+              :lng="eventData.longitude"
+              :zoom="10"
+              :additional-markers="participantMarkers"
+              :fit-markers="true"
+              :displayMainMarker="true"
+              :is_editable="false"
+              :main-marker-popup="mainMarkerPopup"
+              height="350px"
+            />
+          </div>
           <button v-if="searchText" @click="searchText = ''" class="event-page__clear">{{ $t('common.clear') }}</button>
         </Card>
 
@@ -223,13 +236,14 @@ function formatDate(dateStr: string): string {
         </Card>
       </FormLayout>
 
-      <Card v-if="!isErrored" collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
+      <Card v-if="!isErrored" ref="registerCardRef" collapsible :default-expanded="false" :title="$t('registerParticipant.toggle')">
         <RegisterParticipant
           v-if="!isErrored && eventData"
           :token="tokenValue"
           :event-page-url="eventPageUrl"
           :edit-participant-page-url="editParticipantPageUrl"
           @registered="fetchParticipants"
+          @confirmed="onRegisterConfirmed"
         />
       </Card>
     </div>
