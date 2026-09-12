@@ -171,7 +171,7 @@ export default {
       commentsPlaceholder: 'Notes optionnelles...',
       hideEmail: 'Masquer mon e-mail aux autres participants',
       notifyMe: 'M\'avertir des nouvelles inscriptions',
-      location: 'Votre position',
+      location: 'Votre adresse',
     },
     popup: {
       successTitle: 'Inscription réussie !',

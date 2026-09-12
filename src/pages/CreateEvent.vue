@@ -215,7 +215,7 @@ function goHome() {
     <h1>{{ $t('createEvent.title') }}</h1>
     <p class="form__required-legend">{{ $t('createEvent.required') }}</p>
 
-    <FormLayout :submitting="isSubmitting" @submit="onFormSubmit" >
+    <FormLayout :submitting="isSubmitting" @submit="onFormSubmit" :submitLabel="t('createEvent.submit')" >
       <CardRow>
       <Card variant="borderless">
         <div class="form__row">

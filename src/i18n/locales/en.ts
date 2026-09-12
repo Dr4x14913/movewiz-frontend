@@ -171,7 +171,7 @@ export default {
       commentsPlaceholder: 'Optional notes...',
       hideEmail: 'Hide my email from other participants',
       notifyMe: 'Notify me of new registrations',
-      location: 'Your Location',
+      location: 'Your address',
     },
     popup: {
       successTitle: 'Registration successful!',
